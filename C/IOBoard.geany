@@ -1,0 +1,40 @@
+[file_prefs]
+final_new_line=true
+ensure_convert_new_lines=false
+strip_trailing_spaces=false
+replace_tabs=false
+
+[indentation]
+indent_width=4
+indent_type=1
+indent_hard_tab_width=8
+detect_indent=false
+detect_indent_width=false
+indent_mode=2
+
+[project]
+name=IOBoard
+base_path=/home/pi/Desktop/C/GPIO/IOBoard
+description=
+file_patterns=
+
+[long line marker]
+long_line_behaviour=1
+long_line_column=72
+
+[files]
+current_page=1
+FILE_NAME_0=7972;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FIOBoard.c;0;4
+FILE_NAME_1=6543;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fiochannels.c;0;4
+FILE_NAME_2=1681;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fiochannels.h;0;4
+FILE_NAME_3=1278;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fgpio.c;0;4
+FILE_NAME_4=133;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fgpio.h;0;4
+
+[VTE]
+last_dir=/home/pi/Desktop/C/GPIO/IOBoard
+
+[build-menu]
+CFT_01_LB=İn_şa Et
+CFT_01_CM=gcc -Wall -o "%e" "%f" iochannels.o gpio.o $(pkg-config --cflags gtk+-3.0) -Wl,--whole-archive -lrt -ldl -lm -Wl,--no-whole-archive -rdynamic $(pkg-config --libs gtk+-3.0) -lwiringPi
+CFT_01_WD=
+filetypes=C;
