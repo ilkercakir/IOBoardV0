@@ -23,11 +23,17 @@ public class ConsoleServlet extends HttpServlet
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException  
 	{
+		ControllerConsole.User u;
+		ControllerConsole.Controller c;
+		String username, password;
+		int id;
+		byte value, v;
+		
 		if (request.getParameter("login")!=null)
 		{
-			ControllerConsole.User u = new ControllerConsole.User();
-			String username = request.getParameter("username");
-			String password = request.getParameter("password");
+			u = new ControllerConsole.User();
+			username = request.getParameter("username");
+			password = request.getParameter("password");
 			if (u.isPasswordValid(username, password))
 			{
 				request.getSession().setAttribute("user", u);
@@ -40,6 +46,21 @@ public class ConsoleServlet extends HttpServlet
 		}
 		else if (request.getParameter("channel")!=null)
 		{
+			u = request.getSession().getAttribute("user");
+			if (u!=null)
+			{
+				if (u.isLoggedIn())
+				{
+					id = request.getParameter("id");
+					value = (byte)request.getParameter("value");
+					c.setChannelValue(id, value);
+					v = c.getChannelValue(id);
+					PrintWriter pw = response.getWriter();
+					pw.printf("{ \"id\" : %d, }");
+					pw.flush();
+					pw.close();
+				}
+			}
 		}
 		else if (request.getParameter("bit")!=null)
 		{
