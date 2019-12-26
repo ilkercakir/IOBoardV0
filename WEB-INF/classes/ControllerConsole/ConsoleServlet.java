@@ -14,17 +14,18 @@ import ControllerConsole.User;
 
 public class ConsoleServlet extends HttpServlet
 {
+	private ControllerConsole.Controller c;
+
 	public void init(ServletConfig config) throws ServletException
 	{
 		super.init(config);
-		// open controller
-		// getServletContext().setAttribute("Controller", controller);  
+		c.Open();
+		getServletContext().setAttribute("Controller", c);  
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException  
 	{
 		ControllerConsole.User u;
-		ControllerConsole.Controller c;
 		String username, password;
 		int id;
 		byte value, v;
@@ -110,7 +111,7 @@ public class ConsoleServlet extends HttpServlet
 
 	public void destroy()
 	{
-		// getServletContext().removeAttribute("Controller");
-		// close controller
+		getServletContext().removeAttribute("Controller");
+		c.Close();
 	}
 }  
