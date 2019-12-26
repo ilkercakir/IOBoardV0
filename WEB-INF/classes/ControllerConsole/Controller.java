@@ -76,6 +76,7 @@ public class Controller
 				return(-1); // channels init failed
 			}
 		}
+		ochannel_write(controllerHandle);
 
 		// Bits
         	Iterator<Device> bitIter = udev.getDevices("A", 8, 9).iterator(); 
