@@ -56,7 +56,7 @@ public class ConsoleServlet extends HttpServlet
 					c.setChannelValue(id, value);
 					v = c.getChannelValue(id);
 					PrintWriter pw = response.getWriter();
-					pw.printf("{ \"id\" : %d, }");
+					pw.printf("{ \"id\" : %d, \"value\" : %d }", id, v);
 					pw.flush();
 					pw.close();
 				}
@@ -64,9 +64,37 @@ public class ConsoleServlet extends HttpServlet
 		}
 		else if (request.getParameter("bit")!=null)
 		{
+			u = request.getSession().getAttribute("user");
+			if (u!=null)
+			{
+				if (u.isLoggedIn())
+				{
+					id = request.getParameter("id");
+					value = (byte)request.getParameter("value");
+					c.setBitValue(id, value);
+					v = c.getBitValue(id);
+					PrintWriter pw = response.getWriter();
+					pw.printf("{ \"id\" : %d, \"value\" : %d }", id, v);
+					pw.flush();
+					pw.close();
+				}
+			}
 		}
 		else if (request.getParameter("pulse")!=null)
 		{
+			u = request.getSession().getAttribute("user");
+			if (u!=null)
+			{
+				if (u.isLoggedIn())
+				{
+					id = request.getParameter("id");
+					c.pulseOut(id);
+					PrintWriter pw = response.getWriter();
+					pw.printf("{ \"id\" : %d }", id);
+					pw.flush();
+					pw.close();
+				}
+			}
 		}
 		if (request.getParameter("logout")!=null)
 		{
