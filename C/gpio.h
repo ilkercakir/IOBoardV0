@@ -10,7 +10,7 @@
 #define USECS 1000 // clock half pulse width
 
 void set_address(unsigned int addr);
-void clock_pulse();
+void clock_pulse(int duration);
 void output_data_bit(unsigned char databit);
 void write_data(unsigned char c);
 void write_bit(unsigned char addr, unsigned char c);
