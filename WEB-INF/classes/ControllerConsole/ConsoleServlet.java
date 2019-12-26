@@ -22,7 +22,7 @@ public class ConsoleServlet extends HttpServlet
 		int i = c.Open();
 		switch (i)
 		{
-			case  0: c.writeChannel();
+			case  0:
 				break; // success
 			case -1:
 				break; // channels init failed
