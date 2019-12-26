@@ -19,7 +19,19 @@ public class ConsoleServlet extends HttpServlet
 	public void init(ServletConfig config) throws ServletException
 	{
 		super.init(config);
-		c.Open();
+		int i = c.Open();
+		switch (i)
+		{
+			case  0: c.writeChannel();
+				break; // success
+			case -1:
+				break; // channels init failed
+			case -2:
+				break; // bits init failed
+			case -3:
+				break; // pulses init failed
+		}
+		
 		getServletContext().setAttribute("Controller", c);  
 	}
 
