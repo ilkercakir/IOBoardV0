@@ -20,6 +20,27 @@ public class UserDevices
 		DBpath = rb.getString("ControllerConsole.DBPATH");
 	}
 
+	private Device newDeviceFromRS(ResultSet rs)
+	{
+		Device dev = new Device();
+		dev.setAuthorizationLevel(rs.getString("level"));
+		dev.setDeviceID(Integer.parseInt(rs.getString("devid")));
+		dev.setDeviceText(rs.getString("dtext"));
+		dev.setDeviceType(Integer.parseInt(rs.getString("dtype")));
+		dev.setDeviceTypeText(rs.getString("dttext"));
+		int dstat = Integer.parseInt(rs.getString("dstat"));
+		if (dstat==0)
+			dev.setDeviceNumStates(Integer.parseInt(rs.getString("numstates")));
+		else
+			dev.setDeviceNumStates(Integer.parseInt(rs.getString("dstat")));
+		dev.setDeviceInitialValue(Integer.parseInt(rs.getString("initval")));
+		dev.setDeviceCategory(rs.getString("categ"));
+		dev.setDeviceCategoryText(rs.getString("catxt"));
+		dev.setDeviceIcon(rs.getString("dicon"));
+		dev.setDeviceTypeIcon(rs.getString("dticon"));
+		return(dev);
+	}
+
 	public ArrayList<Device> getDevicesOfUser(User user, String categ, int fromChannel, int toChannel)
 	{
 		ArrayList<Device> devices = new ArrayList<Device>();
@@ -47,22 +68,7 @@ public class UserDevices
 				rs = stat.executeQuery("select authorizations.level, devices.devid, devices.dtext, devices.dtype, devicetypes.dtext as dttext, devices.numstates, devices.initval, devicetypes.dstat, devicetypes.categ, devcat.catxt, devices.dicon, devicetypes.dicon as dticon from users inner join authorizations on authorizations.username = users.username inner join devices on devices.devid = authorizations.devid inner join devicetypes on devicetypes.dtype = devices.dtype inner join devcat on devcat.categ = devicetypes.categ where devicetypes.categ = '" + categ + "' and users.username = '" + user.getUserName() + "' and devices.devid >= " + fromChannel + " and devices.devid <= " + toChannel + ";");
 			while (rs.next()) 
 			{
-				Device dev = new Device();
-				dev.setAuthorizationLevel(rs.getString("level"));
-				dev.setDeviceID(Integer.parseInt(rs.getString("devid")));
-				dev.setDeviceText(rs.getString("dtext"));
-				dev.setDeviceType(Integer.parseInt(rs.getString("dtype")));
-				dev.setDeviceTypeText(rs.getString("dttext"));
-				int dstat = Integer.parseInt(rs.getString("dstat"));
-				if (dstat==0)
-					dev.setDeviceNumStates(Integer.parseInt(rs.getString("numstates")));
-				else
-					dev.setDeviceNumStates(Integer.parseInt(rs.getString("dstat")));
-				dev.setDeviceInitialValue(Integer.parseInt(rs.getString("initval")));
-				dev.setDeviceCategory(rs.getString("categ"));
-				dev.setDeviceCategoryText(rs.getString("catxt"));
-				dev.setDeviceIcon(rs.getString("dicon"));
-				dev.setDeviceTypeIcon(rs.getString("dticon"));
+				Device dev = newDeviceFromRS(rs);
 				devices.add(dev);
 			}
 			rs.close();
@@ -97,25 +103,10 @@ public class UserDevices
 		{
 			conn = DriverManager.getConnection("jdbc:sqlite:" + DBpath);
 			stat = conn.createStatement();
-			rs = stat.executeQuery("select devices.devid, devices.dtext, devices.dtype, devicetypes.dtext as dttext, devices.numstates, devices.initval, devicetypes.dstat, devicetypes.categ, devcat.catxt, devices.dicon, devicetypes.dicon as dticon from devices inner join devicetypes on devicetypes.dtype = devices.dtype inner join devcat on devcat.categ = devicetypes.categ where devicetypes.categ = '" + categ + "' and devices.devid >= " + fromChannel + " and devices.devid <= " + toChannel + ";");
+			rs = stat.executeQuery("select 'W' as level, devices.devid, devices.dtext, devices.dtype, devicetypes.dtext as dttext, devices.numstates, devices.initval, devicetypes.dstat, devicetypes.categ, devcat.catxt, devices.dicon, devicetypes.dicon as dticon from devices inner join devicetypes on devicetypes.dtype = devices.dtype inner join devcat on devcat.categ = devicetypes.categ where devicetypes.categ = '" + categ + "' and devices.devid >= " + fromChannel + " and devices.devid <= " + toChannel + ";");
 			while (rs.next()) 
 			{
-				Device dev = new Device();
-				dev.setAuthorizationLevel("W");
-				dev.setDeviceID(Integer.parseInt(rs.getString("devid")));
-				dev.setDeviceText(rs.getString("dtext"));
-				dev.setDeviceType(Integer.parseInt(rs.getString("dtype")));
-				dev.setDeviceTypeText(rs.getString("dttext"));
-				int dstat = Integer.parseInt(rs.getString("dstat"));
-				if (dstat==0)
-					dev.setDeviceNumStates(Integer.parseInt(rs.getString("numstates")));
-				else
-					dev.setDeviceNumStates(Integer.parseInt(rs.getString("dstat")));
-				dev.setDeviceInitialValue(Integer.parseInt(rs.getString("initval")));
-				dev.setDeviceCategory(rs.getString("categ"));
-				dev.setDeviceCategoryText(rs.getString("catxt"));
-				dev.setDeviceIcon(rs.getString("dicon"));
-				dev.setDeviceTypeIcon(rs.getString("dticon"));
+				Device dev =  newDeviceFromRS(rs);
 				devices.add(dev);
 			}
 			rs.close();
