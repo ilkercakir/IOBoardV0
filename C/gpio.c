@@ -29,11 +29,11 @@ void set_address(unsigned int addr)
 	digitalWrite(2, addr&0x04); // 138.A2
 }
 
-void clock_pulse()
+void clock_pulse(int duration)
 {
-	usleep(USECS);
+	usleep(duration);
 	digitalWrite(3, 0); // 138.E3 = 1
-	usleep(USECS);
+	usleep(duration);
 	digitalWrite(3, 1); // 138.E3 = 0
 }
 
@@ -50,24 +50,24 @@ void write_data(unsigned char c)
 	for(i=0;i<8;c=c<<1,i++)
 	{
 		output_data_bit(c&0x80); // Highest bit
-		clock_pulse();
+		clock_pulse(USECS);
 	}
 
 	set_address(1); // Write mode
-	clock_pulse();
+	clock_pulse(USECS);
 }
 
 void write_bit(unsigned char addr, unsigned char c)
 {
 	set_address(addr); // Data Bit Out mode
 	output_data_bit(c); // !c
-	clock_pulse();
+	clock_pulse(USECS);
 }
 
-void write_pulse(unsigned char addr)
+void write_pulse(unsigned char addr, int duration)
 {
 	set_address(addr); // Pulse Out mode
-	clock_pulse();
+	clock_pulse(duration);
 }
 
 int init_state(unsigned char databits)
