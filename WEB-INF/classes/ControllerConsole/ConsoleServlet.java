@@ -35,13 +35,22 @@ public class ConsoleServlet extends HttpServlet
 			}
 			else
 			{
-/*
-				PrintWriter pw = response.getWriter();
-				pw.println(username + " " + password + " failed");
-				pw.close();
-*/
 				request.getRequestDispatcher("loginfailed.jsp").forward(request, response);
 			}
+		}
+		else if (request.getParameter("channel")!=null)
+		{
+		}
+		else if (request.getParameter("bit")!=null)
+		{
+		}
+		else if (request.getParameter("pulse")!=null)
+		{
+		}
+		if (request.getParameter("logout")!=null)
+		{
+			request.getSession().removeAttribute("user");
+			request.getRequestDispatcher("login.jsp").forward(request, response);
 		}
 	}
 
