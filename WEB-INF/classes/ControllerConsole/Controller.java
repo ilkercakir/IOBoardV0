@@ -53,6 +53,7 @@ public class Controller
 		int id;
 
 		controllerHandle = controller_open(0, (byte)0x00); // Version 0, Default value 0
+		logger.info("controller_open() handle " + controllerHandle);
 
 		UserDevices udev = new UserDevices();
 
@@ -114,6 +115,8 @@ public class Controller
 				return(-3); // pulses init failed
 			}
 		}
+
+		logger.info("controller_open() completed");
 		return(0);
 	}
 
