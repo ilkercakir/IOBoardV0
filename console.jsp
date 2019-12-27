@@ -87,9 +87,7 @@ function channelCallback(responseText)
 {
 	alert(responseText);
  	var obj = JSON.parse(responseText);
-	var id = obj.id;
-	var value = obj.value;
-	
+	document.getElementById('value' + obj.id).value = obj.value;
 }
 
 function channelClick(deviceid)
