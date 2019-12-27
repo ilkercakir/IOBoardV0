@@ -16,6 +16,8 @@
 <body>
 <table align="center">
 <%
+byte selectedvalue;
+int i;
 if (user.isLoggedIn())
 {
         Iterator<Device> channelIter = devices.getDevicesOfUser(user, "A", 0, 7).iterator(); 
@@ -28,7 +30,9 @@ if (user.isLoggedIn())
  <tr>
   <td><img src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
-  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:switchclick(<%=dev.getDeviceID()%>)"></td>
+  <%selectedvalue=controller.getChannelValue(dev.getDeviceID())%>
+  <td><select id="value<%=dev.getDeviceID()%>"><%for (int i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
+  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:channelClick(<%=dev.getDeviceID()%>)"></td>
  </tr>
 <%
         }
@@ -43,7 +47,9 @@ if (user.isLoggedIn())
  <tr>
   <td><img src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
-  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:switchclick(<%=dev.getDeviceID()%>)"></td>
+  <%selectedvalue=controller.getBitValue(dev.getDeviceID())%>
+  <td><select id="value<%=dev.getDeviceID()%>"><%for (int i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
+  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:bitClick(<%=dev.getDeviceID()%>)"></td>
  </tr>
 <%
         }
@@ -58,7 +64,7 @@ if (user.isLoggedIn())
  <tr>
   <td><img src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
-  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:switchclick(<%=dev.getDeviceID()%>)"></td>
+  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:pulseClick(<%=dev.getDeviceID()%>)"></td>
  </tr>
 <%
         }
@@ -77,9 +83,34 @@ else
 </html>
 
 <script type="text/javascript">
-function switchclick(deviceid)
+function channelCallback(responseText)
 {
-	alert(deviceid);
+	alert(responseText);
+ 	var obj = JSON.parse(responseText);
+	var id = obj.id;
+	var value = obj.value;
+	
 }
 
+function channelClick(deviceid)
+{
+	var channelobj = eval('document.getElementById("value' + deviceid + '");');
+	var value = channelobj.value;
+	
+ 	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function() { 
+ 		if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+			channelCallback(xmlHttp.responseText);
+	}
+ 	xmlHttp.open('GET', '/controller?channel&id=' + deviceid + '&value=' + value, true); // asynchronous 
+ 	xmlHttp.send(null);
+}
+
+function bitClick(deviceid)
+{
+}
+
+function pulseClick(deviceid)
+{
+}
 </script>
