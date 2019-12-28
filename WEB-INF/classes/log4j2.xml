@@ -12,5 +12,8 @@
 		<Logger name="ControllerConsole.Controller" level="info" additivity="false">
 			<AppenderRef ref="console"/>
 		</Logger>
+		<Logger name="ControllerConsole.ConsoleServlet" level="info" additivity="false">
+			<AppenderRef ref="console"/>
+		</Logger>
 	</Loggers>
 </Configuration>
