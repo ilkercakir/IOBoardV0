@@ -9,30 +9,36 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpSession;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import ControllerConsole.User;
 
 public class ConsoleServlet extends HttpServlet
 {
+	static Logger logger = LogManager.getLogger(ControllerConsole.ConsoleServlet.class);
 	private ControllerConsole.Controller c;
 
 	public void init(ServletConfig config) throws ServletException
 	{
 		super.init(config);
+
+		c = new ControllerConsole.Controller();
+		logger.info("Opening controller");
 		int i = c.Open();
 		switch (i)
 		{
-			case  0:
+			case  0:logger.info("Controller opened");
 				break; // success
-			case -1:
+			case -1:logger.info("Channels init failed");
 				break; // channels init failed
-			case -2:
+			case -2:logger.info("Bits init failed");
 				break; // bits init failed
-			case -3:
+			case -3:logger.info("Pulses init failed");
 				break; // pulses init failed
 		}
 		
-		getServletContext().setAttribute("Controller", c);  
+		getServletContext().setAttribute("controller", c);  
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException  
@@ -59,14 +65,15 @@ public class ConsoleServlet extends HttpServlet
 		}
 		else if (request.getParameter("channel")!=null)
 		{
-			u = request.getSession().getAttribute("user");
+			u = (ControllerConsole.User)request.getSession().getAttribute("user");
 			if (u!=null)
 			{
 				if (u.isLoggedIn())
 				{
-					id = request.getParameter("id");
-					value = (byte)request.getParameter("value");
+					id = Integer.parseInt(request.getParameter("id"));
+					value = (byte)Integer.parseInt(request.getParameter("value"));
 					c.setChannelValue(id, value);
+					c.writeChannel();
 					v = c.getChannelValue(id);
 					PrintWriter pw = response.getWriter();
 					pw.printf("{ \"id\" : %d, \"value\" : %d }", id, v);
@@ -77,13 +84,13 @@ public class ConsoleServlet extends HttpServlet
 		}
 		else if (request.getParameter("bit")!=null)
 		{
-			u = request.getSession().getAttribute("user");
+			u = (ControllerConsole.User)request.getSession().getAttribute("user");
 			if (u!=null)
 			{
 				if (u.isLoggedIn())
 				{
-					id = request.getParameter("id");
-					value = (byte)request.getParameter("value");
+					id = Integer.parseInt(request.getParameter("id"));
+					value = (byte)Integer.parseInt(request.getParameter("value"));
 					c.setBitValue(id, value);
 					v = c.getBitValue(id);
 					PrintWriter pw = response.getWriter();
@@ -95,15 +102,16 @@ public class ConsoleServlet extends HttpServlet
 		}
 		else if (request.getParameter("pulse")!=null)
 		{
-			u = request.getSession().getAttribute("user");
+			u = (ControllerConsole.User)request.getSession().getAttribute("user");
 			if (u!=null)
 			{
 				if (u.isLoggedIn())
 				{
-					id = request.getParameter("id");
-					c.pulseOut(id);
+					id = Integer.parseInt(request.getParameter("id"));
+					int duration = Integer.parseInt(request.getParameter("value"));
+					c.pulseOut(id, duration);
 					PrintWriter pw = response.getWriter();
-					pw.printf("{ \"id\" : %d }", id);
+					pw.printf("{ \"id\" : %d, \"value\" : %d }", id, duration);
 					pw.flush();
 					pw.close();
 				}
@@ -123,7 +131,8 @@ public class ConsoleServlet extends HttpServlet
 
 	public void destroy()
 	{
-		getServletContext().removeAttribute("Controller");
+		getServletContext().removeAttribute("controller");
 		c.Close();
+		logger.info("Controller closed");
 	}
 }  

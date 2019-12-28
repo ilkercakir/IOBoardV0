@@ -23,21 +23,28 @@ public class UserDevices
 	private Device newDeviceFromRS(ResultSet rs)
 	{
 		Device dev = new Device();
-		dev.setAuthorizationLevel(rs.getString("level"));
-		dev.setDeviceID(Integer.parseInt(rs.getString("devid")));
-		dev.setDeviceText(rs.getString("dtext"));
-		dev.setDeviceType(Integer.parseInt(rs.getString("dtype")));
-		dev.setDeviceTypeText(rs.getString("dttext"));
-		int dstat = Integer.parseInt(rs.getString("dstat"));
-		if (dstat==0)
-			dev.setDeviceNumStates(Integer.parseInt(rs.getString("numstates")));
-		else
-			dev.setDeviceNumStates(Integer.parseInt(rs.getString("dstat")));
-		dev.setDeviceInitialValue(Integer.parseInt(rs.getString("initval")));
-		dev.setDeviceCategory(rs.getString("categ"));
-		dev.setDeviceCategoryText(rs.getString("catxt"));
-		dev.setDeviceIcon(rs.getString("dicon"));
-		dev.setDeviceTypeIcon(rs.getString("dticon"));
+		try
+		{
+			dev.setAuthorizationLevel(rs.getString("level"));
+			dev.setDeviceID(Integer.parseInt(rs.getString("devid")));
+			dev.setDeviceText(rs.getString("dtext"));
+			dev.setDeviceType(Integer.parseInt(rs.getString("dtype")));
+			dev.setDeviceTypeText(rs.getString("dttext"));
+			int dstat = Integer.parseInt(rs.getString("dstat"));
+			if (dstat==0)
+				dev.setDeviceNumStates(Integer.parseInt(rs.getString("numstates")));
+			else
+				dev.setDeviceNumStates(Integer.parseInt(rs.getString("dstat")));
+			dev.setDeviceInitialValue(Integer.parseInt(rs.getString("initval")));
+			dev.setDeviceCategory(rs.getString("categ"));
+			dev.setDeviceCategoryText(rs.getString("catxt"));
+			dev.setDeviceIcon(rs.getString("dicon"));
+			dev.setDeviceTypeIcon(rs.getString("dticon"));
+		}
+		catch(SQLException sqlex)
+		{
+        		//throw sqlex;	
+		}
 		return(dev);
 	}
 

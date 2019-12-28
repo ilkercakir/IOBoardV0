@@ -12,7 +12,7 @@ public class Controller
 	static Logger logger = LogManager.getLogger(ControllerConsole.Controller.class);
 
 	private native long controller_open(int version, byte initialValue);
-	private native long controller_close(long handle);
+	private native void controller_close(long handle);
 	private native int ochannel_add(long handle, String name, int type, int numstates);
 	private native int obit_add(long handle, String name);
 	private native int opulse_add(long handle, String name);
@@ -22,7 +22,7 @@ public class Controller
 	private native void ochannel_write(long handle);
 	private native byte obit_get_value(long handle, int bit);
 	private native void obit_set_value(long handle, int bit, byte value);
-	private native void opulse_out(long handle, int pulse);
+	private native void opulse_out(long handle, int pulse, int usecs);
 
 	public Controller()
 	{
@@ -141,9 +141,9 @@ public class Controller
 		obit_set_value(controllerHandle, bit, value);
 	}
 
-	public void pulseOut(int pulse)
+	public void pulseOut(int pulse, int usecs)
 	{
-		opulse_out(controllerHandle, pulse);
+		opulse_out(controllerHandle, pulse, usecs);
 	}
 
 	public byte getControllerValue()
