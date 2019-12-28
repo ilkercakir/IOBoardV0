@@ -14,7 +14,7 @@ void clock_pulse(int duration);
 void output_data_bit(unsigned char databit);
 void write_data(unsigned char c);
 void write_bit(unsigned char addr, unsigned char c);
-void write_pulse(unsigned char addr);
+void write_pulse(unsigned char addr, unsigned int usecs);
 int init_state(unsigned char databits);
 
 #endif

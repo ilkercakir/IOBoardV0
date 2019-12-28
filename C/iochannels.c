@@ -27,13 +27,13 @@
 
 #include "iochannels.h"
 
-void controller_open(controller **cont, controller_type type, unsigned char databits)
+controller* controller_open(controller_type type, unsigned char databits)
 {
+	controller *c;
 	actuator *a;
 	int i, err;
 
-	(*cont) = malloc(sizeof(controller));
-	controller *c = *cont;
+	c = malloc(sizeof(controller));
 
 	c->type = type;
 	c->actuators = NULL;
@@ -98,18 +98,15 @@ void controller_open(controller **cont, controller_type type, unsigned char data
 	}
 
 	c->err = err;
+
+	return(c);
 }
 
-void controller_close(controller **cont)
+void controller_close(controller *c)
 {
-	controller *c = *cont;
-
 	if (c->actuators)
 		free(c->actuators);
-	c->actuators = NULL;
-
 	free(c);
-	c = NULL;
 }
 
 unsigned char controller_get_value(controller *c)
@@ -310,7 +307,7 @@ void obit_set_value(controller *c, unsigned int bit, unsigned char value)
 	write_bit(a[bit].base_pin, a[bit].value);
 }
 
-void opulse_out(controller *c, unsigned int pulse)
+void opulse_out(controller *c, unsigned int pulse, unsigned int usecs)
 {
 	actuator *a = c->actuators;
 
@@ -320,5 +317,5 @@ void opulse_out(controller *c, unsigned int pulse)
 	if ((pulse < c->ochannels + c->obits) || (pulse >= (c->ochannels + c->obits + c->opulses))) // pulse outside bounds
 		return;
 
-	write_pulse(a[pulse].base_pin);
+	write_pulse(a[pulse].base_pin, usecs);
 }

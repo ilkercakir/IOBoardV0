@@ -31,6 +31,8 @@ gboolean widget_state_set(GtkWidget *togglebutton, gboolean state, gpointer data
 	ochannel_set_value(a->parent, a->channel, (state?0x01:0x00));
 	ochannel_write(a->parent);
 
+//printf("channel %d value %c\n", a->channel, (ochannel_get_value(a->parent, a->channel)?'1':'0'));
+
 	return(TRUE);
 }
 
@@ -45,6 +47,8 @@ void combo_changed(GtkWidget *combo, gpointer data)
 	g_free(strval);
 
 	ochannel_write(a->parent);
+
+//printf("channel %d value %c\n", a->channel, ochannel_get_value(a->parent, a->channel) + '0');
 }
 
 gboolean widget_state_set_bit(GtkWidget *togglebutton, gboolean state, gpointer data)
@@ -54,6 +58,8 @@ gboolean widget_state_set_bit(GtkWidget *togglebutton, gboolean state, gpointer 
 
 	obit_set_value(a->parent, a->channel, value);
 
+//printf("bit %d value %c\n", a->channel, (obit_get_value(a->parent, a->channel)?'1':'0'));
+
 	return(TRUE);
 }
 
@@ -61,7 +67,7 @@ static void button_clicked_pulse(GtkWidget *button, gpointer data)
 {
 	actuator *a = (actuator*)data;
 
-	opulse_out(a->parent, a->channel);
+	opulse_out(a->parent, a->channel, 1000000);
 }
 
 void add_channelframe(controlpanel *cp, controller *c, int channel)
@@ -275,7 +281,7 @@ int main(int argc, char **argv)
 	int i;
 	controlpanel cp;
 
-	controller_open(&c, V0, 0x00);
+	c = controller_open(V0, 0x00);
 	if (c->err)
 		printf("Open err=%d\n", c->err);
 
@@ -330,7 +336,8 @@ int main(int argc, char **argv)
 
 	gtk_main();
 
-	controller_close(&c);
+	controller_close(c);
+	c = NULL;
 
 	return(0);
 

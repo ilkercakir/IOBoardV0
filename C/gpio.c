@@ -64,10 +64,10 @@ void write_bit(unsigned char addr, unsigned char c)
 	clock_pulse(USECS);
 }
 
-void write_pulse(unsigned char addr, int duration)
+void write_pulse(unsigned char addr, unsigned int usecs)
 {
 	set_address(addr); // Pulse Out mode
-	clock_pulse(duration);
+	clock_pulse(usecs);
 }
 
 int init_state(unsigned char databits)

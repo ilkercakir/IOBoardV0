@@ -45,8 +45,8 @@ struct actuatorcontroller
 	unsigned char databits;
 };
 
-void controller_open(controller **c, controller_type type, unsigned char databits);
-void controller_close(controller **c);
+controller* controller_open(controller_type type, unsigned char databits);
+void controller_close(controller *c);
 int ochannel_add(controller *c, char *name, actuator_type type, int numstates);
 int obit_add(controller *c, char *name);
 int opulse_add(controller *c, char *name);
@@ -56,6 +56,6 @@ unsigned char controller_get_value(controller *c);
 void ochannel_write(controller *c);
 unsigned char obit_get_value(controller *c, unsigned int bit);
 void obit_set_value(controller *c, unsigned int bit, unsigned char value);
-void opulse_out(controller *c, unsigned int pulse);
+void opulse_out(controller *c, unsigned int pulse, unsigned int usecs);
 
 #endif

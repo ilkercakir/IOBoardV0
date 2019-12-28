@@ -23,12 +23,14 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=1
-FILE_NAME_0=7972;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FIOBoard.c;0;4
-FILE_NAME_1=6543;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fiochannels.c;0;4
-FILE_NAME_2=1681;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fiochannels.h;0;4
-FILE_NAME_3=1278;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fgpio.c;0;4
-FILE_NAME_4=133;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fgpio.h;0;4
+current_page=0
+FILE_NAME_0=536;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FIOBoard.c;0;4
+FILE_NAME_1=798;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fiochannels.c;0;4
+FILE_NAME_2=1023;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fiochannels.h;0;4
+FILE_NAME_3=1432;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fgpio.c;0;4
+FILE_NAME_4=420;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fgpio.h;0;4
+FILE_NAME_5=1157;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FControllerConsole_Controller.c;0;4
+FILE_NAME_6=1534;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FControllerConsole_Controller.h;0;4
 
 [VTE]
 last_dir=/home/pi/Desktop/C/GPIO/IOBoard
@@ -38,3 +40,6 @@ CFT_01_LB=İn_şa Et
 CFT_01_CM=gcc -Wall -o "%e" "%f" iochannels.o gpio.o $(pkg-config --cflags gtk+-3.0) -Wl,--whole-archive -lrt -ldl -lm -Wl,--no-whole-archive -rdynamic $(pkg-config --libs gtk+-3.0) -lwiringPi
 CFT_01_WD=
 filetypes=C;
+CFT_00_LB=_Derle
+CFT_00_CM=gcc -Wall -c "%f" -DIS_RPI -DSTANDALONE -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS -DTARGET_POSIX -D_LINUX -fPIC -DPIC -D_REENTRANT -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -U_FORTIFY_SOURCE -g -ftree-vectorize -pipe -DUSE_VCHIQ_ARM -Wno-psabi -mcpu=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits $(pkg-config --cflags gtk+-3.0) -Wno-deprecated-declarations -I/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/include -I/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/include/linux
+CFT_00_WD=
