@@ -10,7 +10,7 @@
 <jsp:useBean id="user" class="ControllerConsole.User" scope="session"/>
 <jsp:useBean id="devices" class="ControllerConsole.UserDevices" scope="page"/>
 
-<jsp:useBean id="controller" class="ControllerConsole.Controller" scope="page"/>
+<jsp:useBean id="controller" class="ControllerConsole.Controller" scope="application"/>
 
 
 <body>
@@ -30,8 +30,8 @@ if (user.isLoggedIn())
  <tr>
   <td><img src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
-  <%selectedvalue=controller.getChannelValue(dev.getDeviceID())%>
-  <td><select id="value<%=dev.getDeviceID()%>"><%for (int i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
+  <%selectedvalue=controller.getChannelValue(dev.getDeviceID());%>
+  <td><select id="value<%=dev.getDeviceID()%>"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
   <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:channelClick(<%=dev.getDeviceID()%>)"></td>
  </tr>
 <%
@@ -47,8 +47,8 @@ if (user.isLoggedIn())
  <tr>
   <td><img src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
-  <%selectedvalue=controller.getBitValue(dev.getDeviceID())%>
-  <td><select id="value<%=dev.getDeviceID()%>"><%for (int i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
+  <%selectedvalue=controller.getBitValue(dev.getDeviceID());%>
+  <td><select id="value<%=dev.getDeviceID()%>"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
   <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:bitClick(<%=dev.getDeviceID()%>)"></td>
  </tr>
 <%
@@ -64,11 +64,16 @@ if (user.isLoggedIn())
  <tr>
   <td><img src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
-  <td></td>
+  <td><select id="value<%=dev.getDeviceID()%>"><%for (i=1;i<=10;i++){%><option value="<%=i%>"><%=i%></option><%}%></select></td>
   <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:pulseClick(<%=dev.getDeviceID()%>)"></td>
  </tr>
 <%
         }
+%>
+ <tr>
+  <td colspan="4" align="center"><form name="logoutform" method="POST" action="ControllerConsole?logout"><input type="submit" name="logout" value="Logout"/></form></td>
+ </tr>
+<%
 }
 else
 {
@@ -86,7 +91,6 @@ else
 <script type="text/javascript">
 function channelCallback(responseText)
 {
-	alert(responseText);
  	var obj = JSON.parse(responseText);
 	document.getElementById('value' + obj.id).value = obj.value;
 }
@@ -95,21 +99,56 @@ function channelClick(deviceid)
 {
 	var channelobj = eval('document.getElementById("value' + deviceid + '");');
 	var value = channelobj.value;
-	
+
  	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.onreadystatechange = function() { 
  		if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
 			channelCallback(xmlHttp.responseText);
 	}
- 	xmlHttp.open('GET', '/controller?channel&id=' + deviceid + '&value=' + value, true); // asynchronous 
+	var url = 'ControllerConsole?channel&id=' + deviceid + '&value=' + value;
+ 	xmlHttp.open('GET', url, true); // asynchronous 
  	xmlHttp.send(null);
+}
+
+function bitCallback(responseText)
+{
+ 	var obj = JSON.parse(responseText);
+	document.getElementById('value' + obj.id).value = obj.value;
 }
 
 function bitClick(deviceid)
 {
+	var bitobj = eval('document.getElementById("value' + deviceid + '");');
+	var value = bitobj.value;
+
+ 	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function() { 
+ 		if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+			bitCallback(xmlHttp.responseText);
+	}
+	var url = 'ControllerConsole?bit&id=' + deviceid + '&value=' + value;
+ 	xmlHttp.open('GET', url, true); // asynchronous 
+ 	xmlHttp.send(null);
+}
+
+function pulseCallback(responseText)
+{
+ 	var obj = JSON.parse(responseText);
+	//document.getElementById('value' + obj.id).value = obj.value;
 }
 
 function pulseClick(deviceid)
 {
+	var pulseobj = eval('document.getElementById("value' + deviceid + '");');
+	var value = pulseobj.value * 100000;
+
+ 	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function() { 
+ 		if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+			pulseCallback(xmlHttp.responseText);
+	}
+	var url = 'ControllerConsole?pulse&id=' + deviceid + '&value=' + value;
+ 	xmlHttp.open('GET', url, true); // asynchronous 
+ 	xmlHttp.send(null);
 }
 </script>
