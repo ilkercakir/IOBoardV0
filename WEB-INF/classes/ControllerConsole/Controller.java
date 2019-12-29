@@ -18,7 +18,7 @@ public class Controller
 	private native int opulse_add(long handle, String name);
 	private native byte ochannel_get_value(long handle, int channel);
 	private native void ochannel_set_value(long handle, int channel, byte value);
-	private native byte controller_get_value(long handle);
+	//private native byte controller_get_value(long handle);
 	private native void ochannel_write(long handle);
 	private native byte obit_get_value(long handle, int bit);
 	private native void obit_set_value(long handle, int bit, byte value);
@@ -146,10 +146,12 @@ public class Controller
 		opulse_out(controllerHandle, pulse, usecs);
 	}
 
+/*
 	public byte getControllerValue()
 	{
 		return(controller_get_value(controllerHandle));
 	}
+*/
 
 	public void writeChannel()
 	{
