@@ -65,14 +65,6 @@ JNIEXPORT void JNICALL Java_ControllerConsole_Controller_ochannel_1set_1value
 
 /*
  * Class:     ControllerConsole_Controller
- * Method:    controller_get_value
- * Signature: (J)B
- */
-JNIEXPORT jbyte JNICALL Java_ControllerConsole_Controller_controller_1get_1value
-  (JNIEnv *, jobject, jlong);
-
-/*
- * Class:     ControllerConsole_Controller
  * Method:    ochannel_write
  * Signature: (J)V
  */

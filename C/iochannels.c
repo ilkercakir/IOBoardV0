@@ -89,6 +89,13 @@ controller* controller_open(controller_type type, unsigned char databits)
 				a->pins_used = 0;
 			}
 
+			if( (err=pthread_mutex_init(&(c->omutex), NULL))!=0 )
+			{
+				//printf("omutex init failed, %d\n", ret);
+				err = CONTROLLER_MUTEX_FAILED;
+				break;
+			}
+		
 			err = init_state(c->databits);
 			//printf("init_state(%d) = %d\n", c->databits, ret);
 			break;
@@ -106,6 +113,7 @@ void controller_close(controller *c)
 {
 	if (c->actuators)
 		free(c->actuators);
+	pthread_mutex_destroy(&(c->omutex));
 	free(c);
 }
 
@@ -140,8 +148,9 @@ unsigned char controller_get_value(controller *c)
 int ochannel_add(controller *c, char *name, actuator_type type, int numstates)
 {
 	actuator *a = c->actuators;
-	int pins_used;
+	int pins_used, err;
 
+	pthread_mutex_lock(&(c->omutex));
 	switch (type)
 	{
 		case A_LEVEL:
@@ -159,87 +168,119 @@ int ochannel_add(controller *c, char *name, actuator_type type, int numstates)
 	}
 
 	if (type == A_VOID)
-		return (CONTROLLER_INVALID_ACTUATOR);
-
-	if (c->channel_pins_used + pins_used > c->ochannels)
-		return (CONTROLLER_FULL);
-
-	strcpy(a[c->aindex].name, name);
-	a[c->aindex].type = type;
-	a[c->aindex].numstates = numstates;
-	a[c->aindex].base_pin = c->channel_pins_used;
-	a[c->aindex].pins_used = pins_used;
-	a[c->aindex].channel = c->aindex;
-	switch (type)
 	{
-		case A_LEVEL:
-			a[c->aindex].value = 0; // Default value
-			break;
-		case A_SWITCH:
-		case A_PULSE:
-		default:
-			a[c->aindex].value = SWITCH_OFF; // Default value
-			break;
+		err = CONTROLLER_INVALID_ACTUATOR;
 	}
+	else if (c->channel_pins_used + pins_used > c->ochannels)
+	{
+		err = CONTROLLER_FULL;
+	}
+	else
+	{
+		strcpy(a[c->aindex].name, name);
+		a[c->aindex].type = type;
+		a[c->aindex].numstates = numstates;
+		a[c->aindex].base_pin = c->channel_pins_used;
+		a[c->aindex].pins_used = pins_used;
+		a[c->aindex].channel = c->aindex;
+		switch (type)
+		{
+			case A_LEVEL:
+				a[c->aindex].value = 0; // Default value
+				break;
+			case A_SWITCH:
+			case A_PULSE:
+			default:
+				a[c->aindex].value = SWITCH_OFF; // Default value
+				break;
+		}
 
-	c->channel_pins_used+=pins_used;
-	c->aindex++;
+		c->channel_pins_used+=pins_used;
+		c->aindex++;
 
-	controller_get_value(c); // updates c->databits;
+		controller_get_value(c); // updates c->databits;
 
-	return(c->aindex-1);
+		err = c->aindex-1;
+	}
+	pthread_mutex_unlock(&(c->omutex));
+
+	return(err);
 }
 
 int obit_add(controller *c, char *name)
 {
 	actuator *a = c->actuators;
+	int err;
 
+	pthread_mutex_lock(&(c->omutex));
 	if (c->bindex >= c->ochannels + c->obits)
-		return (CONTROLLER_FULL);
+	{
+		err = CONTROLLER_FULL;
+	}
+	else
+	{
+		strcpy(a[c->bindex].name, name);
+		a[c->bindex].type = A_SWITCH;
+		a[c->bindex].numstates = 2;
+		a[c->bindex].base_pin = c->bindex - c->ochannels + 4;
+		a[c->bindex].pins_used = 1;
+		a[c->bindex].channel = c->bindex;
+		a[c->bindex].value = SWITCH_OFF; // Default value
+		c->bindex++;
+		err = c->bindex-1;
+	}
+	pthread_mutex_unlock(&(c->omutex));
 
-	strcpy(a[c->bindex].name, name);
-	a[c->bindex].type = A_SWITCH;
-	a[c->bindex].numstates = 2;
-	a[c->bindex].base_pin = c->bindex - c->ochannels + 4;
-	a[c->bindex].pins_used = 1;
-	a[c->bindex].channel = c->bindex;
-	a[c->bindex].value = SWITCH_OFF; // Default value
-
-	c->bindex++;
-
-	return(c->bindex-1);
+	return(err);
 }
 
 int opulse_add(controller *c, char *name)
 {
 	actuator *a = c->actuators;
+	int err;
 
+	pthread_mutex_lock(&(c->omutex));
 	if (c->pindex >= c->ochannels + c->obits + c->opulses)
-		return (CONTROLLER_FULL);
+	{
+		err = CONTROLLER_FULL;
+	}
+	else
+	{
+		strcpy(a[c->pindex].name, name);
+		a[c->pindex].type = A_PULSE;
+		a[c->pindex].numstates = 2;
+		a[c->pindex].base_pin = c->pindex - c->ochannels - c->opulses + 6;
+		a[c->pindex].pins_used = 1;
+		a[c->pindex].channel = c->pindex;
+		c->pindex++;
+		err = c->pindex-1;
+	}
+	pthread_mutex_unlock(&(c->omutex));
 
-	strcpy(a[c->pindex].name, name);
-	a[c->pindex].type = A_PULSE;
-	a[c->pindex].numstates = 2;
-	a[c->pindex].base_pin = c->pindex - c->ochannels - c->opulses + 6;
-	a[c->pindex].pins_used = 1;
-	a[c->pindex].channel = c->pindex;
-
-	c->pindex++;
-
-	return(c->pindex-1);
+	return(err);
 }
 
 unsigned char ochannel_get_value(controller *c, unsigned int channel)
 {
 	actuator *a = c->actuators;
+	int err;
 
+	pthread_mutex_lock(&(c->omutex));
 	if (!c->aindex) // no channels added
-		return(0);
+	{
+		err = 0;
+	}
+	else if (channel >= c->aindex) // channel outside bounds
+	{
+		err = 0;
+	}
+	else
+	{
+		err = a[channel].value;
+	}
+	pthread_mutex_unlock(&(c->omutex));
 
-	if (channel >= c->aindex) // channel outside bounds
-		return(0);
-
-	return(a[channel].value);
+	return(err);
 }
 
 void ochannel_set_value(controller *c, unsigned int channel, unsigned char value)
@@ -247,75 +288,102 @@ void ochannel_set_value(controller *c, unsigned int channel, unsigned char value
 	actuator *a = c->actuators;
 	unsigned char valuemask;
 
+	pthread_mutex_lock(&(c->omutex));
 	if (!c->aindex) // no channels added
-		return;
-
-	if (channel >= c->aindex) // channel outside bounds
-		return;
-
-	switch (a[channel].type)
 	{
-		case A_LEVEL:
-			valuemask = pow(2, a[channel].pins_used) - 1;
-			value &= valuemask;
-			break;
-		case A_SWITCH:
-		case A_PULSE:
-		default:
-			if (value)
-				value = 0x01;
-			else
-				value = 0x00;
-			break;
 	}
-	a[channel].value = value;
+	else if (channel >= c->aindex) // channel outside bounds
+	{
+	}
+	else
+	{
+		switch (a[channel].type)
+		{
+			case A_LEVEL:
+				valuemask = pow(2, a[channel].pins_used) - 1;
+				value &= valuemask;
+				break;
+			case A_SWITCH:
+			case A_PULSE:
+			default:
+				if (value)
+					value = 0x01;
+				else
+					value = 0x00;
+				break;
+		}
+		a[channel].value = value;
+	}
+	pthread_mutex_unlock(&(c->omutex));
 }
 
 void ochannel_write(controller *c)
 {
+	pthread_mutex_lock(&(c->omutex));
 	write_data(controller_get_value(c));
+	pthread_mutex_unlock(&(c->omutex));
 }
 
 unsigned char obit_get_value(controller *c, unsigned int bit)
 {
 	actuator *a = c->actuators;
+	int err;
 
+	pthread_mutex_lock(&(c->omutex));
 	if (c->bindex == c->ochannels) // no bits added
-		return(0);
+	{
+		err = 0;
+	}
+	else if ((bit < c->ochannels) || (bit >= (c->ochannels + c->obits))) // bit outside bounds
+	{
+		err = 0;
+	}
+	else
+	{
+		err = a[bit].value;
+	}
+	pthread_mutex_unlock(&(c->omutex));
 
-	if ((bit < c->ochannels) || (bit >= (c->ochannels + c->obits))) // bit outside bounds
-		return(0);
-
-	return(a[bit].value);
+	return(err);
 }
 
 void obit_set_value(controller *c, unsigned int bit, unsigned char value)
 {
 	actuator *a = c->actuators;
 
+	pthread_mutex_lock(&(c->omutex));
 	if (c->bindex == c->ochannels) // no bits added
-		return;
-
-	if ((bit < c->ochannels) || (bit >= (c->ochannels + c->obits))) // bit outside bounds
-		return;
-
-	if (value)
-		a[bit].value = 0x01;
+	{
+	}
+	else if ((bit < c->ochannels) || (bit >= (c->ochannels + c->obits))) // bit outside bounds
+	{
+	}
 	else
-		a[bit].value = 0x00;
+	{
+		if (value)
+			a[bit].value = 0x01;
+		else
+			a[bit].value = 0x00;
 
-	write_bit(a[bit].base_pin, a[bit].value);
+		write_bit(a[bit].base_pin, a[bit].value);
+	}
+	pthread_mutex_unlock(&(c->omutex));
 }
 
 void opulse_out(controller *c, unsigned int pulse, unsigned int usecs)
 {
 	actuator *a = c->actuators;
 
+	pthread_mutex_lock(&(c->omutex));
 	if (c->pindex == c->ochannels + c->obits) // no pulses added
-		return;
-
-	if ((pulse < c->ochannels + c->obits) || (pulse >= (c->ochannels + c->obits + c->opulses))) // pulse outside bounds
-		return;
-
-	write_pulse(a[pulse].base_pin, usecs);
+	{
+	}
+	else if ((pulse < c->ochannels + c->obits) || (pulse >= (c->ochannels + c->obits + c->opulses))) // pulse outside bounds
+	{
+	}
+	else
+	{
+		write_pulse(a[pulse].base_pin, usecs);
+	}
+	pthread_mutex_unlock(&(c->omutex));
 }

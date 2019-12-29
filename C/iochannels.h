@@ -1,6 +1,7 @@
 #ifndef iochannelsH
 #define iochannelsH
 
+#include <pthread.h>
 #include "gpio.h"
 
 #define CONTROLLER_SUCCESS 0
@@ -8,6 +9,7 @@
 #define CONTROLLER_FULL -3
 #define CONTROLLER_INVALID_ACTUATOR -4
 #define CONTROLLER_INVALID_STATES -5
+#define CONTROLLER_MUTEX_FAILED -6
 
 typedef enum { V0 } controller_type;
 
@@ -43,6 +45,7 @@ struct actuatorcontroller
 	unsigned int bindex;
 	unsigned int pindex;
 	unsigned char databits;
+	pthread_mutex_t omutex;
 };
 
 controller* controller_open(controller_type type, unsigned char databits);

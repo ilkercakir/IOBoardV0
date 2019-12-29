@@ -99,16 +99,6 @@ JNIEXPORT void JNICALL Java_ControllerConsole_Controller_ochannel_1set_1value(JN
 	ochannel_set_value(c, (unsigned int)channel, (unsigned char)value);
 }
 
-JNIEXPORT jbyte JNICALL Java_ControllerConsole_Controller_controller_1get_1value(JNIEnv *env, jobject obj, jlong handle)
-{
-	controller *c = (controller *)(long)handle;
-	unsigned char value;
-
-	value = controller_get_value(c);
-
-	return((jbyte)value);
-}
-
 JNIEXPORT void JNICALL Java_ControllerConsole_Controller_ochannel_1write(JNIEnv *env, jobject obj, jlong handle)
 {
 	controller *c = (controller *)(long)handle;
