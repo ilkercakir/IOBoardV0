@@ -95,6 +95,30 @@ JNIEXPORT void JNICALL Java_ControllerConsole_Controller_obit_1set_1value
 JNIEXPORT void JNICALL Java_ControllerConsole_Controller_opulse_1out
   (JNIEnv *, jobject, jlong, jint, jint);
 
+/*
+ * Class:     ControllerConsole_Controller
+ * Method:    ichannel_add
+ * Signature: (JLjava/lang/String;II)I
+ */
+JNIEXPORT jint JNICALL Java_ControllerConsole_Controller_ichannel_1add
+  (JNIEnv *, jobject, jlong, jstring, jint, jint);
+
+/*
+ * Class:     ControllerConsole_Controller
+ * Method:    ichannel_get_value
+ * Signature: (JI)B
+ */
+JNIEXPORT jbyte JNICALL Java_ControllerConsole_Controller_ichannel_1get_1value
+  (JNIEnv *, jobject, jlong, jint);
+
+/*
+ * Class:     ControllerConsole_Controller
+ * Method:    ichannel_read
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_ControllerConsole_Controller_ichannel_1read
+  (JNIEnv *, jobject, jlong);
+
 #ifdef __cplusplus
 }
 #endif

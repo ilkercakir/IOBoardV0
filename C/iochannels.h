@@ -14,11 +14,12 @@
 typedef enum { V0 } controller_type;
 
 typedef enum { A_VOID, A_SWITCH, A_LEVEL, A_PULSE } actuator_type;
+typedef enum { S_VOID, S_SWITCH, S_LEVEL } sensor_type;
 
 typedef enum { SWITCH_OFF, SWITCH_ON } switch_values;
 typedef enum { PULSE_LOW, PULSE_HIGH } pulse_values;
 
-typedef struct actuatorcontroller controller; // forward
+typedef struct actuatorsensorcontroller controller; // forward
 
 typedef struct
 {
@@ -32,20 +33,39 @@ typedef struct
 	unsigned char value;
 } actuator;
 
-struct actuatorcontroller
+typedef struct
+{
+	controller *parent;
+	char name[50];
+	sensor_type type;
+	unsigned int numstates;
+	unsigned int base_pin;
+	unsigned int pins_used;
+	unsigned int channel;
+	unsigned char value;
+} sensor;
+
+struct actuatorsensorcontroller
 {
 	int err;
 	controller_type type;
-	unsigned int ochannels; // max channels
-	unsigned int obits; // max bits
-	unsigned int opulses; // max pulses
+	unsigned int ochannels; // max output channels
+	unsigned int obits; // max output bits
+	unsigned int opulses; // max output pulses
 	actuator *actuators;
 	unsigned int aindex;
-	unsigned int channel_pins_used;
+	unsigned int ochannel_pins_used;
 	unsigned int bindex;
 	unsigned int pindex;
-	unsigned char databits;
-	pthread_mutex_t omutex;
+	unsigned char odatabits;
+
+	unsigned int ichannels; // max input channels
+	sensor *sensors;
+	unsigned int sindex;
+	unsigned int ichannel_pins_used;
+	unsigned char idatabits;
+	
+	pthread_mutex_t iomutex;
 };
 
 controller* controller_open(controller_type type, unsigned char databits);
@@ -55,10 +75,13 @@ int obit_add(controller *c, char *name);
 int opulse_add(controller *c, char *name);
 unsigned char ochannel_get_value(controller *c, unsigned int channel);
 void ochannel_set_value(controller *c, unsigned int channel, unsigned char value);
-unsigned char controller_get_value(controller *c);
+unsigned char controller_get_ovalue(controller *c);
 void ochannel_write(controller *c);
 unsigned char obit_get_value(controller *c, unsigned int bit);
 void obit_set_value(controller *c, unsigned int bit, unsigned char value);
 void opulse_out(controller *c, unsigned int pulse, unsigned int usecs);
-
+void controller_set_ivalue(controller *c, unsigned char value);
+int ichannel_add(controller *c, char *name, sensor_type type, int numstates);
+unsigned char ichannel_get_value(controller *c, unsigned int channel);
+void ichannel_read(controller *c);
 #endif

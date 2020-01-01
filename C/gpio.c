@@ -31,7 +31,7 @@ void set_address(unsigned int addr)
 
 void clock_pulse(int duration)
 {
-	usleep(duration);
+	usleep(USECS);
 	digitalWrite(3, 0); // 138.E3 = 1
 	usleep(duration);
 	digitalWrite(3, 1); // 138.E3 = 0
@@ -70,6 +70,25 @@ void write_pulse(unsigned char addr, unsigned int usecs)
 	clock_pulse(usecs);
 }
 
+unsigned char read_data()
+{
+	int i;
+	unsigned char c;
+
+	set_address(3); // Parallel load mode
+	clock_pulse(USECS);
+
+	set_address(2); // Serial Out mode
+	for(i=0;i<8;i++)
+	{
+		c = c << 1;
+		c |= (unsigned char)digitalRead(5) & 0x01; // 165.Q7
+		clock_pulse(USECS);
+	}
+
+	return(c);
+}
+
 int init_state(unsigned char databits)
 {
 	if (wiringPiSetup() == -1)
@@ -83,7 +102,7 @@ int init_state(unsigned char databits)
 	pinMode(1, OUTPUT); // aka BCM_GPIO pin 18 // 138.A1
 	pinMode(2, OUTPUT); // aka BCM_GPIO pin 27 // 138.A2
 	pinMode(4, OUTPUT); // aka BCM_GPIO pin 23 // 164.A, 74(1).D, 74(2).D
-	//pinMode(5, INPUT);  // aka BCM_GPIO pin 24 // 165.Q7
+	pinMode(5, INPUT);  // aka BCM_GPIO pin 24 // 165.Q7
 
 	write_data(databits);
 

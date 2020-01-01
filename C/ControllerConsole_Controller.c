@@ -129,3 +129,33 @@ JNIEXPORT void JNICALL Java_ControllerConsole_Controller_opulse_1out(JNIEnv *env
 
 	opulse_out(c, (unsigned int)pulse, (unsigned int)usecs);
 }
+
+JNIEXPORT jint JNICALL Java_ControllerConsole_Controller_ichannel_1add(JNIEnv *env, jobject obj, jlong handle, jstring jname, jint jstype, jint jnumstates)
+{
+	controller *c = (controller *)(long)handle;
+	jboolean iscopy; 
+	const char *name;
+	int id;
+
+	name = (*env)->GetStringUTFChars(env, jname, &iscopy); 
+	id = ichannel_add(c, (char *)name, (sensor_type)jstype, (int)jnumstates);
+
+	return((jint)id);
+}
+
+JNIEXPORT jbyte JNICALL Java_ControllerConsole_Controller_ichannel_1get_1value(JNIEnv *env, jobject obj, jlong handle, jint channel)
+{
+	controller *c = (controller *)(long)handle;
+	unsigned char value;
+
+	value = ichannel_get_value(c, (unsigned int)channel);
+
+	return((jbyte)value);
+}
+
+JNIEXPORT void JNICALL Java_ControllerConsole_Controller_ichannel_1read(JNIEnv *env, jobject obj, jlong handle)
+{
+	controller *c = (controller *)(long)handle;
+
+	ichannel_read(c);
+}
