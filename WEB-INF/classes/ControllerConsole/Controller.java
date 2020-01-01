@@ -18,11 +18,15 @@ public class Controller
 	private native int opulse_add(long handle, String name);
 	private native byte ochannel_get_value(long handle, int channel);
 	private native void ochannel_set_value(long handle, int channel, byte value);
-	//private native byte controller_get_value(long handle);
+	//private native byte controller_get_ovalue(long handle);
 	private native void ochannel_write(long handle);
 	private native byte obit_get_value(long handle, int bit);
 	private native void obit_set_value(long handle, int bit, byte value);
 	private native void opulse_out(long handle, int pulse, int usecs);
+	//private native void controller_set_ivalue(long handle, byte value);
+	private native int ichannel_add(long handle, String name, int type, int numstates);
+	private native byte ichannel_get_value(long handle, int channel);
+	private native void ichannel_read(long handle);
 
 	public Controller()
 	{
@@ -57,7 +61,7 @@ public class Controller
 
 		UserDevices udev = new UserDevices();
 
-		// Channels
+		// Output Channels
         	Iterator<Device> channelIter = udev.getDevices("A", 0, 7).iterator(); 
 	        while (channelIter.hasNext())
 		{
@@ -78,7 +82,7 @@ public class Controller
 		}
 		ochannel_write(controllerHandle);
 
-		// Bits
+		// Output Bits
         	Iterator<Device> bitIter = udev.getDevices("A", 8, 9).iterator(); 
 	        while (bitIter.hasNext())
 		{
@@ -98,7 +102,7 @@ public class Controller
 			}
 		}
 
-		// Pulses
+		// Output Pulses
         	Iterator<Device> pulseIter = udev.getDevices("A", 10, 11).iterator(); 
 	        while (pulseIter.hasNext())
 		{
@@ -116,6 +120,27 @@ public class Controller
 				return(-3); // pulses init failed
 			}
 		}
+		ochannel_write(controllerHandle);
+
+
+		// Input Channels
+        	Iterator<Device> ichannelIter = udev.getDevices("S", 12, 19).iterator(); 
+	        while (ichannelIter.hasNext())
+		{
+			dev = ichannelIter.next();
+
+			id = ichannel_add(controllerHandle, dev.getDeviceText(), dev.getDeviceType(), dev.getDeviceNumStates());
+			logger.info("ichannel_add " + dev.getDeviceText() + " db:" + id);
+			if (id == (dev.getDeviceID() - 12))
+			{
+			}
+			else
+			{
+				logger.error("ichannel_add " + dev.getDeviceID() + " failed");
+				return(-1); // channels init failed
+			}
+		}
+		ichannel_read(controllerHandle);
 
 		logger.info("controller_open() completed");
 		return(0);
@@ -146,16 +171,19 @@ public class Controller
 		opulse_out(controllerHandle, pulse, usecs);
 	}
 
-/*
-	public byte getControllerValue()
-	{
-		return(controller_get_value(controllerHandle));
-	}
-*/
-
 	public void writeChannel()
 	{
 		ochannel_write(controllerHandle);
+	}
+
+	public byte getInputChannelValue(int channel)
+	{
+		return(ichannel_get_value(controllerHandle, channel));
+	}
+
+	public void readChannel()
+	{
+		ichannel_read(controllerHandle);
 	}
 
 	public void Close()

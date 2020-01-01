@@ -117,6 +117,23 @@ public class ConsoleServlet extends HttpServlet
 				}
 			}
 		}
+		else if (request.getParameter("readchannel")!=null)
+		{
+			u = (ControllerConsole.User)request.getSession().getAttribute("user");
+			if (u!=null)
+			{
+				if (u.isLoggedIn())
+				{
+					id = Integer.parseInt(request.getParameter("id"));
+					c.readChannel();
+					v = c.getInputChannelValue(id);
+					PrintWriter pw = response.getWriter();
+					pw.printf("{ \"id\" : %d, \"value\" : %d }", id, v);
+					pw.flush();
+					pw.close();
+				}
+			}
+		}
 		if (request.getParameter("logout")!=null)
 		{
 			request.getSession().removeAttribute("user");
