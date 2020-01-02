@@ -28,6 +28,7 @@ public class UserDevices
 			dev.setAuthorizationLevel(rs.getString("level"));
 			dev.setDeviceID(Integer.parseInt(rs.getString("devid")));
 			dev.setDeviceText(rs.getString("dtext"));
+			dev.setDeviceChannel(Integer.parseInt(rs.getString("chnnl")));
 			dev.setDeviceType(Integer.parseInt(rs.getString("dtype")));
 			dev.setDeviceTypeText(rs.getString("dttext"));
 			int dstat = Integer.parseInt(rs.getString("dstat"));
