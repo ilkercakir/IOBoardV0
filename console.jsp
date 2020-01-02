@@ -153,7 +153,7 @@ function bitClick(deviceid, channelid)
 function pulseCallback(responseText)
 {
  	var obj = JSON.parse(responseText);
-	//document.getElementById('value' + obj.id).value = obj.value;
+	//document.getElementById('value' + obj.devid).value = obj.value;
 }
 
 function pulseClick(deviceid, channelid)
