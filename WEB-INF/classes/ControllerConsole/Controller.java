@@ -69,7 +69,7 @@ public class Controller
 
 			id = ochannel_add(controllerHandle, dev.getDeviceText(), dev.getDeviceType(), dev.getDeviceNumStates());
 			logger.info("ochannel_add " + dev.getDeviceText() + " db:" + id);
-			if (id == dev.getDeviceID())
+			if (id == dev.getDeviceChannel())
 			{
 				ochannel_set_value(controllerHandle, dev.getDeviceID(), (byte)dev.getDeviceInitialValue());
 				logger.info("ochannel_set_value " + dev.getDeviceID() + ", initial value " + (byte)dev.getDeviceInitialValue());
@@ -90,7 +90,7 @@ public class Controller
 
 			id = obit_add(controllerHandle, dev.getDeviceText());
 			logger.info("obit_add " + dev.getDeviceText() + " db:" + id);
-			if (id == dev.getDeviceID())
+			if (id == dev.getDeviceChannel())
 			{
 				obit_set_value(controllerHandle, dev.getDeviceID(), (byte)dev.getDeviceInitialValue());
 				logger.info("obit_set_value " + dev.getDeviceID() + ", initial value " + (byte)dev.getDeviceInitialValue());
@@ -110,7 +110,7 @@ public class Controller
 
 			id = opulse_add(controllerHandle, dev.getDeviceText());
 			logger.info("opulse_add " + dev.getDeviceText() + " db:" + id);
-			if (id == dev.getDeviceID())
+			if (id == dev.dev.getDeviceChannel())
 			{
 				logger.info("opulse " + dev.getDeviceID());
 			}
@@ -124,14 +124,14 @@ public class Controller
 
 
 		// Input Channels
-        	Iterator<Device> ichannelIter = udev.getDevices("S", 12, 19).iterator(); 
+        	Iterator<Device> ichannelIter = udev.getDevices("S", 0, 7).iterator(); 
 	        while (ichannelIter.hasNext())
 		{
 			dev = ichannelIter.next();
 
 			id = ichannel_add(controllerHandle, dev.getDeviceText(), dev.getDeviceType(), dev.getDeviceNumStates());
 			logger.info("ichannel_add " + dev.getDeviceText() + " db:" + id);
-			if (id == (dev.getDeviceID() - 12))
+			if (id == dev.getDeviceChannel())
 			{
 			}
 			else
