@@ -45,7 +45,7 @@ public class ConsoleServlet extends HttpServlet
 	{
 		ControllerConsole.User u;
 		String username, password;
-		int id;
+		int id, devid;
 		byte value, v;
 		
 		if (request.getParameter("login")!=null)
@@ -71,12 +71,13 @@ public class ConsoleServlet extends HttpServlet
 				if (u.isLoggedIn())
 				{
 					id = Integer.parseInt(request.getParameter("id"));
+					devid = Integer.parseInt(request.getParameter("devid"));
 					value = (byte)Integer.parseInt(request.getParameter("value"));
 					c.setChannelValue(id, value);
 					c.writeChannel();
 					v = c.getChannelValue(id);
 					PrintWriter pw = response.getWriter();
-					pw.printf("{ \"id\" : %d, \"value\" : %d }", id, v);
+					pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, v, devid);
 					pw.flush();
 					pw.close();
 				}
@@ -90,11 +91,12 @@ public class ConsoleServlet extends HttpServlet
 				if (u.isLoggedIn())
 				{
 					id = Integer.parseInt(request.getParameter("id"));
+					devid = Integer.parseInt(request.getParameter("devid"));
 					value = (byte)Integer.parseInt(request.getParameter("value"));
 					c.setBitValue(id, value);
 					v = c.getBitValue(id);
 					PrintWriter pw = response.getWriter();
-					pw.printf("{ \"id\" : %d, \"value\" : %d }", id, v);
+					pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, v, devid);
 					pw.flush();
 					pw.close();
 				}
@@ -108,10 +110,11 @@ public class ConsoleServlet extends HttpServlet
 				if (u.isLoggedIn())
 				{
 					id = Integer.parseInt(request.getParameter("id"));
+					devid = Integer.parseInt(request.getParameter("devid"));
 					int duration = Integer.parseInt(request.getParameter("value"));
 					c.pulseOut(id, duration);
 					PrintWriter pw = response.getWriter();
-					pw.printf("{ \"id\" : %d, \"value\" : %d }", id, duration);
+					pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, duration, devid);
 					pw.flush();
 					pw.close();
 				}
@@ -125,10 +128,11 @@ public class ConsoleServlet extends HttpServlet
 				if (u.isLoggedIn())
 				{
 					id = Integer.parseInt(request.getParameter("id"));
+					devid = Integer.parseInt(request.getParameter("devid"));
 					c.readChannel();
 					v = c.getInputChannelValue(id);
 					PrintWriter pw = response.getWriter();
-					pw.printf("{ \"id\" : %d, \"value\" : %d }", id, v);
+					pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, v, devid);
 					pw.flush();
 					pw.close();
 				}
