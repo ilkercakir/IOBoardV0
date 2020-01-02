@@ -32,7 +32,7 @@ if (user.isLoggedIn())
   <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
   <%selectedvalue=controller.getChannelValue(dev.getDeviceChannel());%>
   <td><select id="value<%=dev.getDeviceID()%>"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
-  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:channelClick(<%=dev.getDeviceID()%>)"></td>
+  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:channelClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
  </tr>
 <%
         }
@@ -49,7 +49,7 @@ if (user.isLoggedIn())
   <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
   <%selectedvalue=controller.getBitValue(dev.getDeviceChannel());%>
   <td><select id="value<%=dev.getDeviceID()%>"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
-  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:bitClick(<%=dev.getDeviceID()%>)"></td>
+  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:bitClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
  </tr>
 <%
         }
@@ -65,7 +65,7 @@ if (user.isLoggedIn())
   <td><img src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
   <td><select id="value<%=dev.getDeviceID()%>"><%for (i=1;i<=10;i++){%><option value="<%=i%>"><%=i%></option><%}%></select></td>
-  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:pulseClick(<%=dev.getDeviceID()%>)"></td>
+  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:pulseClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
  </tr>
 <%
         }
@@ -84,7 +84,7 @@ if (user.isLoggedIn())
   <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
   <%selectedvalue=controller.getInputChannelValue(dev.getDeviceChannel());%>
   <td><select id="value<%=dev.getDeviceID()%>"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
-  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:sensorClick(<%=dev.getDeviceID()%>)"></td>
+  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:sensorClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
  </tr>
 <%
         }
@@ -111,10 +111,10 @@ else
 function channelCallback(responseText)
 {
  	var obj = JSON.parse(responseText);
-	document.getElementById('value' + obj.id).value = obj.value;
+	document.getElementById('value' + obj.devid).value = obj.value;
 }
 
-function channelClick(deviceid)
+function channelClick(deviceid, channelid)
 {
 	var channelobj = eval('document.getElementById("value' + deviceid + '");');
 	var value = channelobj.value;
@@ -124,7 +124,7 @@ function channelClick(deviceid)
  		if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
 			channelCallback(xmlHttp.responseText);
 	}
-	var url = 'ControllerConsole?channel&id=' + deviceid + '&value=' + value;
+	var url = 'ControllerConsole?channel&id=' + channelid + '&value=' + value + '&devid=' + deviceid;
  	xmlHttp.open('GET', url, true); // asynchronous 
  	xmlHttp.send(null);
 }
@@ -132,10 +132,10 @@ function channelClick(deviceid)
 function bitCallback(responseText)
 {
  	var obj = JSON.parse(responseText);
-	document.getElementById('value' + obj.id).value = obj.value;
+	document.getElementById('value' + obj.devid).value = obj.value;
 }
 
-function bitClick(deviceid)
+function bitClick(deviceid, channelid)
 {
 	var bitobj = eval('document.getElementById("value' + deviceid + '");');
 	var value = bitobj.value;
@@ -145,7 +145,7 @@ function bitClick(deviceid)
  		if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
 			bitCallback(xmlHttp.responseText);
 	}
-	var url = 'ControllerConsole?bit&id=' + deviceid + '&value=' + value;
+	var url = 'ControllerConsole?bit&id=' + channelid + '&value=' + value + '&devid=' + deviceid;
  	xmlHttp.open('GET', url, true); // asynchronous 
  	xmlHttp.send(null);
 }
@@ -156,7 +156,7 @@ function pulseCallback(responseText)
 	//document.getElementById('value' + obj.id).value = obj.value;
 }
 
-function pulseClick(deviceid)
+function pulseClick(deviceid, channelid)
 {
 	var pulseobj = eval('document.getElementById("value' + deviceid + '");');
 	var value = pulseobj.value * 100000;
@@ -166,12 +166,26 @@ function pulseClick(deviceid)
  		if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
 			pulseCallback(xmlHttp.responseText);
 	}
-	var url = 'ControllerConsole?pulse&id=' + deviceid + '&value=' + value;
+	var url = 'ControllerConsole?pulse&id=' + channelid + '&value=' + value + '&devid=' + deviceid;
  	xmlHttp.open('GET', url, true); // asynchronous 
  	xmlHttp.send(null);
 }
 	
-function sensorClick(deviceid)
+function sensorCallback(responseText)
 {
+ 	var obj = JSON.parse(responseText);
+	document.getElementById('value' + obj.devid).value = obj.value;
+}
+
+function sensorClick(deviceid, channelid)
+{
+ 	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function() { 
+ 		if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+			sensorCallback(xmlHttp.responseText);
+	}
+	var url = 'ControllerConsole?readchannel&id=' + channelid + '&devid=' + deviceid;
+ 	xmlHttp.open('GET', url, true); // asynchronous 
+ 	xmlHttp.send(null);
 }
 </script>
