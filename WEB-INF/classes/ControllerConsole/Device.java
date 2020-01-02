@@ -5,6 +5,7 @@ public class Device
 	private String level;
 	private int devid;
 	private String dtext;
+	private int chnnl;
 	private int dtype;
 	private String dttext;
 	private int numstates;
@@ -48,6 +49,16 @@ public class Device
 		dtext = deviceText;
 	}
 
+	public int getDeviceChannel()
+	{
+		return chnnl;
+	}
+
+	public void setDeviceChannel(int deviceChannel)
+	{
+		chnnl = deviceChannel;
+	}
+	
 	public int getDeviceType()
 	{
 		return dtype;
