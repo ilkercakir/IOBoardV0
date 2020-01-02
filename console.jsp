@@ -70,6 +70,8 @@ if (user.isLoggedIn())
 <%
         }
 
+	controller.readChannel();
+
         Iterator<Device> sensorIter = devices.getDevicesOfUser(user, "S", 0, 7).iterator(); 
   
         while (sensorIter.hasNext())
