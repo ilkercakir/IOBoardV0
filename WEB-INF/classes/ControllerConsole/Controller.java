@@ -120,7 +120,6 @@ public class Controller
 				return(-3); // pulses init failed
 			}
 		}
-		ochannel_write(controllerHandle);
 
 
 		// Input Channels
