@@ -30,7 +30,7 @@ if (user.isLoggedIn())
  <tr>
   <td><img src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
-  <%selectedvalue=controller.getChannelValue(dev.getDeviceID());%>
+  <%selectedvalue=controller.getChannelValue(dev.getDeviceChannel());%>
   <td><select id="value<%=dev.getDeviceID()%>"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
   <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:channelClick(<%=dev.getDeviceID()%>)"></td>
  </tr>
@@ -47,7 +47,7 @@ if (user.isLoggedIn())
  <tr>
   <td><img src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
-  <%selectedvalue=controller.getBitValue(dev.getDeviceID());%>
+  <%selectedvalue=controller.getBitValue(dev.getDeviceChannel());%>
   <td><select id="value<%=dev.getDeviceID()%>"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
   <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:bitClick(<%=dev.getDeviceID()%>)"></td>
  </tr>
@@ -66,6 +66,23 @@ if (user.isLoggedIn())
   <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
   <td><select id="value<%=dev.getDeviceID()%>"><%for (i=1;i<=10;i++){%><option value="<%=i%>"><%=i%></option><%}%></select></td>
   <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:pulseClick(<%=dev.getDeviceID()%>)"></td>
+ </tr>
+<%
+        }
+
+        Iterator<Device> sensorIter = devices.getDevicesOfUser(user, "S", 0, 7).iterator(); 
+  
+        while (sensorIter.hasNext())
+	{
+		Device dev = sensorIter.next();
+%>
+<!-- <br/><%=dev.getAuthorizationLevel()%>, <%=dev.getDeviceID()%>, <%=dev.getDeviceText()%>, <%=dev.getDeviceType()%>, <%=dev.getDeviceTypeText()%>, <%=dev.getDeviceNumStates()%>, <%=dev.getDeviceCategory()%>, <%=dev.getDeviceCategoryText()%> -->
+ <tr>
+  <td><img src="images/<%=dev.getDeviceIcon()%>"></td>
+  <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
+  <%selectedvalue=controller.getInputChannelValue(dev.getDeviceChannel());%>
+  <td><select id="value<%=dev.getDeviceID()%>"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
+  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:sensorClick(<%=dev.getDeviceID()%>)"></td>
  </tr>
 <%
         }
@@ -150,5 +167,9 @@ function pulseClick(deviceid)
 	var url = 'ControllerConsole?pulse&id=' + deviceid + '&value=' + value;
  	xmlHttp.open('GET', url, true); // asynchronous 
  	xmlHttp.send(null);
+}
+	
+function sensorClick(deviceid)
+{
 }
 </script>
