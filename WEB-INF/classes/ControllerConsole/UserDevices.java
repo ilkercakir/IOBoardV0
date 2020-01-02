@@ -70,9 +70,9 @@ public class UserDevices
 			conn = DriverManager.getConnection("jdbc:sqlite:" + DBpath);
 			stat = conn.createStatement();
 			if (user.isSuperUser()) // superuser
-				rs = stat.executeQuery("select 'W' as level, devices.devid, devices.dtext, devices.dtype, devicetypes.dtext as dttext, devices.numstates, devices.initval, devicetypes.dstat, devicetypes.categ, devcat.catxt, devices.dicon, devicetypes.dicon as dticon from devices inner join devicetypes on devicetypes.dtype = devices.dtype inner join devcat on devcat.categ = devicetypes.categ where devicetypes.categ = '" + categ + "' and devices.devid >= " + fromChannel + " and devices.devid <= " + toChannel + ";");
+				rs = stat.executeQuery("select 'W' as level, devices.devid, devices.dtext, devices.chnnl, devices.dtype, devicetypes.dtext as dttext, devices.numstates, devices.initval, devicetypes.dstat, devicetypes.categ, devcat.catxt, devices.dicon, devicetypes.dicon as dticon from devices inner join devicetypes on devicetypes.dtype = devices.dtype inner join devcat on devcat.categ = devicetypes.categ where devicetypes.categ = '" + categ + "' and devices.chnnl >= " + fromChannel + " and devices.chnnl <= " + toChannel + ";");
 			else
-				rs = stat.executeQuery("select authorizations.level, devices.devid, devices.dtext, devices.dtype, devicetypes.dtext as dttext, devices.numstates, devices.initval, devicetypes.dstat, devicetypes.categ, devcat.catxt, devices.dicon, devicetypes.dicon as dticon from users inner join authorizations on authorizations.username = users.username inner join devices on devices.devid = authorizations.devid inner join devicetypes on devicetypes.dtype = devices.dtype inner join devcat on devcat.categ = devicetypes.categ where devicetypes.categ = '" + categ + "' and users.username = '" + user.getUserName() + "' and devices.devid >= " + fromChannel + " and devices.devid <= " + toChannel + ";");
+				rs = stat.executeQuery("select authorizations.level, devices.devid, devices.dtext, devices.chnnl, devices.dtype, devicetypes.dtext as dttext, devices.numstates, devices.initval, devicetypes.dstat, devicetypes.categ, devcat.catxt, devices.dicon, devicetypes.dicon as dticon from users inner join authorizations on authorizations.username = users.username inner join devices on devices.devid = authorizations.devid inner join devicetypes on devicetypes.dtype = devices.dtype inner join devcat on devcat.categ = devicetypes.categ where devicetypes.categ = '" + categ + "' and users.username = '" + user.getUserName() + "' and devices.chnnl >= " + fromChannel + " and devices.chnnl <= " + toChannel + ";");
 			while (rs.next()) 
 			{
 				Device dev = newDeviceFromRS(rs);
@@ -110,7 +110,7 @@ public class UserDevices
 		{
 			conn = DriverManager.getConnection("jdbc:sqlite:" + DBpath);
 			stat = conn.createStatement();
-			rs = stat.executeQuery("select 'W' as level, devices.devid, devices.dtext, devices.dtype, devicetypes.dtext as dttext, devices.numstates, devices.initval, devicetypes.dstat, devicetypes.categ, devcat.catxt, devices.dicon, devicetypes.dicon as dticon from devices inner join devicetypes on devicetypes.dtype = devices.dtype inner join devcat on devcat.categ = devicetypes.categ where devicetypes.categ = '" + categ + "' and devices.devid >= " + fromChannel + " and devices.devid <= " + toChannel + ";");
+			rs = stat.executeQuery("select 'W' as level, devices.devid, devices.dtext, devices.chnnl, devices.dtype, devicetypes.dtext as dttext, devices.numstates, devices.initval, devicetypes.dstat, devicetypes.categ, devcat.catxt, devices.dicon, devicetypes.dicon as dticon from devices inner join devicetypes on devicetypes.dtype = devices.dtype inner join devcat on devcat.categ = devicetypes.categ where devicetypes.categ = '" + categ + "' and devices.chnnl >= " + fromChannel + " and devices.chnnl <= " + toChannel + ";");
 			while (rs.next()) 
 			{
 				Device dev =  newDeviceFromRS(rs);
