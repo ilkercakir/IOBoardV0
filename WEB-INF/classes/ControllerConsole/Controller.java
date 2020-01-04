@@ -110,7 +110,7 @@ public class Controller
 
 			id = opulse_add(controllerHandle, dev.getDeviceText());
 			logger.info("opulse_add " + dev.getDeviceText() + " db:" + id);
-			if (id == dev.dev.getDeviceChannel())
+			if (id == dev.getDeviceChannel())
 			{
 				logger.info("opulse " + dev.getDeviceID());
 			}
