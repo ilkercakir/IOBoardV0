@@ -114,7 +114,7 @@ controller* controller_open(controller_type type, unsigned char databits)
 				err = CONTROLLER_MUTEX_FAILED;
 				break;
 			}
-		
+
 			err = init_state(c->odatabits);
 			//printf("init_state(%d) = %d\n", c->odatabits, ret);
 			break;
@@ -519,9 +519,14 @@ unsigned char ichannel_get_value(controller *c, unsigned int channel)
 	return(err);
 }
 
-void ichannel_read(controller *c)
+unsigned char ichannel_read(controller *c)
 {
+	unsigned char value;
+
 	pthread_mutex_lock(&(c->iomutex));
-	controller_set_ivalue(c, read_data());
+	value = read_data();
+	controller_set_ivalue(c, value);
 	pthread_mutex_unlock(&(c->iomutex));
+
+	return(value);
 }

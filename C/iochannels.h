@@ -13,8 +13,8 @@
 
 typedef enum { V0 } controller_type;
 
-typedef enum { A_VOID, A_SWITCH, A_LEVEL, A_PULSE } actuator_type;
-typedef enum { S_VOID, S_SWITCH, S_LEVEL } sensor_type;
+typedef enum { A_VOID, A_SWITCH, A_LEVEL, A_PULSE } actuator_type; // Must be inline with database table IOBoard.devicetypes
+typedef enum { S_VOID = 4, S_SWITCH, S_LEVEL } sensor_type; // Must be inline with database table IOBoard.devicetypes
 
 typedef enum { SWITCH_OFF, SWITCH_ON } switch_values;
 typedef enum { PULSE_LOW, PULSE_HIGH } pulse_values;
@@ -83,5 +83,5 @@ void opulse_out(controller *c, unsigned int pulse, unsigned int usecs);
 void controller_set_ivalue(controller *c, unsigned char value);
 int ichannel_add(controller *c, char *name, sensor_type type, int numstates);
 unsigned char ichannel_get_value(controller *c, unsigned int channel);
-void ichannel_read(controller *c);
+unsigned char ichannel_read(controller *c);
 #endif

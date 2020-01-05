@@ -153,9 +153,9 @@ JNIEXPORT jbyte JNICALL Java_ControllerConsole_Controller_ichannel_1get_1value(J
 	return((jbyte)value);
 }
 
-JNIEXPORT void JNICALL Java_ControllerConsole_Controller_ichannel_1read(JNIEnv *env, jobject obj, jlong handle)
+JNIEXPORT jbyte JNICALL Java_ControllerConsole_Controller_ichannel_1read(JNIEnv *env, jobject obj, jlong handle)
 {
 	controller *c = (controller *)(long)handle;
 
-	ichannel_read(c);
+	return(ichannel_read(c));
 }

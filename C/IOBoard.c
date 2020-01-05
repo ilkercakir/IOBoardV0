@@ -21,7 +21,9 @@ typedef struct
 {
 	GtkWidget *window;
 	GtkWidget *container;
-	devicewidgets dw[12];
+	devicewidgets odw[12];
+	devicewidgets idw[8];
+	controller *c;
 }controlpanel;
 
 gboolean widget_state_set(GtkWidget *togglebutton, gboolean state, gpointer data)
@@ -70,28 +72,28 @@ static void button_clicked_pulse(GtkWidget *button, gpointer data)
 	opulse_out(a->parent, a->channel, 1000000);
 }
 
-void add_channelframe(controlpanel *cp, controller *c, int channel)
+void add_ochannelframe(controlpanel *cp, controller *c, int channel)
 {
 // frame
-	cp->dw[channel].frame = gtk_frame_new(c->actuators[channel].name);
+	cp->odw[channel].frame = gtk_frame_new(c->actuators[channel].name);
 	//gtk_container_add(GTK_CONTAINER(ae->container), ae->frame);
-	gtk_box_pack_start(GTK_BOX(cp->container), cp->dw[channel].frame, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(cp->container), cp->odw[channel].frame, TRUE, TRUE, 0);
 
 // horizontal box
-	cp->dw[channel].hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
-	gtk_container_add(GTK_CONTAINER(cp->dw[channel].frame), cp->dw[channel].hbox);
+	cp->odw[channel].hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+	gtk_container_add(GTK_CONTAINER(cp->odw[channel].frame), cp->odw[channel].hbox);
 	//gtk_box_pack_start(GTK_BOX(ae->frame), ae->hbox, TRUE, TRUE, 0);
 
 	GtkWidget *w;
 
-	cp->dw[channel].label = gtk_label_new(c->actuators[channel].name);
+	cp->odw[channel].label = gtk_label_new(c->actuators[channel].name);
 	//gtk_widget_set_size_request(cp->dw[channel].label, 100, 30);
-	gtk_container_add(GTK_CONTAINER(cp->dw[channel].hbox), cp->dw[channel].label);
+	gtk_container_add(GTK_CONTAINER(cp->odw[channel].hbox), cp->odw[channel].label);
 
 	switch (c->actuators[channel].type)
 	{
 		case A_LEVEL:
-			cp->dw[channel].control = w = gtk_combo_box_text_new();
+			cp->odw[channel].control = w = gtk_combo_box_text_new();
 
 			int i;
 			char s[10];
@@ -107,22 +109,22 @@ void add_channelframe(controlpanel *cp, controller *c, int channel)
 			sprintf(s, "%d", c->actuators[channel].value);
 			g_object_set((gpointer)w, "active-id", s, NULL);
 			g_signal_connect(GTK_COMBO_BOX(w), "changed", G_CALLBACK(combo_changed), &(c->actuators[channel]));
-			gtk_container_add(GTK_CONTAINER(cp->dw[channel].hbox), w);
+			gtk_container_add(GTK_CONTAINER(cp->odw[channel].hbox), w);
 			//gtk_box_pack_start(GTK_BOX(ae->parameter[i].vbox), w, TRUE, TRUE, 0);
 			break;
 		case A_SWITCH:
 		case A_PULSE:
 		default:
-			cp->dw[channel].control = w = gtk_switch_new();
+			cp->odw[channel].control = w = gtk_switch_new();
 			gtk_switch_set_active(GTK_SWITCH(w), c->actuators[channel].value);
 			g_signal_connect(GTK_SWITCH(w), "state-set", G_CALLBACK(widget_state_set), &(c->actuators[channel]));
-			gtk_container_add(GTK_CONTAINER(cp->dw[channel].hbox), w);
+			gtk_container_add(GTK_CONTAINER(cp->odw[channel].hbox), w);
 			//gtk_box_pack_start(GTK_BOX(cp->dw[channel].hbox), w, TRUE, TRUE, 0);
 			break;
 	}
 }
 
-int add_channeldevice(controlpanel *cp, controller *c, char *name, actuator_type type, int nstates)
+int add_ochanneldevice(controlpanel *cp, controller *c, char *name, actuator_type type, int nstates)
 {
 	int i;
 
@@ -138,38 +140,38 @@ int add_channeldevice(controlpanel *cp, controller *c, char *name, actuator_type
 			printf("ochannel_add() err=%d\n", i);
 			break;
 		default:
-			add_channelframe(cp, c, i);
+			add_ochannelframe(cp, c, i);
 	}
 
 	return(i);
 }
 
-void add_bitframe(controlpanel *cp, controller *c, int channel)
+void add_obitframe(controlpanel *cp, controller *c, int channel)
 {
 // frame
-	cp->dw[channel].frame = gtk_frame_new(c->actuators[channel].name);
+	cp->odw[channel].frame = gtk_frame_new(c->actuators[channel].name);
 	//gtk_container_add(GTK_CONTAINER(ae->container), ae->frame);
-	gtk_box_pack_start(GTK_BOX(cp->container), cp->dw[channel].frame, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(cp->container), cp->odw[channel].frame, TRUE, TRUE, 0);
 
 // horizontal box
-	cp->dw[channel].hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
-	gtk_container_add(GTK_CONTAINER(cp->dw[channel].frame), cp->dw[channel].hbox);
+	cp->odw[channel].hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+	gtk_container_add(GTK_CONTAINER(cp->odw[channel].frame), cp->odw[channel].hbox);
 	//gtk_box_pack_start(GTK_BOX(ae->frame), ae->hbox, TRUE, TRUE, 0);
 
 	GtkWidget *w;
 
-	cp->dw[channel].label = gtk_label_new(c->actuators[channel].name);
+	cp->odw[channel].label = gtk_label_new(c->actuators[channel].name);
 	//gtk_widget_set_size_request(cp->dw[channel].label, 100, 30);
-	gtk_container_add(GTK_CONTAINER(cp->dw[channel].hbox), cp->dw[channel].label);
+	gtk_container_add(GTK_CONTAINER(cp->odw[channel].hbox), cp->odw[channel].label);
 
-	cp->dw[channel].control = w = gtk_switch_new();
+	cp->odw[channel].control = w = gtk_switch_new();
 	gtk_switch_set_active(GTK_SWITCH(w), c->actuators[channel].value);
 	g_signal_connect(GTK_SWITCH(w), "state-set", G_CALLBACK(widget_state_set_bit), &(c->actuators[channel]));
-	gtk_container_add(GTK_CONTAINER(cp->dw[channel].hbox), w);
+	gtk_container_add(GTK_CONTAINER(cp->odw[channel].hbox), w);
 	//gtk_box_pack_start(GTK_BOX(cp->dw[channel].hbox), w, TRUE, TRUE, 0);
 }
 
-int add_bitdevice(controlpanel *cp, controller *c, char *name)
+int add_obitdevice(controlpanel *cp, controller *c, char *name)
 {
 	int i;
 
@@ -185,38 +187,38 @@ int add_bitdevice(controlpanel *cp, controller *c, char *name)
 			printf("obit_add() err=%d\n", i);
 			break;
 		default:
-			add_bitframe(cp, c, i);
+			add_obitframe(cp, c, i);
 			break;
 	}
 
 	return(i);
 }
 
-void add_pulseframe(controlpanel *cp, controller *c, int channel)
+void add_opulseframe(controlpanel *cp, controller *c, int channel)
 {
 // frame
-	cp->dw[channel].frame = gtk_frame_new(c->actuators[channel].name);
+	cp->odw[channel].frame = gtk_frame_new(c->actuators[channel].name);
 	//gtk_container_add(GTK_CONTAINER(ae->container), ae->frame);
-	gtk_box_pack_start(GTK_BOX(cp->container), cp->dw[channel].frame, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(cp->container), cp->odw[channel].frame, TRUE, TRUE, 0);
 
 // horizontal box
-	cp->dw[channel].hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
-	gtk_container_add(GTK_CONTAINER(cp->dw[channel].frame), cp->dw[channel].hbox);
+	cp->odw[channel].hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+	gtk_container_add(GTK_CONTAINER(cp->odw[channel].frame), cp->odw[channel].hbox);
 	//gtk_box_pack_start(GTK_BOX(ae->frame), ae->hbox, TRUE, TRUE, 0);
 
 	GtkWidget *w;
 
-	cp->dw[channel].label = gtk_label_new(c->actuators[channel].name);
+	cp->odw[channel].label = gtk_label_new(c->actuators[channel].name);
 	//gtk_widget_set_size_request(cp->dw[channel].label, 100, 30);
-	gtk_container_add(GTK_CONTAINER(cp->dw[channel].hbox), cp->dw[channel].label);
+	gtk_container_add(GTK_CONTAINER(cp->odw[channel].hbox), cp->odw[channel].label);
 
-	cp->dw[channel].control = w = gtk_button_new_with_label(c->actuators[channel].name);
+	cp->odw[channel].control = w = gtk_button_new_with_label(c->actuators[channel].name);
 	g_signal_connect(GTK_BUTTON(w), "clicked", G_CALLBACK(button_clicked_pulse), &(c->actuators[channel]));
-	gtk_container_add(GTK_CONTAINER(cp->dw[channel].hbox), w);
+	gtk_container_add(GTK_CONTAINER(cp->odw[channel].hbox), w);
 	//gtk_box_pack_start(GTK_BOX(cp->dw[channel].hbox), w, TRUE, TRUE, 0);
 }
 
-int add_pulsedevice(controlpanel *cp, controller *c, char *name)
+int add_opulsedevice(controlpanel *cp, controller *c, char *name)
 {
 	int i;
 
@@ -232,11 +234,114 @@ int add_pulsedevice(controlpanel *cp, controller *c, char *name)
 			printf("obit_add() err=%d\n", i);
 			break;
 		default:
-			add_pulseframe(cp, c, i);
+			add_opulseframe(cp, c, i);
 			break;
 	}
 
 	return(i);
+}
+
+void add_ichannelframe(controlpanel *cp, controller *c, int channel)
+{
+// frame
+	cp->idw[channel].frame = gtk_frame_new(c->sensors[channel].name);
+	//gtk_container_add(GTK_CONTAINER(ae->container), ae->frame);
+	gtk_box_pack_start(GTK_BOX(cp->container), cp->idw[channel].frame, TRUE, TRUE, 0);
+
+// horizontal box
+	cp->idw[channel].hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+	gtk_container_add(GTK_CONTAINER(cp->idw[channel].frame), cp->idw[channel].hbox);
+	//gtk_box_pack_start(GTK_BOX(ae->frame), ae->hbox, TRUE, TRUE, 0);
+
+	GtkWidget *w;
+
+	cp->idw[channel].label = gtk_label_new(c->sensors[channel].name);
+	//gtk_widget_set_size_request(cp->dw[channel].label, 100, 30);
+	gtk_container_add(GTK_CONTAINER(cp->idw[channel].hbox), cp->idw[channel].label);
+
+	switch (c->sensors[channel].type)
+	{
+		case S_LEVEL:
+			cp->idw[channel].control = w = gtk_combo_box_text_new();
+
+			int i;
+			char s[10];
+			for(i=0;i<c->sensors[channel].numstates;i++)
+			{
+				sprintf(s, "%d", i);
+				//printf("val = %s\n", s);
+				gchar *gc = g_strnfill(10, '\0');
+				g_stpcpy(gc, (const char *)s);
+				gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(w), gc, gc);
+				g_free(gc);
+			}
+			sprintf(s, "%d", c->sensors[channel].value);
+			g_object_set((gpointer)w, "active-id", s, NULL);
+			//g_signal_connect(GTK_COMBO_BOX(w), "changed", G_CALLBACK(combo_changed), &(c->sensors[channel]));
+			gtk_container_add(GTK_CONTAINER(cp->idw[channel].hbox), w);
+			//gtk_box_pack_start(GTK_BOX(ae->parameter[i].vbox), w, TRUE, TRUE, 0);
+			break;
+		case S_SWITCH:
+		default:
+			cp->idw[channel].control = w = gtk_switch_new();
+			gtk_switch_set_active(GTK_SWITCH(w), c->sensors[channel].value);
+			//g_signal_connect(GTK_SWITCH(w), "state-set", G_CALLBACK(widget_state_set), &(c->sensors[channel]));
+			gtk_container_add(GTK_CONTAINER(cp->idw[channel].hbox), w);
+			//gtk_box_pack_start(GTK_BOX(cp->dw[channel].hbox), w, TRUE, TRUE, 0);
+			break;
+	}
+}
+
+int add_ichanneldevice(controlpanel *cp, controller *c, char *name, sensor_type type, int nstates)
+{
+	int i;
+
+	switch (i = ichannel_add(c, name, type, nstates))
+	{
+		case CONTROLLER_INVALID_STATES:
+			printf("ichannel_add() err=%d\n", i);
+			break;
+		case CONTROLLER_INVALID_ACTUATOR:
+			printf("ichannel_add() err=%d\n", i);
+			break;
+		case CONTROLLER_FULL:
+			printf("ichannel_add() err=%d\n", i);
+			break;
+		default:
+			add_ichannelframe(cp, c, i);
+	}
+
+	return(i);
+}
+
+static void button_clicked(GtkWidget *button, gpointer data)
+{
+	controlpanel* cp = (controlpanel *)data;
+	controller *c = cp->c;
+	int i;
+	GtkWidget *w;
+	char s[10];
+
+	ichannel_read(c);
+
+	for(i=0;c->sensors[i].type!=S_VOID;i++)
+	{
+		w = cp->idw[i].control;
+		switch (c->sensors[i].type)
+		{
+			case S_LEVEL:
+				sprintf(s, "%d", c->sensors[i].value);
+				g_object_set((gpointer)w, "active-id", s, NULL);
+				break;
+			case S_SWITCH:
+			default:
+				gtk_switch_set_active(GTK_SWITCH(w), c->sensors[i].value);
+				break;
+		}
+		//printf("%s = %c\n", c->sensors[i].name, ichannel_get_value(c, i) + '0');
+	}
+	
+//printf("ichannel_get_value(0) = %d\n", ichannel_get_value(c, 0));
 }
 
 static gboolean delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
@@ -281,7 +386,7 @@ int main(int argc, char **argv)
 	int i;
 	controlpanel cp;
 
-	c = controller_open(V0, 0x00);
+	cp.c = c = controller_open(V0, 0x00);
 	if (c->err)
 		printf("Open err=%d\n", c->err);
 
@@ -313,25 +418,47 @@ int main(int argc, char **argv)
 	cp.container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	gtk_container_add(GTK_CONTAINER(cp.window), cp.container);
 
-	if ((i=add_channeldevice(&cp, c, "Motor", A_SWITCH, 0)) >= 0)
+	if ((i=add_ochanneldevice(&cp, c, "Motor", A_SWITCH, 0)) >= 0)
 	{}
-	if ((i=add_channeldevice(&cp, c, "Water Level", A_LEVEL, 8)) >= 0)
-	{}
-
-
-	if ((i=add_bitdevice(&cp, c, "Enable")) >= 0)
-	{}
-
-	if ((i=add_bitdevice(&cp, c, "LED")) >= 0)
+	if ((i=add_ochanneldevice(&cp, c, "Water Level", A_LEVEL, 8)) >= 0)
 	{}
 
 
-	if ((i=add_pulsedevice(&cp, c, "Pulse 1")) >= 0)
+	if ((i=add_obitdevice(&cp, c, "Enable")) >= 0)
 	{}
 
-	if ((i=add_pulsedevice(&cp, c, "Pulse 2")) >= 0)
+	if ((i=add_obitdevice(&cp, c, "LED")) >= 0)
 	{}
 
+
+	if ((i=add_opulsedevice(&cp, c, "Pulse 1")) >= 0)
+	{}
+
+	if ((i=add_opulsedevice(&cp, c, "Pulse 2")) >= 0)
+	{}
+
+
+	if ((i=add_ichanneldevice(&cp, c, "In 1", S_SWITCH, 0)) >= 0)
+	{}
+	if ((i=add_ichanneldevice(&cp, c, "In 2", S_LEVEL, 8)) >= 0)
+	{}
+	if ((i=add_ichanneldevice(&cp, c, "In 3", S_SWITCH, 0)) >= 0)
+	{}
+	if ((i=add_ichanneldevice(&cp, c, "In 4", S_LEVEL, 4)) >= 0)
+	{}
+
+	GtkWidget *button;
+	button = gtk_button_new_with_label("Refresh");
+	g_signal_connect(GTK_BUTTON(button), "clicked", G_CALLBACK(button_clicked), (void *)&cp);
+	gtk_container_add(GTK_CONTAINER(cp.container), button);
+
+/*
+	controller_set_ivalue(c, 0xBC);
+	printf("In 1 = %c\n", ichannel_get_value(c, 0) + '0');
+	printf("In 2 = %c\n", ichannel_get_value(c, 1) + '0');
+	printf("In 3 = %c\n", ichannel_get_value(c, 2) + '0');
+	printf("In 4 = %c\n", ichannel_get_value(c, 3) + '0');
+*/
 	gtk_widget_show_all(cp.window);
 
 	gtk_main();
@@ -340,52 +467,4 @@ int main(int argc, char **argv)
 	c = NULL;
 
 	return(0);
-
-/*
-	printf("ret=%d, c.aindex=%d, c.pins_used=%d\n", ochannel_add(&c, "", A_SWITCH, 0), c.aindex, c.channel_pins_used);
-	printf("ret=%d, c.aindex=%d, c.pins_used=%d\n", ochannel_add(&c, "", A_SWITCH, 0), c.aindex, c.channel_pins_used);
-	printf("ret=%d, c.aindex=%d, c.pins_used=%d\n", ochannel_add(&c, "", A_SWITCH, 0), c.aindex, c.channel_pins_used);
-	//printf("base_pin=%d\n", c.actuators[c.aindex-1].base_pin);
-	printf("ret=%d, c.aindex=%d, c.pins_used=%d\n", ochannel_add(&c, "", A_LEVEL, 8), c.aindex, c.channel_pins_used);
-	//printf("base_pin=%d\n", c.actuators[c.aindex-1].base_pin);
-	printf("ret=%d, c.aindex=%d, c.pins_used=%d\n", ochannel_add(&c, "", A_SWITCH, 0), c.aindex, c.channel_pins_used);
-	printf("ret=%d, c.aindex=%d, c.pins_used=%d\n", ochannel_add(&c, "", A_SWITCH, 0), c.aindex, c.channel_pins_used);
-
-	printf("ret=%d, c.bindex=%d\n", obit_add(&c, ""), c.bindex);
-	printf("ret=%d, c.bindex=%d\n", obit_add(&c, ""), c.bindex);
-	printf("ret=%d, c.bindex=%d\n", obit_add(&c, ""), c.bindex);
-
-	ochannel_set_value(&c, 0, SWITCH_ON);
-	ochannel_set_value(&c, 1, SWITCH_OFF);
-	ochannel_set_value(&c, 2, SWITCH_ON);
-	ochannel_set_value(&c, 3, 2);
-	ochannel_set_value(&c, 4, SWITCH_ON);
-	ochannel_set_value(&c, 5, SWITCH_ON);
-	ochannel_write(&c);
-
-	obit_set_value(&c, 9, SWITCH_ON);
-	
-	//obit_set_value(&c, 8, SWITCH_ON); // OE
-
-	printf("ret=%d, c.pindex=%d\n", opulse_add(&c, ""), c.pindex);
-	printf("ret=%d, c.pindex=%d\n", opulse_add(&c, ""), c.pindex);
-	printf("ret=%d, c.pindex=%d\n", opulse_add(&c, ""), c.pindex);
-
-	opulse_out(&c, 10);
-*/
-
-/*
-	printf("ret=%d, c.aindex=%d, c.pins_used=%d\n", add_ochannel(&c, "", A_SWITCH, 0), c.aindex, c.channel_pins_used);
-	printf("base_pin=%d\n", c.actuators[c.aindex-1].base_pin);
-
-	printf("ret=%d, c.bindex=%d, c.pins_used=%d\n", add_obit(&c, ""), c.bindex, c.channel_pins_used);
-	printf("ret=%d, c.bindex=%d, c.pins_used=%d\n", add_obit(&c, ""), c.bindex, c.channel_pins_used);
-	printf("ret=%d, c.bindex=%d, c.pins_used=%d\n", add_obit(&c, ""), c.bindex, c.channel_pins_used);
-	printf("base_pin=%d\n", c.actuators[c.bindex-1].base_pin);
-
-	printf("ret=%d, c.pindex=%d, c.pins_used=%d\n", add_opulse(&c, ""), c.pindex, c.channel_pins_used);
-	printf("ret=%d, c.pindex=%d, c.pins_used=%d\n", add_opulse(&c, ""), c.pindex, c.channel_pins_used);
-	printf("ret=%d, c.pindex=%d, c.pins_used=%d\n", add_opulse(&c, ""), c.pindex, c.channel_pins_used);
-	printf("base_pin=%d\n", c.actuators[c.pindex-1].base_pin);
-*/
 }

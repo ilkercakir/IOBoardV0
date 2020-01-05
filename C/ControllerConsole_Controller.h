@@ -114,9 +114,9 @@ JNIEXPORT jbyte JNICALL Java_ControllerConsole_Controller_ichannel_1get_1value
 /*
  * Class:     ControllerConsole_Controller
  * Method:    ichannel_read
- * Signature: (J)V
+ * Signature: (J)B
  */
-JNIEXPORT void JNICALL Java_ControllerConsole_Controller_ichannel_1read
+JNIEXPORT jbyte JNICALL Java_ControllerConsole_Controller_ichannel_1read
   (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
