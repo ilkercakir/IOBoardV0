@@ -1,18 +1,13 @@
 <%@ page import ="java.util.*" %>
 <%@ page import ="ControllerConsole.*" %>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-9" pageEncoding="utf-8" %>
-
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-9" />
 </head>
-
 <jsp:useBean id="user" class="ControllerConsole.User" scope="session"/>
 <jsp:useBean id="devices" class="ControllerConsole.UserDevices" scope="page"/>
-
 <jsp:useBean id="controller" class="ControllerConsole.Controller" scope="application"/>
-
-
 <body>
 <table align="center">
 <%
@@ -26,7 +21,6 @@ if (user.isLoggedIn())
 	{
 		Device dev = channelIter.next();
 %>
-<!-- <br/><%=dev.getAuthorizationLevel()%>, <%=dev.getDeviceID()%>, <%=dev.getDeviceText()%>, <%=dev.getDeviceType()%>, <%=dev.getDeviceTypeText()%>, <%=dev.getDeviceNumStates()%>, <%=dev.getDeviceCategory()%>, <%=dev.getDeviceCategoryText()%> -->
  <tr>
   <td><img src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
@@ -43,7 +37,6 @@ if (user.isLoggedIn())
 	{
 		Device dev = bitIter.next();
 %>
-<!-- <br/><%=dev.getAuthorizationLevel()%>, <%=dev.getDeviceID()%>, <%=dev.getDeviceText()%>, <%=dev.getDeviceType()%>, <%=dev.getDeviceTypeText()%>, <%=dev.getDeviceNumStates()%>, <%=dev.getDeviceCategory()%>, <%=dev.getDeviceCategoryText()%> -->
  <tr>
   <td><img src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
@@ -60,7 +53,6 @@ if (user.isLoggedIn())
 	{
 		Device dev = pulseIter.next();
 %>
-<!-- <br/><%=dev.getAuthorizationLevel()%>, <%=dev.getDeviceID()%>, <%=dev.getDeviceText()%>, <%=dev.getDeviceType()%>, <%=dev.getDeviceTypeText()%>, <%=dev.getDeviceNumStates()%>, <%=dev.getDeviceCategory()%>, <%=dev.getDeviceCategoryText()%> -->
  <tr>
   <td><img src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
@@ -70,7 +62,7 @@ if (user.isLoggedIn())
 <%
         }
 
-	controller.readChannel();
+	byte value = controller.readChannel();
 
         Iterator<Device> sensorIter = devices.getDevicesOfUser(user, "S", 0, 7).iterator(); 
   
@@ -78,7 +70,6 @@ if (user.isLoggedIn())
 	{
 		Device dev = sensorIter.next();
 %>
-<!-- <br/><%=dev.getAuthorizationLevel()%>, <%=dev.getDeviceID()%>, <%=dev.getDeviceText()%>, <%=dev.getDeviceType()%>, <%=dev.getDeviceTypeText()%>, <%=dev.getDeviceNumStates()%>, <%=dev.getDeviceCategory()%>, <%=dev.getDeviceCategoryText()%> -->
  <tr>
   <td><img src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
