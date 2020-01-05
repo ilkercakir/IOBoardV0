@@ -26,7 +26,7 @@ public class Controller
 	//private native void controller_set_ivalue(long handle, byte value);
 	private native int ichannel_add(long handle, String name, int type, int numstates);
 	private native byte ichannel_get_value(long handle, int channel);
-	private native void ichannel_read(long handle);
+	private native byte ichannel_read(long handle);
 
 	public Controller()
 	{
@@ -139,7 +139,7 @@ public class Controller
 				return(-1); // channels init failed
 			}
 		}
-		ichannel_read(controllerHandle);
+		logger.info("ichannel_read() = " + ichannel_read(controllerHandle));
 
 		logger.info("controller_open() completed");
 		return(0);
@@ -180,9 +180,9 @@ public class Controller
 		return(ichannel_get_value(controllerHandle, channel));
 	}
 
-	public void readChannel()
+	public byte readChannel()
 	{
-		ichannel_read(controllerHandle);
+		return(ichannel_read(controllerHandle));
 	}
 
 	public void Close()
