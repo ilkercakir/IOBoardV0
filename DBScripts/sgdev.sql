@@ -1,7 +1,7 @@
 create table sgdev
 (
-devgr int,
-devid int,
+devgr int NOT NULL,
+devid int NOT NULL,
 fromval int,
 toval int,
 primary key (devgr, devid),
