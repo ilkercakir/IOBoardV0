@@ -33,13 +33,13 @@ typedef struct
 {
   int intid;
   int seconds;
-  int count;
+  int rulecount;
   rule *rules;
 }interval;
 
 typedef struct
 {
- int count;
+ int intervalcount;
  interval *intervals;
 }scheduler;
 
