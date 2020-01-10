@@ -1,6 +1,8 @@
 #ifndef rulesH
 #define rulesH
 
+#define DBPATH "/var/sqlite3DATA/IOBoard.db"
+
 typedef struct
 {
   int chnnl;
