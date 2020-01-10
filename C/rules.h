@@ -28,9 +28,13 @@ typedef struct
 typedef struct
 {
   int intid;
-  char intxt[30];
-  int interval;
+  int seconds;
   rule *rules;
 }interval;
+
+typedef struct
+{
+ interval *intervals;
+}scheduler;
 
 #endif
