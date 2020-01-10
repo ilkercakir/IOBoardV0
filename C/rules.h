@@ -21,7 +21,9 @@ typedef struct
   int rulid;
   int sgrid;
   int agrid;
+  int sdevcount;
   sdev *sdevs;
+  int adevcount;
   adev *adevs;
 }rule;
 
@@ -29,11 +31,13 @@ typedef struct
 {
   int intid;
   int seconds;
+  int count;
   rule *rules;
 }interval;
 
 typedef struct
 {
+ int count;
  interval *intervals;
 }scheduler;
 
