@@ -24,20 +24,22 @@ long_line_column=72
 
 [files]
 current_page=0
-FILE_NAME_0=536;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FIOBoard.c;0;4
-FILE_NAME_1=798;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fiochannels.c;0;4
-FILE_NAME_2=1023;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fiochannels.h;0;4
-FILE_NAME_3=1432;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fgpio.c;0;4
-FILE_NAME_4=420;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fgpio.h;0;4
-FILE_NAME_5=1157;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FControllerConsole_Controller.c;0;4
-FILE_NAME_6=1534;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FControllerConsole_Controller.h;0;4
+FILE_NAME_0=11446;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FIOBoard.c;0;4
+FILE_NAME_1=8424;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Frules.c;0;4
+FILE_NAME_2=339;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Frules.h;0;4
+FILE_NAME_3=8945;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fiochannels.c;0;4
+FILE_NAME_4=559;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fiochannels.h;0;4
+FILE_NAME_5=1711;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fgpio.c;0;4
+FILE_NAME_6=420;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fgpio.h;0;4
+FILE_NAME_7=5013;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FControllerConsole_Controller.c;0;4
+FILE_NAME_8=0;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FControllerConsole_Controller.h;0;4
 
 [VTE]
 last_dir=/home/pi/Desktop/C/GPIO/IOBoard
 
 [build-menu]
 CFT_01_LB=İn_şa Et
-CFT_01_CM=gcc -Wall -o "%e" "%f" iochannels.o gpio.o $(pkg-config --cflags gtk+-3.0) -Wl,--whole-archive -lrt -ldl -lm -Wl,--no-whole-archive -rdynamic $(pkg-config --libs gtk+-3.0) -lwiringPi
+CFT_01_CM=gcc -Wall -o "%e" "%f" iochannels.o rules.o gpio.o $(pkg-config --cflags gtk+-3.0) -Wl,--whole-archive -lrt -ldl -lm -Wl,--no-whole-archive -rdynamic $(pkg-config --libs gtk+-3.0) -lwiringPi $(pkg-config --libs sqlite3)
 CFT_01_WD=
 filetypes=C;
 CFT_00_LB=_Derle
