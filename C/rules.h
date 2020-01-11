@@ -43,4 +43,6 @@ typedef struct
  interval *intervals;
 }scheduler;
 
+void init_scheduler(scheduler *s);
+void close_scheduler(scheduler *s);
 #endif
