@@ -5,6 +5,7 @@
 #include <locale.h>
 
 #include "iochannels.h"
+#include "rules.h"
 
 // compile with gcc -std=c99 -Wall -c "%f" -DIS_RPI -DSTANDALONE -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS -DTARGET_POSIX -D_LINUX -fPIC -DPIC -D_REENTRANT -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -U_FORTIFY_SOURCE -g -ftree-vectorize -pipe -DUSE_VCHIQ_ARM -Wno-psabi -mcpu=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits $(pkg-config --cflags gtk+-3.0) -Wno-deprecated-declarations
 // link with gcc -std=c99 -Wall -o "%e" "%f" $(pkg-config --cflags gtk+-3.0) -Wl,--whole-archive -lrt -ldl -lm -Wl,--no-whole-archive -rdynamic $(pkg-config --libs gtk+-3.0) -lwiringPi
@@ -385,6 +386,7 @@ int main(int argc, char **argv)
 	controller *c = NULL;
 	int i;
 	controlpanel cp;
+	scheduler s;
 
 	cp.c = c = controller_open(V0, 0x00);
 	if (c->err)
@@ -452,19 +454,15 @@ int main(int argc, char **argv)
 	g_signal_connect(GTK_BUTTON(button), "clicked", G_CALLBACK(button_clicked), (void *)&cp);
 	gtk_container_add(GTK_CONTAINER(cp.container), button);
 
-/*
-	controller_set_ivalue(c, 0xBC);
-	printf("In 1 = %c\n", ichannel_get_value(c, 0) + '0');
-	printf("In 2 = %c\n", ichannel_get_value(c, 1) + '0');
-	printf("In 3 = %c\n", ichannel_get_value(c, 2) + '0');
-	printf("In 4 = %c\n", ichannel_get_value(c, 3) + '0');
-*/
 	gtk_widget_show_all(cp.window);
+
+	init_scheduler(&s, c);
 
 	gtk_main();
 
+	close_scheduler(&s);
+
 	controller_close(c);
-	c = NULL;
 
 	return(0);
 }

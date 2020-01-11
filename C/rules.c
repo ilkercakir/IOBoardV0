@@ -253,7 +253,8 @@ int init_intervals_callback(void *data, int argc, char **argv, char **azColName)
 	scheduler *s = (scheduler *)data;
   
 	s->intervals[s->intervalcount].intid = atoi(argv[0]);
-	s->intervals[s->intervalcount].seconds = atoi(argv[2]);  
+	s->intervals[s->intervalcount].seconds = atoi(argv[2]);
+	s->intervals[s->intervalcount].c = s->c;
 //printf("init_intervals_callback %d %d %d\n", s->intervalcount, s->intervals[s->intervalcount].intid, s->intervals[s->intervalcount].seconds);
 	init_count_rules_of_interval(&(s->intervals[s->intervalcount]));
 	init_rules_of_interval(&(s->intervals[s->intervalcount]));
@@ -329,15 +330,107 @@ void init_count_intervals(scheduler *s)
 	sqlite3_close(db);
 }
 
-void init_scheduler(scheduler *s)
+void* interval_thread(void *args)
 {
+	interval *ival = (interval *)args;
+	controller *c = ival->c;
+	rule *r;
+	sdev *s;
+	adev *a;
+	int i, j;
+	unsigned char value;
+	int sensorval;
+
+	int ctype = PTHREAD_CANCEL_ASYNCHRONOUS;
+	int ctype_old;
+	pthread_setcanceltype(ctype, &ctype_old);
+
+	ival->threadrunning = 1;
+	do
+	{
+//printf("interval task %d\n", ival->intid);
+		ichannel_read(c);
+		for(i=0;i<ival->rulecount;i++)
+		{
+			sensorval = 1;
+			r = &(ival->rules[i]);
+			for(j=0;(j<r->sdevcount) && (sensorval);j++)
+			{
+				s = &(r->sdevs[j]);
+//printf("%d %d %d %d\n", s->chnnl, s->devid, s->fromval, s->toval);
+				value = ichannel_get_value(c, s->chnnl);
+				sensorval &= ((value >= s->fromval) && (value <= s->toval));
+			}
+			if (sensorval)
+			{
+				for(j=0;j<r->adevcount;j++)
+				{
+					a = &(r->adevs[j]);
+//printf("%d %d %d\n", a->chnnl, a->devid, a->value);
+					if (a->chnnl < 8) // channel
+					{
+						ochannel_set_value(c, a->chnnl, (unsigned char)a->value);
+						ochannel_write(c);
+					}
+					else if (a->chnnl < 10) // bit
+						obit_set_value(c, (unsigned int)a->chnnl, (unsigned char)a->value);
+					else if (a->chnnl < 12) // pulse
+						opulse_out(c, (unsigned int)a->chnnl, (unsigned char)a->value);
+				}
+			}
+		}
+//printf("\n");
+		sleep(ival->seconds);
+	}while (ival->threadrunning);
+
+	ival->retval = 0;
+	pthread_exit(&(ival->retval));
+}
+
+void init_interval_threads(scheduler *s)
+{
+	int i, err;
+
+	for(i=0;i<s->intervalcount;i++)
+	{
+		err = pthread_create(&(s->intervals[i].tid), NULL, &interval_thread, (void *)&(s->intervals[i]));
+		if (err)
+			printf("pthread_create error, interval %d\n", i);
+	}
+}
+
+void close_interval_threads(scheduler *s)
+{
+	int i, err;
+
+	for(i=0;i<s->intervalcount;i++)
+	{
+		s->intervals[i].threadrunning = 0;
+	}
+
+	for(i=0;i<s->intervalcount;i++)
+	{
+		err = pthread_join(s->intervals[i].tid, NULL);
+		if (err)
+			printf("pthread_join error, interval %d\n", i);
+	}
+}
+
+void init_scheduler(scheduler *s, controller *c)
+{
+	s->c = c;
 	init_count_intervals(s);
 	init_intervals(s);
+//printf("intervals %d\n", s->intervalcount);
+
+	init_interval_threads(s);
 }
 
 void close_scheduler(scheduler *s)
 {
 	int i, j;
+
+	close_interval_threads(s);
 
 	for(i=0;i<s->intervalcount;i++)
 	{

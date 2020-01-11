@@ -1,6 +1,11 @@
 #ifndef rulesH
 #define rulesH
 
+#include <pthread.h>
+#include <unistd.h>
+
+#include "iochannels.h"
+
 #define DBPATH "/var/sqlite3DATA/IOBoard.db"
 
 typedef struct
@@ -33,16 +38,21 @@ typedef struct
 {
   int intid;
   int seconds;
+  controller *c;
   int rulecount;
   rule *rules;
+  pthread_t tid;
+  int retval;
+  int threadrunning;
 }interval;
 
 typedef struct
 {
  int intervalcount;
  interval *intervals;
+ controller *c;
 }scheduler;
 
-void init_scheduler(scheduler *s);
+void init_scheduler(scheduler *s, controller *c);
 void close_scheduler(scheduler *s);
 #endif
