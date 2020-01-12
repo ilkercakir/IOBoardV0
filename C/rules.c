@@ -1,7 +1,3 @@
-#include <sqlite3.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "rules.h"
 
 int init_actuators_of_rule_callback(void *data, int argc, char **argv, char **azColName) 

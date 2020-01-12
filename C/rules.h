@@ -1,12 +1,14 @@
 #ifndef rulesH
 #define rulesH
 
+#include <sqlite3.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <pthread.h>
 #include <unistd.h>
 
 #include "iochannels.h"
-
-#define DBPATH "/var/sqlite3DATA/IOBoard.db"
+#include "db.h"
 
 typedef struct
 {

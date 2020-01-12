@@ -6,6 +6,7 @@
 
 #include "iochannels.h"
 #include "rules.h"
+#include "devices.h"
 
 // compile with gcc -std=c99 -Wall -c "%f" -DIS_RPI -DSTANDALONE -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS -DTARGET_POSIX -D_LINUX -fPIC -DPIC -D_REENTRANT -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -U_FORTIFY_SOURCE -g -ftree-vectorize -pipe -DUSE_VCHIQ_ARM -Wno-psabi -mcpu=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits $(pkg-config --cflags gtk+-3.0) -Wno-deprecated-declarations
 // link with gcc -std=c99 -Wall -o "%e" "%f" $(pkg-config --cflags gtk+-3.0) -Wl,--whole-archive -lrt -ldl -lm -Wl,--no-whole-archive -rdynamic $(pkg-config --libs gtk+-3.0) -lwiringPi
@@ -125,7 +126,7 @@ void add_ochannelframe(controlpanel *cp, controller *c, int channel)
 	}
 }
 
-int add_ochanneldevice(controlpanel *cp, controller *c, char *name, actuator_type type, int nstates)
+int add_ochanneldevice(controlpanel *cp, controller *c, char *name, actuator_type type, int nstates, unsigned char initval)
 {
 	int i;
 
@@ -141,7 +142,9 @@ int add_ochanneldevice(controlpanel *cp, controller *c, char *name, actuator_typ
 			printf("ochannel_add() err=%d\n", i);
 			break;
 		default:
+			ochannel_set_value(c, i, initval);
 			add_ochannelframe(cp, c, i);
+			break;
 	}
 
 	return(i);
@@ -172,7 +175,7 @@ void add_obitframe(controlpanel *cp, controller *c, int channel)
 	//gtk_box_pack_start(GTK_BOX(cp->dw[channel].hbox), w, TRUE, TRUE, 0);
 }
 
-int add_obitdevice(controlpanel *cp, controller *c, char *name)
+int add_obitdevice(controlpanel *cp, controller *c, char *name, unsigned char initval)
 {
 	int i;
 
@@ -188,6 +191,7 @@ int add_obitdevice(controlpanel *cp, controller *c, char *name)
 			printf("obit_add() err=%d\n", i);
 			break;
 		default:
+			obit_set_value(c, i, initval);
 			add_obitframe(cp, c, i);
 			break;
 	}
@@ -384,9 +388,10 @@ void setup_default_icon(char *filename)
 int main(int argc, char **argv)
 {
 	controller *c = NULL;
-	int i;
+	int i, err;
 	controlpanel cp;
 	scheduler s;
+	iodevices cha, bit, pul, sen;
 
 	cp.c = c = controller_open(V0, 0x00);
 	if (c->err)
@@ -420,34 +425,44 @@ int main(int argc, char **argv)
 	cp.container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	gtk_container_add(GTK_CONTAINER(cp.window), cp.container);
 
-	if ((i=add_ochanneldevice(&cp, c, "Motor", A_SWITCH, 0)) >= 0)
-	{}
-	if ((i=add_ochanneldevice(&cp, c, "Water Level", A_LEVEL, 8)) >= 0)
-	{}
 
+	get_devices(&cha, 'A', 0, 7);
+	for(i=0;i<cha.count;i++)
+	{
+		//printf("channel %d, id=%d\n", i, cha.devices[i].devid);
+		if ((err=add_ochanneldevice(&cp, c, cha.devices[i].dtext, cha.devices[i].dtype, (cha.devices[i].dstat?cha.devices[i].dstat:cha.devices[i].numstates), cha.devices[i].initval)) >= 0)
+		{}
+	}
+	free_devices(&cha);
+	ochannel_write(c);
 
-	if ((i=add_obitdevice(&cp, c, "Enable")) >= 0)
-	{}
+	get_devices(&bit, 'A', 8, 9);
+	for(i=0;i<bit.count;i++)
+	{
+		//printf("bit %d, id=%d\n", i, bit.devices[i].devid);
+		if ((err=add_obitdevice(&cp, c, bit.devices[i].dtext, bit.devices[i].initval)) >= 0)
+		{}
+	}
+	free_devices(&bit);
 
-	if ((i=add_obitdevice(&cp, c, "LED")) >= 0)
-	{}
+	get_devices(&pul, 'A', 10, 11);
+	for(i=0;i<pul.count;i++)
+	{
+		//printf("pulse %d, id=%d\n", i, pul.devices[i].devid);
+		if ((err=add_opulsedevice(&cp, c, pul.devices[i].dtext)) >= 0)
+		{}
+	}
+	free_devices(&pul);
 
+	get_devices(&sen, 'S', 0, 7);
+	for(i=0;i<sen.count;i++)
+	{
+		//printf("sensor %d, id=%d\n", i, sen.devices[i].devid);
+		if ((err=add_ichanneldevice(&cp, c, sen.devices[i].dtext, sen.devices[i].dtype, (sen.devices[i].dstat?sen.devices[i].dstat:sen.devices[i].numstates))) >= 0)
+		{}
+	}
+	free_devices(&sen);
 
-	if ((i=add_opulsedevice(&cp, c, "Pulse 1")) >= 0)
-	{}
-
-	if ((i=add_opulsedevice(&cp, c, "Pulse 2")) >= 0)
-	{}
-
-
-	if ((i=add_ichanneldevice(&cp, c, "In 1", S_SWITCH, 0)) >= 0)
-	{}
-	if ((i=add_ichanneldevice(&cp, c, "In 2", S_LEVEL, 8)) >= 0)
-	{}
-	if ((i=add_ichanneldevice(&cp, c, "In 3", S_SWITCH, 0)) >= 0)
-	{}
-	if ((i=add_ichanneldevice(&cp, c, "In 4", S_LEVEL, 4)) >= 0)
-	{}
 
 	GtkWidget *button;
 	button = gtk_button_new_with_label("Refresh");
@@ -456,11 +471,11 @@ int main(int argc, char **argv)
 
 	gtk_widget_show_all(cp.window);
 
-	init_scheduler(&s, c);
+	//init_scheduler(&s, c);
 
 	gtk_main();
 
-	close_scheduler(&s);
+	//close_scheduler(&s);
 
 	controller_close(c);
 
