@@ -155,5 +155,6 @@ public class ConsoleServlet extends HttpServlet
 		getServletContext().removeAttribute("controller");
 		c.Close();
 		logger.info("Controller closed");
+		super.destroy();
 	}
 }  
