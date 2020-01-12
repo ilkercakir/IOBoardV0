@@ -469,6 +469,8 @@ int main(int argc, char **argv)
 	g_signal_connect(GTK_BUTTON(button), "clicked", G_CALLBACK(button_clicked), (void *)&cp);
 	gtk_container_add(GTK_CONTAINER(cp.container), button);
 
+	button_clicked(button, (void *)&cp);
+
 	gtk_widget_show_all(cp.window);
 
 	//init_scheduler(&s, c);
