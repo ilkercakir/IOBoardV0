@@ -141,7 +141,7 @@ public class ConsoleServlet extends HttpServlet
 		else if (request.getParameter("status")!=null)
 		{
 			PrintWriter pw = response.getWriter();
-			pw.printf("{ \"status\" : \"%s\", \"version\" : %d, \"local\" : \"%s\", "remote" : \"%s\" }", "running", 0, request.getLocalAddr(), request.getRemoteAddr());
+			pw.printf("{ \"status\" : \"%s\", \"version\" : %d, \"local\" : \"%s\", \"remote\" : \"%s\" }", "running", 0, request.getLocalAddr(), request.getRemoteAddr());
 			pw.flush();
 			pw.close();
 		}
@@ -164,4 +164,4 @@ public class ConsoleServlet extends HttpServlet
 		logger.info("Controller closed");
 		super.destroy();
 	}
-}  
+}
