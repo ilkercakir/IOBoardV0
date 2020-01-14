@@ -138,6 +138,13 @@ public class ConsoleServlet extends HttpServlet
 				}
 			}
 		}
+		else if (request.getParameter("status")!=null)
+		{
+			PrintWriter pw = response.getWriter();
+			pw.printf("{ \"status\" : \"%s\", \"version\" : %d }", "running", 0);
+			pw.flush();
+			pw.close();
+		}
 		if (request.getParameter("logout")!=null)
 		{
 			request.getSession().removeAttribute("user");
