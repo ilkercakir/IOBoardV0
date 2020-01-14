@@ -7,6 +7,7 @@
 #include "iochannels.h"
 #include "rules.h"
 #include "devices.h"
+#include "httpget.h"
 
 // compile with gcc -std=c99 -Wall -c "%f" -DIS_RPI -DSTANDALONE -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS -DTARGET_POSIX -D_LINUX -fPIC -DPIC -D_REENTRANT -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -U_FORTIFY_SOURCE -g -ftree-vectorize -pipe -DUSE_VCHIQ_ARM -Wno-psabi -mcpu=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits $(pkg-config --cflags gtk+-3.0) -Wno-deprecated-declarations
 // link with gcc -std=c99 -Wall -o "%e" "%f" $(pkg-config --cflags gtk+-3.0) -Wl,--whole-archive -lrt -ldl -lm -Wl,--no-whole-archive -rdynamic $(pkg-config --libs gtk+-3.0) -lwiringPi
@@ -392,6 +393,18 @@ int main(int argc, char **argv)
 	controlpanel cp;
 	scheduler s;
 	iodevices cha, bit, pul, sen;
+
+
+	httpclient h;
+
+	http_get_init(&h);
+	http_get_command(&h, "status", "");
+	http_get(&h);
+	printf("%s\n", h.json);
+
+	return 0;
+
+
 
 	cp.c = c = controller_open(V0, 0x00);
 	if (c->err)
