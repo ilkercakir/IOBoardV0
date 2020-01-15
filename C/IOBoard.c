@@ -402,6 +402,34 @@ int main(int argc, char **argv)
 	http_get(&h);
 	printf("%s\n", h.json);
 
+	struct json_object *jobj, *val;
+
+	jobj = json_tokener_parse(h.json);
+
+	val = json_object_new_object();
+	if (json_object_object_get_ex(jobj, "status", &val))
+		printf("%s\n", (char*)json_object_get_string(val));
+	else
+		printf("%d\n", -1);
+
+	if (json_object_object_get_ex(jobj, "version", &val))
+		printf("%d\n", json_object_get_int(val));
+	else
+		printf("%d\n", -1);
+
+	if (json_object_object_get_ex(jobj, "local", &val))
+		printf("%s\n", (char*)json_object_get_string(val));
+	else
+		printf("%d\n", -1);
+
+	if (json_object_object_get_ex(jobj, "remote", &val))
+		printf("%s\n", (char*)json_object_get_string(val));
+	else
+		printf("%d\n", -1);
+
+	json_object_put(val);
+	json_object_put(jobj);
+
 	return 0;
 
 
