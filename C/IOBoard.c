@@ -394,7 +394,7 @@ int main(int argc, char **argv)
 	scheduler s;
 	iodevices cha, bit, pul, sen;
 
-
+/*
 	httpclient h;
 
 	http_get_init(&h);
@@ -429,7 +429,7 @@ int main(int argc, char **argv)
 	json_object_put(jobj);
 
 	return 0;
-
+*/
 
 
 	cp.c = c = controller_open(V0, 0x00);
