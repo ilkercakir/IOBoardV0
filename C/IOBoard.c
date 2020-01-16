@@ -394,47 +394,11 @@ int main(int argc, char **argv)
 	scheduler s;
 	iodevices cha, bit, pul, sen;
 
-/*
-	httpclient h;
-
-	http_get_init(&h);
-	http_get_command(&h, "status", "");
-	http_get(&h);
-	printf("%s\n", h.json);
-
-	struct json_object *jobj, *val;
-
-	jobj = json_tokener_parse(h.json);
-
-	if (json_object_object_get_ex(jobj, "status", &val))
-		printf("%s\n", (char*)json_object_get_string(val));
-	else
-		printf("%d\n", -1);
-
-	if (json_object_object_get_ex(jobj, "version", &val))
-		printf("%d\n", json_object_get_int(val));
-	else
-		printf("%d\n", -1);
-
-	if (json_object_object_get_ex(jobj, "local", &val))
-		printf("%s\n", (char*)json_object_get_string(val));
-	else
-		printf("%d\n", -1);
-
-	if (json_object_object_get_ex(jobj, "remote", &val))
-		printf("%s\n", (char*)json_object_get_string(val));
-	else
-		printf("%d\n", -1);
-
-	json_object_put(jobj);
-
-	return 0;
-*/
-	httpclient h;
-	jsonWriteChannel(&h, 0, 0, 0);
-	//jsonWriteBit(&h, 9, 9, 0);
-	//jsonWritePulse(&h, 10, 1000000);
-	printf("%d\n", jsonReadChannel(&h, 0, 12);
+	//httpclient h;
+	//jsonWriteChannel(&h, 2, 2, 0);
+	//jsonWriteBit(&h, 8, 8, 1);
+	//jsonWritePulse(&h, 11, 11, 1000000);
+	//printf("%d\n", jsonReadChannel(&h, 1, 13));
 
 	return(0);
 
