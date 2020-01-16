@@ -20,7 +20,5 @@ typedef struct
 	char request[100], response[300], json[100];
 }httpclient;
 
-void http_get_init(httpclient *h);
-void http_get_command(httpclient *h, char *command, char *parameters);
-void http_get(httpclient *h);
+void http_get(httpclient *h, char *command, char *parameters);
 #endif
