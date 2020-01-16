@@ -430,6 +430,13 @@ int main(int argc, char **argv)
 
 	return 0;
 */
+	httpclient h;
+	jsonWriteChannel(&h, 0, 0, 0);
+	//jsonWriteBit(&h, 9, 9, 0);
+	//jsonWritePulse(&h, 10, 10);
+	printf("%d\n", jsonReadChannel(&h, 0, 12);
+
+	return(0);
 
 
 	cp.c = c = controller_open(V0, 0x00);
