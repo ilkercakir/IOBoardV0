@@ -20,5 +20,8 @@ typedef struct
 	char request[100], response[300], json[100];
 }httpclient;
 
-void http_get(httpclient *h, char *command, char *parameters);
+void jsonWriteChannel(httpclient *h, int id, int devid, unsigned char value);
+void jsonWriteBit(httpclient *h, int id, int devid, unsigned char value);
+void jsonWritePulse(httpclient *h, int id, int devid, unsigned char value);
+unsigned char jsonReadChannel(httpclient *h, int id, int devid);
 #endif
