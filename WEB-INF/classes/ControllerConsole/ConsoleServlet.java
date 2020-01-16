@@ -41,6 +41,28 @@ public class ConsoleServlet extends HttpServlet
 		getServletContext().setAttribute("controller", c);  
 	}
 
+	private boolean isAuthenticated(HttpServletRequest request)
+	{
+		ControllerConsole.User u;
+
+		u = (ControllerConsole.User)request.getSession().getAttribute("user");
+		if (u!=null)
+		{
+			if (u.isLoggedIn())
+			{
+				return(true);
+			}
+		}
+		else
+		{
+			if (request.getLocalAddr().equals(request.getRemoteAddr()))
+			{
+				return(true);
+			}
+		}
+		return(false);
+	}
+	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException  
 	{
 		ControllerConsole.User u;
@@ -65,77 +87,61 @@ public class ConsoleServlet extends HttpServlet
 		}
 		else if (request.getParameter("channel")!=null)
 		{
-			u = (ControllerConsole.User)request.getSession().getAttribute("user");
-			if (u!=null)
+			if (isAuthenticated(request))
 			{
-				if (u.isLoggedIn())
-				{
-					id = Integer.parseInt(request.getParameter("id"));
-					devid = Integer.parseInt(request.getParameter("devid"));
-					value = (byte)Integer.parseInt(request.getParameter("value"));
-					c.setChannelValue(id, value);
-					c.writeChannel();
-					v = c.getChannelValue(id);
-					PrintWriter pw = response.getWriter();
-					pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, v, devid);
-					pw.flush();
-					pw.close();
-				}
+				id = Integer.parseInt(request.getParameter("id"));
+				devid = Integer.parseInt(request.getParameter("devid"));
+				value = (byte)Integer.parseInt(request.getParameter("value"));
+				c.setChannelValue(id, value);
+				c.writeChannel();
+				v = c.getChannelValue(id);
+				PrintWriter pw = response.getWriter();
+				pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, v, devid);
+				pw.flush();
+				pw.close();
 			}
 		}
 		else if (request.getParameter("bit")!=null)
 		{
-			u = (ControllerConsole.User)request.getSession().getAttribute("user");
-			if (u!=null)
+			if (isAuthenticated(request))
 			{
-				if (u.isLoggedIn())
-				{
-					id = Integer.parseInt(request.getParameter("id"));
-					devid = Integer.parseInt(request.getParameter("devid"));
-					value = (byte)Integer.parseInt(request.getParameter("value"));
-					c.setBitValue(id, value);
-					v = c.getBitValue(id);
-					PrintWriter pw = response.getWriter();
-					pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, v, devid);
-					pw.flush();
-					pw.close();
-				}
+				id = Integer.parseInt(request.getParameter("id"));
+				devid = Integer.parseInt(request.getParameter("devid"));
+				value = (byte)Integer.parseInt(request.getParameter("value"));
+				c.setBitValue(id, value);
+				v = c.getBitValue(id);
+				PrintWriter pw = response.getWriter();
+				pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, v, devid);
+				pw.flush();
+				pw.close();
 			}
 		}
 		else if (request.getParameter("pulse")!=null)
 		{
-			u = (ControllerConsole.User)request.getSession().getAttribute("user");
-			if (u!=null)
+			if (isAuthenticated(request))
 			{
-				if (u.isLoggedIn())
-				{
-					id = Integer.parseInt(request.getParameter("id"));
-					devid = Integer.parseInt(request.getParameter("devid"));
-					int duration = Integer.parseInt(request.getParameter("value"));
-					c.pulseOut(id, duration);
-					PrintWriter pw = response.getWriter();
-					pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, duration, devid);
-					pw.flush();
-					pw.close();
-				}
+				id = Integer.parseInt(request.getParameter("id"));
+				devid = Integer.parseInt(request.getParameter("devid"));
+				int duration = Integer.parseInt(request.getParameter("value"));
+				c.pulseOut(id, duration);
+				PrintWriter pw = response.getWriter();
+				pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, duration, devid);
+				pw.flush();
+				pw.close();
 			}
 		}
 		else if (request.getParameter("readchannel")!=null)
 		{
-			u = (ControllerConsole.User)request.getSession().getAttribute("user");
-			if (u!=null)
+			if (isAuthenticated(request))
 			{
-				if (u.isLoggedIn())
-				{
-					id = Integer.parseInt(request.getParameter("id"));
-					devid = Integer.parseInt(request.getParameter("devid"));
-					c.readChannel();
-					v = c.getInputChannelValue(id);
-					PrintWriter pw = response.getWriter();
-					pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, v, devid);
-					pw.flush();
-					pw.close();
-				}
+				id = Integer.parseInt(request.getParameter("id"));
+				devid = Integer.parseInt(request.getParameter("devid"));
+				c.readChannel();
+				v = c.getInputChannelValue(id);
+				PrintWriter pw = response.getWriter();
+				pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, v, devid);
+				pw.flush();
+				pw.close();
 			}
 		}
 		else if (request.getParameter("status")!=null)
