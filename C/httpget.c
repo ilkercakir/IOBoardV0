@@ -142,7 +142,7 @@ void jsonWriteBit(httpclient *h, int id, int devid, unsigned char value)
 	json_object_put(jobj);
 }
 
-void jsonWritePulse(httpclient *h, int id, int devid, unsigned char value)
+void jsonWritePulse(httpclient *h, int id, int devid, int value)
 {
 	char params[100];
 
@@ -156,7 +156,7 @@ void jsonWritePulse(httpclient *h, int id, int devid, unsigned char value)
 
 	id = (json_object_object_get_ex(jobj, "id", &val)?json_object_get_int(val):-1);
 	devid = (json_object_object_get_ex(jobj, "devid", &val)?json_object_get_int(val):-1);
-	value = (unsigned char)(json_object_object_get_ex(jobj, "value", &val)?json_object_get_int(val):-1);
+	value = (json_object_object_get_ex(jobj, "value", &val)?json_object_get_int(val):-1);
 
 	json_object_put(jobj);
 }
