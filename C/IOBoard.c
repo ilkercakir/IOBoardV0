@@ -406,7 +406,6 @@ int main(int argc, char **argv)
 
 	jobj = json_tokener_parse(h.json);
 
-	val = json_object_new_object();
 	if (json_object_object_get_ex(jobj, "status", &val))
 		printf("%s\n", (char*)json_object_get_string(val));
 	else
@@ -427,7 +426,6 @@ int main(int argc, char **argv)
 	else
 		printf("%d\n", -1);
 
-	json_object_put(val);
 	json_object_put(jobj);
 
 	return 0;
