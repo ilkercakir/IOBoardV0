@@ -433,7 +433,7 @@ int main(int argc, char **argv)
 	httpclient h;
 	jsonWriteChannel(&h, 0, 0, 0);
 	//jsonWriteBit(&h, 9, 9, 0);
-	//jsonWritePulse(&h, 10, 10);
+	//jsonWritePulse(&h, 10, 1000000);
 	printf("%d\n", jsonReadChannel(&h, 0, 12);
 
 	return(0);
