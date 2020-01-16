@@ -1,23 +1,17 @@
 #include "httpget.h"
 
-void http_get_init(httpclient *h)
-{
-	h->portno = 8080;
-	h->host = "localhost";
-	h->getformat = "GET /IOBoardV0/ControllerConsole?%s%s HTTP/1.0\r\n\r\n";
-}
-
-void http_get_command(httpclient *h, char *command, char *parameters)
-{
-	sprintf(h->request, h->getformat, command, parameters);
-//printf("Request: %s\n", h->request);
-}
-
-void http_get(httpclient *h)
+void http_get(httpclient *h, char *command, char *parameters)
 {
 	struct hostent *server;
 	struct sockaddr_in serv_addr;
 	int sockfd, bytes, sent, received, total;
+	
+	h->portno = 8080;
+	h->host = "localhost";
+	h->getformat = "GET /IOBoardV0/ControllerConsole?%s%s HTTP/1.0\r\n\r\n";
+
+	sprintf(h->request, h->getformat, command, parameters);
+//printf("Request: %s\n", h->request);
 
 	/* create the socket */
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
