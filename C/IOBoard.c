@@ -43,7 +43,7 @@ gboolean widget_state_set(GtkWidget *togglebutton, gboolean state, gpointer data
 	return(TRUE);
 }
 
-void combo_changed(GtkWidget *combo, gpointer data)
+void combo_changed_gpio(GtkWidget *combo, gpointer data)
 {
 	actuator *a = (actuator*)data;
 	gchar *strval;
@@ -58,7 +58,23 @@ void combo_changed(GtkWidget *combo, gpointer data)
 //printf("channel %d value %c\n", a->channel, ochannel_get_value(a->parent, a->channel) + '0');
 }
 
-gboolean widget_state_set_bit(GtkWidget *togglebutton, gboolean state, gpointer data)
+void combo_changed_http(GtkWidget *combo, gpointer data)
+{
+	actuator *a = (actuator*)data;
+	gchar *strval;
+
+	g_object_get((gpointer)combo, "active-id", &strval, NULL);
+	//printf("Selected id %s\n", strval);
+	a->value = atoi((const char *)strval);
+	g_free(strval);
+
+	httpclient h;
+	jsonWriteChannel(&h, a->channel, 0, a->value);
+
+//printf("channel %d value %c\n", a->channel, ochannel_get_value(a->parent, a->channel) + '0');
+}
+
+gboolean widget_state_set_bit_gpio(GtkWidget *togglebutton, gboolean state, gpointer data)
 {
 	actuator *a = (actuator*)data;
 	switch_values value = (state?SWITCH_ON:SWITCH_OFF);
@@ -70,11 +86,32 @@ gboolean widget_state_set_bit(GtkWidget *togglebutton, gboolean state, gpointer 
 	return(TRUE);
 }
 
-static void button_clicked_pulse(GtkWidget *button, gpointer data)
+gboolean widget_state_set_bit_http(GtkWidget *togglebutton, gboolean state, gpointer data)
+{
+	actuator *a = (actuator*)data;
+	switch_values value = (state?SWITCH_ON:SWITCH_OFF);
+
+	httpclient h;
+	jsonWriteBit(&h, a->channel, 0, value);
+
+//printf("bit %d value %c\n", a->channel, (obit_get_value(a->parent, a->channel)?'1':'0'));
+
+	return(TRUE);
+}
+
+static void button_clicked_pulse_gpio(GtkWidget *button, gpointer data)
 {
 	actuator *a = (actuator*)data;
 
 	opulse_out(a->parent, a->channel, 1000000);
+}
+
+static void button_clicked_pulse_http(GtkWidget *button, gpointer data)
+{
+	actuator *a = (actuator*)data;
+
+	httpclient h;
+	jsonWritePulse(&h, a->channel, 0, 1000000);
 }
 
 void add_ochannelframe(controlpanel *cp, controller *c, int channel)
@@ -113,7 +150,10 @@ void add_ochannelframe(controlpanel *cp, controller *c, int channel)
 			}
 			sprintf(s, "%d", c->actuators[channel].value);
 			g_object_set((gpointer)w, "active-id", s, NULL);
-			g_signal_connect(GTK_COMBO_BOX(w), "changed", G_CALLBACK(combo_changed), &(c->actuators[channel]));
+			if (cp->usegpio)
+				g_signal_connect(GTK_COMBO_BOX(w), "changed", G_CALLBACK(combo_changed_gpio), &(c->actuators[channel]));
+			else
+				g_signal_connect(GTK_COMBO_BOX(w), "changed", G_CALLBACK(combo_changed_http), &(c->actuators[channel]));
 			gtk_container_add(GTK_CONTAINER(cp->odw[channel].hbox), w);
 			//gtk_box_pack_start(GTK_BOX(ae->parameter[i].vbox), w, TRUE, TRUE, 0);
 			break;
@@ -122,7 +162,10 @@ void add_ochannelframe(controlpanel *cp, controller *c, int channel)
 		default:
 			cp->odw[channel].control = w = gtk_switch_new();
 			gtk_switch_set_active(GTK_SWITCH(w), c->actuators[channel].value);
-			g_signal_connect(GTK_SWITCH(w), "state-set", G_CALLBACK(widget_state_set), &(c->actuators[channel]));
+			if (cp->usegpio)
+				g_signal_connect(GTK_SWITCH(w), "state-set", G_CALLBACK(widget_state_set_gpio), &(c->actuators[channel]));
+			else
+				g_signal_connect(GTK_SWITCH(w), "state-set", G_CALLBACK(widget_state_set_http), &(c->actuators[channel]));
 			gtk_container_add(GTK_CONTAINER(cp->odw[channel].hbox), w);
 			//gtk_box_pack_start(GTK_BOX(cp->dw[channel].hbox), w, TRUE, TRUE, 0);
 			break;
@@ -147,8 +190,6 @@ int add_ochanneldevice(controlpanel *cp, controller *c, char *name, actuator_typ
 		default:
 			if (cp->usegpio)
 				ochannel_set_value(c, i, initval);
-			else
-				c->actuators[i].value = jsonChannelGetValue(&(cp->h), c->actuators[i].channel, 0);
 			add_ochannelframe(cp, c, i);
 			break;
 	}
@@ -176,7 +217,10 @@ void add_obitframe(controlpanel *cp, controller *c, int channel)
 
 	cp->odw[channel].control = w = gtk_switch_new();
 	gtk_switch_set_active(GTK_SWITCH(w), c->actuators[channel].value);
-	g_signal_connect(GTK_SWITCH(w), "state-set", G_CALLBACK(widget_state_set_bit), &(c->actuators[channel]));
+	if (cp->usegpio)
+		g_signal_connect(GTK_SWITCH(w), "state-set", G_CALLBACK(widget_state_set_bit_gpio), &(c->actuators[channel]));
+	else
+		g_signal_connect(GTK_SWITCH(w), "state-set", G_CALLBACK(widget_state_set_bit_http), &(c->actuators[channel]));
 	gtk_container_add(GTK_CONTAINER(cp->odw[channel].hbox), w);
 	//gtk_box_pack_start(GTK_BOX(cp->dw[channel].hbox), w, TRUE, TRUE, 0);
 }
@@ -199,8 +243,6 @@ int add_obitdevice(controlpanel *cp, controller *c, char *name, unsigned char in
 		default:
 			if (cp->usegpio)
 				obit_set_value(c, i, initval);
-			else
-				c->actuators[i].value = jsonChannelGetValue(&(cp->h), c->actuators[i].channel, 0);
 			add_obitframe(cp, c, i);
 			break;
 	}
@@ -227,7 +269,10 @@ void add_opulseframe(controlpanel *cp, controller *c, int channel)
 	gtk_container_add(GTK_CONTAINER(cp->odw[channel].hbox), cp->odw[channel].label);
 
 	cp->odw[channel].control = w = gtk_button_new_with_label(c->actuators[channel].name);
-	g_signal_connect(GTK_BUTTON(w), "clicked", G_CALLBACK(button_clicked_pulse), &(c->actuators[channel]));
+	if (cp->usegpio)
+		g_signal_connect(GTK_BUTTON(w), "clicked", G_CALLBACK(button_clicked_pulse_gpio), &(c->actuators[channel]));
+	else
+		g_signal_connect(GTK_BUTTON(w), "clicked", G_CALLBACK(button_clicked_pulse_http), &(c->actuators[channel]));
 	gtk_container_add(GTK_CONTAINER(cp->odw[channel].hbox), w);
 	//gtk_box_pack_start(GTK_BOX(cp->dw[channel].hbox), w, TRUE, TRUE, 0);
 }
