@@ -538,7 +538,10 @@ int main(int argc, char **argv)
 
 	gtk_widget_show_all(cp.window);
 
-	//init_scheduler(&s, c);
+	//if (usegpio)
+	//	init_scheduler(&s, c);
+	//else
+	//	init_scheduler(&s, NULL);
 
 	gtk_main();
 
