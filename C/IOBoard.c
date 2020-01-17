@@ -4,7 +4,6 @@
 #include <gtk/gtk.h>
 #include <locale.h>
 
-#include "iochannels.h"
 #include "rules.h"
 #include "devices.h"
 #include "httpget.h"
@@ -320,7 +319,7 @@ int add_ichanneldevice(controlpanel *cp, controller *c, char *name, sensor_type 
 	return(i);
 }
 
-static void button_clicked(GtkWidget *button, gpointer data)
+static void button_clicked_gpio(GtkWidget *button, gpointer data)
 {
 	controlpanel* cp = (controlpanel *)data;
 	controller *c = cp->c;
@@ -393,23 +392,63 @@ int main(int argc, char **argv)
 	controlpanel cp;
 	scheduler s;
 	iodevices cha, bit, pul, sen;
-
-	//httpclient h;
-	//jsonWriteChannel(&h, 2, 2, 0);
-	//jsonWriteBit(&h, 8, 8, 1);
-	//jsonWritePulse(&h, 11, 11, 1000000);
-	//printf("%d\n", jsonReadChannel(&h, 1, 13));
-
-	return(0);
-
-
-	cp.c = c = controller_open(V0, 0x00);
-	if (c->err)
-		printf("Open err=%d\n", c->err);
+	httpclient h;
+	bool usegpio = 0;
 
 	setlocale(LC_ALL, "tr_TR.UTF-8");
-
 	setup_default_icon("./images/controller.png");
+
+	if (argc>1)
+	{
+		if (!strcmp(argv[1], "gpio"))
+		{
+			usegpio = 1;
+		}
+	}
+	c = controller_open(V0, 0x00);
+	if (c->err)
+		printf("Open err=%d\n", c->err);
+	cp.c = c;
+
+	get_devices(&cha, 'A', 0, 7);
+	for(i=0;i<cha.count;i++)
+	{
+		//printf("channel %d, id=%d\n", i, cha.devices[i].devid);
+		if ((err=add_ochanneldevice(&cp, c, cha.devices[i].dtext, cha.devices[i].dtype, (cha.devices[i].dstat?cha.devices[i].dstat:cha.devices[i].numstates), cha.devices[i].initval)) >= 0)
+		{}
+	}
+	if (usegpio)
+		ochannel_write(c);
+	else
+	{
+		if (cha.count)
+			jsonWriteChannel(&h, cha.devices[0].chnnl, cha.devices[0].devid, cha.devices[0].initval)
+	}
+
+	get_devices(&bit, 'A', 8, 9);
+	for(i=0;i<bit.count;i++)
+	{
+		//printf("bit %d, id=%d\n", i, bit.devices[i].devid);
+		if ((err=add_obitdevice(&cp, c, bit.devices[i].dtext, bit.devices[i].initval)) >= 0)
+		{}
+	}
+
+	get_devices(&pul, 'A', 10, 11);
+	for(i=0;i<pul.count;i++)
+	{
+		//printf("pulse %d, id=%d\n", i, pul.devices[i].devid);
+		if ((err=add_opulsedevice(&cp, c, pul.devices[i].dtext)) >= 0)
+		{}
+	}
+
+	get_devices(&sen, 'S', 0, 7);
+	for(i=0;i<sen.count;i++)
+	{
+		//printf("sensor %d, id=%d\n", i, sen.devices[i].devid);
+		if ((err=add_ichanneldevice(&cp, c, sen.devices[i].dtext, sen.devices[i].dtype, (sen.devices[i].dstat?sen.devices[i].dstat:sen.devices[i].numstates))) >= 0)
+		{}
+	}
+	
 
 	gtk_init(&argc, &argv);
 
@@ -435,51 +474,19 @@ int main(int argc, char **argv)
 	cp.container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	gtk_container_add(GTK_CONTAINER(cp.window), cp.container);
 
-
-	get_devices(&cha, 'A', 0, 7);
-	for(i=0;i<cha.count;i++)
-	{
-		//printf("channel %d, id=%d\n", i, cha.devices[i].devid);
-		if ((err=add_ochanneldevice(&cp, c, cha.devices[i].dtext, cha.devices[i].dtype, (cha.devices[i].dstat?cha.devices[i].dstat:cha.devices[i].numstates), cha.devices[i].initval)) >= 0)
-		{}
-	}
-	free_devices(&cha);
-	ochannel_write(c);
-
-	get_devices(&bit, 'A', 8, 9);
-	for(i=0;i<bit.count;i++)
-	{
-		//printf("bit %d, id=%d\n", i, bit.devices[i].devid);
-		if ((err=add_obitdevice(&cp, c, bit.devices[i].dtext, bit.devices[i].initval)) >= 0)
-		{}
-	}
-	free_devices(&bit);
-
-	get_devices(&pul, 'A', 10, 11);
-	for(i=0;i<pul.count;i++)
-	{
-		//printf("pulse %d, id=%d\n", i, pul.devices[i].devid);
-		if ((err=add_opulsedevice(&cp, c, pul.devices[i].dtext)) >= 0)
-		{}
-	}
-	free_devices(&pul);
-
-	get_devices(&sen, 'S', 0, 7);
-	for(i=0;i<sen.count;i++)
-	{
-		//printf("sensor %d, id=%d\n", i, sen.devices[i].devid);
-		if ((err=add_ichanneldevice(&cp, c, sen.devices[i].dtext, sen.devices[i].dtype, (sen.devices[i].dstat?sen.devices[i].dstat:sen.devices[i].numstates))) >= 0)
-		{}
-	}
-	free_devices(&sen);
-
-
 	GtkWidget *button;
 	button = gtk_button_new_with_label("Refresh");
-	g_signal_connect(GTK_BUTTON(button), "clicked", G_CALLBACK(button_clicked), (void *)&cp);
+	if (c)
+		g_signal_connect(GTK_BUTTON(button), "clicked", G_CALLBACK(button_clicked_gpio), (void *)&cp);
+	else
+		g_signal_connect(GTK_BUTTON(button), "clicked", G_CALLBACK(button_clicked), (void *)&sen);
 	gtk_container_add(GTK_CONTAINER(cp.container), button);
 
-	button_clicked(button, (void *)&cp);
+	if (c)
+		button_clicked_gpio(button, (void *)&cp);
+	else
+		button_clicked(button, (void *)&sen);
+
 
 	gtk_widget_show_all(cp.window);
 
@@ -489,7 +496,13 @@ int main(int argc, char **argv)
 
 	//close_scheduler(&s);
 
-	controller_close(c);
+	free_devices(&cha);
+	free_devices(&bit);
+	free_devices(&pul);
+	free_devices(&sen);
+
+	if (c)
+		controller_close(c);
 
 	return(0);
 }
