@@ -26,6 +26,9 @@ typedef struct
 	devicewidgets odw[12];
 	devicewidgets idw[8];
 	controller *c;
+	iodevices *cha, *bit, *pul, *sen;
+	httpclient h;
+	bool usegpio;
 }controlpanel;
 
 gboolean widget_state_set(GtkWidget *togglebutton, gboolean state, gpointer data)
@@ -142,7 +145,10 @@ int add_ochanneldevice(controlpanel *cp, controller *c, char *name, actuator_typ
 			printf("ochannel_add() err=%d\n", i);
 			break;
 		default:
-			ochannel_set_value(c, i, initval);
+			if (cp->usegpio)
+				ochannel_set_value(c, i, initval);
+			else
+				c->actuators[i].value = jsonChannelGetValue(&(cp->h), c->actuators[i].channel, 0);
 			add_ochannelframe(cp, c, i);
 			break;
 	}
@@ -191,7 +197,10 @@ int add_obitdevice(controlpanel *cp, controller *c, char *name, unsigned char in
 			printf("obit_add() err=%d\n", i);
 			break;
 		default:
-			obit_set_value(c, i, initval);
+			if (cp->usegpio)
+				obit_set_value(c, i, initval);
+			else
+				c->actuators[i].value = jsonChannelGetValue(&(cp->h), c->actuators[i].channel, 0);
 			add_obitframe(cp, c, i);
 			break;
 	}
@@ -313,6 +322,10 @@ int add_ichanneldevice(controlpanel *cp, controller *c, char *name, sensor_type 
 			printf("ichannel_add() err=%d\n", i);
 			break;
 		default:
+			if (cp->usegpio)
+				ichannel_read(c);
+			else
+				c->sensors[i].value = jsonReadChannel(&(cp->h), c->sensors[i].channel, 0);
 			add_ichannelframe(cp, c, i);
 	}
 
@@ -332,6 +345,36 @@ static void button_clicked_gpio(GtkWidget *button, gpointer data)
 	for(i=0;c->sensors[i].type!=S_VOID;i++)
 	{
 		w = cp->idw[i].control;
+		switch (c->sensors[i].type)
+		{
+			case S_LEVEL:
+				sprintf(s, "%d", c->sensors[i].value);
+				g_object_set((gpointer)w, "active-id", s, NULL);
+				break;
+			case S_SWITCH:
+			default:
+				gtk_switch_set_active(GTK_SWITCH(w), c->sensors[i].value);
+				break;
+		}
+		//printf("%s = %c\n", c->sensors[i].name, ichannel_get_value(c, i) + '0');
+	}
+	
+//printf("ichannel_get_value(0) = %d\n", ichannel_get_value(c, 0));
+}
+
+static void button_clicked(GtkWidget *button, gpointer data)
+{
+	controlpanel* cp = (controlpanel *)data;
+	controller *c = cp->c;
+	iodevices *sen = cp->sen;
+	int i;
+	GtkWidget *w;
+	char s[10];
+
+	for(i=0;i<sen->count;i++)
+	{
+		w = cp->idw[i].control;
+		c->sensors[i].value = jsonReadChannel(&(cp->h), c->sensors[i].chnnl, c->sensors[i].devid);
 		switch (c->sensors[i].type)
 		{
 			case S_LEVEL:
@@ -392,7 +435,6 @@ int main(int argc, char **argv)
 	controlpanel cp;
 	scheduler s;
 	iodevices cha, bit, pul, sen;
-	httpclient h;
 	bool usegpio = 0;
 
 	setlocale(LC_ALL, "tr_TR.UTF-8");
@@ -408,7 +450,33 @@ int main(int argc, char **argv)
 	c = controller_open(V0, 0x00);
 	if (c->err)
 		printf("Open err=%d\n", c->err);
+	
 	cp.c = c;
+	cp.usegpio = usegpio;
+
+	gtk_init(&argc, &argv);
+
+	/* create a new window */
+	cp.window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_position(GTK_WINDOW(cp.window), GTK_WIN_POS_CENTER);
+	gtk_container_set_border_width(GTK_CONTAINER(cp.window), 2);
+	//gtk_widget_set_size_request(window, 100, 100);
+	gtk_window_set_title(GTK_WINDOW(cp.window), "Controller");
+	gtk_window_set_resizable(GTK_WINDOW(cp.window), TRUE);
+	/* When the window is given the "delete-event" signal (this is given
+	* by the window manager, usually by the "close" option, or on the
+	* titlebar), we ask it to call the delete_event () function
+	* as defined above. The data passed to the callback
+	* function is NULL and is ignored in the callback function. */
+	g_signal_connect(cp.window, "delete-event", G_CALLBACK (delete_event), NULL);
+	/* Here we connect the "destroy" event to a signal handler.  
+	* This event occurs when we call gtk_widget_destroy() on the window,
+	* or if we return FALSE in the "delete-event" callback. */
+	g_signal_connect(cp.window, "destroy", G_CALLBACK (destroy), NULL);
+	g_signal_connect(cp.window, "realize", G_CALLBACK (realize_cb), NULL);
+
+	cp.container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+	gtk_container_add(GTK_CONTAINER(cp.window), cp.container);
 
 	get_devices(&cha, 'A', 0, 7);
 	for(i=0;i<cha.count;i++)
@@ -448,44 +516,24 @@ int main(int argc, char **argv)
 		if ((err=add_ichanneldevice(&cp, c, sen.devices[i].dtext, sen.devices[i].dtype, (sen.devices[i].dstat?sen.devices[i].dstat:sen.devices[i].numstates))) >= 0)
 		{}
 	}
-	
 
-	gtk_init(&argc, &argv);
-
-	/* create a new window */
-	cp.window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_position(GTK_WINDOW(cp.window), GTK_WIN_POS_CENTER);
-	gtk_container_set_border_width(GTK_CONTAINER(cp.window), 2);
-	//gtk_widget_set_size_request(window, 100, 100);
-	gtk_window_set_title(GTK_WINDOW(cp.window), "Controller");
-	gtk_window_set_resizable(GTK_WINDOW(cp.window), TRUE);
-	/* When the window is given the "delete-event" signal (this is given
-	* by the window manager, usually by the "close" option, or on the
-	* titlebar), we ask it to call the delete_event () function
-	* as defined above. The data passed to the callback
-	* function is NULL and is ignored in the callback function. */
-	g_signal_connect(cp.window, "delete-event", G_CALLBACK (delete_event), NULL);
-	/* Here we connect the "destroy" event to a signal handler.  
-	* This event occurs when we call gtk_widget_destroy() on the window,
-	* or if we return FALSE in the "delete-event" callback. */
-	g_signal_connect(cp.window, "destroy", G_CALLBACK (destroy), NULL);
-	g_signal_connect(cp.window, "realize", G_CALLBACK (realize_cb), NULL);
-
-	cp.container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-	gtk_container_add(GTK_CONTAINER(cp.window), cp.container);
+	cp.cha = &cha;
+	cp.bit = &bit;
+	cp.pul = &pul;
+	cp.sen = &sen;
 
 	GtkWidget *button;
 	button = gtk_button_new_with_label("Refresh");
-	if (c)
+	if (usegpio)
 		g_signal_connect(GTK_BUTTON(button), "clicked", G_CALLBACK(button_clicked_gpio), (void *)&cp);
 	else
-		g_signal_connect(GTK_BUTTON(button), "clicked", G_CALLBACK(button_clicked), (void *)&sen);
+		g_signal_connect(GTK_BUTTON(button), "clicked", G_CALLBACK(button_clicked), (void *)&cp);
 	gtk_container_add(GTK_CONTAINER(cp.container), button);
 
-	if (c)
+	if (usegpio)
 		button_clicked_gpio(button, (void *)&cp);
 	else
-		button_clicked(button, (void *)&sen);
+		button_clicked(button, (void *)&cp);
 
 
 	gtk_widget_show_all(cp.window);
@@ -501,8 +549,7 @@ int main(int argc, char **argv)
 	free_devices(&pul);
 	free_devices(&sen);
 
-	if (c)
-		controller_close(c);
+	controller_close(c);
 
 	return(0);
 }
