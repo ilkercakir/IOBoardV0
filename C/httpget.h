@@ -21,6 +21,7 @@ typedef struct
 }httpclient;
 
 void jsonWriteChannel(httpclient *h, int id, int devid, unsigned char value);
+unsigned char jsonChannelGetValue(httpclient *h, int id, int devid);
 void jsonWriteBit(httpclient *h, int id, int devid, unsigned char value);
 void jsonWritePulse(httpclient *h, int id, int devid, int value);
 unsigned char jsonReadChannel(httpclient *h, int id, int devid);
