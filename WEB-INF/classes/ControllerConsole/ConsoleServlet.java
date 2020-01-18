@@ -63,11 +63,6 @@ public class ConsoleServlet extends HttpServlet
 		return(false);
 	}
 
-	private boolean isMissing(String param)
-	{
-		return ((param==null) || param.trim.equals(""));
-	}
-
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException  
 	{
 		ControllerConsole.User u;
@@ -96,9 +91,9 @@ public class ConsoleServlet extends HttpServlet
 			{
 				id = Integer.parseInt(request.getParameter("id"));
 				devid = Integer.parseInt(request.getParameter("devid"));
-				value = (byte)Integer.parseInt(request.getParameter("value"));
-				if (!isMissing(value))
+				if (request.getParameter("value")!=null)
 				{
+					value = (byte)Integer.parseInt(request.getParameter("value"));
 					c.setChannelValue(id, value);
 					c.writeChannel();
 				}
@@ -115,8 +110,11 @@ public class ConsoleServlet extends HttpServlet
 			{
 				id = Integer.parseInt(request.getParameter("id"));
 				devid = Integer.parseInt(request.getParameter("devid"));
-				value = (byte)Integer.parseInt(request.getParameter("value"));
-				c.setBitValue(id, value);
+				if (request.getParameter("value")!=null)
+				{
+					value = (byte)Integer.parseInt(request.getParameter("value"));
+					c.setBitValue(id, value);
+				}
 				v = c.getBitValue(id);
 				PrintWriter pw = response.getWriter();
 				pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, v, devid);
