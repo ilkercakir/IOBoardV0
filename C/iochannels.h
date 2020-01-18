@@ -68,7 +68,7 @@ struct actuatorsensorcontroller
 	pthread_mutex_t iomutex;
 };
 
-controller* controller_open(controller_type type, unsigned char databits);
+controller* controller_open(controller_type type, unsigned char databits, int usegpio);
 void controller_close(controller *c);
 int ochannel_add(controller *c, char *name, actuator_type type, int numstates);
 int obit_add(controller *c, char *name);

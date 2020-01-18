@@ -29,12 +29,12 @@
 
 // Controller interface
 
-controller* controller_open(controller_type type, unsigned char databits)
+controller* controller_open(controller_type type, unsigned char databits, int usegpio)
 {
 	controller *c;
 	actuator *a;
 	sensor *s;
-	int i, err;
+	int i, err = CONTROLLER_SUCCESS;
 
 	c = malloc(sizeof(controller));
 
@@ -115,7 +115,8 @@ controller* controller_open(controller_type type, unsigned char databits)
 				break;
 			}
 
-			err = init_state(c->odatabits);
+			if (usegpio)
+				err = init_state(c->odatabits);
 			//printf("init_state(%d) = %d\n", c->odatabits, ret);
 			break;
 		default:

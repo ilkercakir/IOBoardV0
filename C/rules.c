@@ -336,7 +336,6 @@ void* interval_thread(void *args)
 	int i, j;
 	unsigned char value;
 	int sensorval;
-	httpclient h;
 
 	int ctype = PTHREAD_CANCEL_ASYNCHRONOUS;
 	int ctype_old;
@@ -346,7 +345,7 @@ void* interval_thread(void *args)
 	do
 	{
 //printf("interval task %d\n", ival->intid);
-		if (c) ichannel_read(c);
+		ichannel_read(c);
 		for(i=0;i<ival->rulecount;i++)
 		{
 			sensorval = 1;
@@ -355,10 +354,7 @@ void* interval_thread(void *args)
 			{
 				s = &(r->sdevs[j]);
 //printf("%d %d %d %d\n", s->chnnl, s->devid, s->fromval, s->toval);
-				if (c)
-					value = ichannel_get_value(c, s->chnnl);
-				else
-					value jsonReadChannel(&h, s->chnnl, s->devid);
+				value = ichannel_get_value(c, s->chnnl);
 				sensorval &= ((value >= s->fromval) && (value <= s->toval));
 			}
 			if (sensorval)
@@ -369,27 +365,13 @@ void* interval_thread(void *args)
 //printf("%d %d %d\n", a->chnnl, a->devid, a->value);
 					if (a->chnnl < 8) // channel
 					{
-						if (c)
-						{
-							ochannel_set_value(c, (unsigned int)a->chnnl, (unsigned char)a->value);
-							ochannel_write(c);
-						}
-						else
-							jsonWriteChannel(&h, a->chnnl, a->devid, (unsigned char)a->value);
+						ochannel_set_value(c, a->chnnl, (unsigned char)a->value);
+						ochannel_write(c);
 					}
 					else if (a->chnnl < 10) // bit
-					{
-						if (c)
-							obit_set_value(c, (unsigned int)a->chnnl, (unsigned char)a->value);
-						else
-							jsonWriteBit(&h, a->chnnl, a->devid, (unsigned char)a->value);
-					}
+						obit_set_value(c, (unsigned int)a->chnnl, (unsigned char)a->value);
 					else if (a->chnnl < 12) // pulse
-					{
-						if (c)
-							opulse_out(c, (unsigned int)a->chnnl, a->value);
-						else
-							jsonWritePulse(&h, a->chnnl, a->devid, a->value);
+						opulse_out(c, (unsigned int)a->chnnl, (unsigned char)a->value);
 				}
 			}
 		}

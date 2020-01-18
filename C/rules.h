@@ -8,7 +8,6 @@
 #include <unistd.h>
 
 #include "iochannels.h"
-#include "httpget.h"
 #include "db.h"
 
 typedef struct

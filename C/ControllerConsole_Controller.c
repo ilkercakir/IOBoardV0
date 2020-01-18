@@ -31,7 +31,7 @@ JNIEXPORT jlong JNICALL Java_ControllerConsole_Controller_controller_1open(JNIEn
 {
 	controller *c;
 
-	c = controller_open((controller_type)version, (unsigned char)value);
+	c = controller_open((controller_type)version, (unsigned char)value, 1);
 
 	return((jlong)(long)c);
 }

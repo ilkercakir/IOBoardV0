@@ -28,15 +28,27 @@ typedef struct
 	controller *c;
 	iodevices *cha, *bit, *pul, *sen;
 	httpclient h;
-	bool usegpio;
+	int usegpio;
 }controlpanel;
 
-gboolean widget_state_set(GtkWidget *togglebutton, gboolean state, gpointer data)
+gboolean widget_state_set_gpio(GtkWidget *togglebutton, gboolean state, gpointer data)
 {
 	actuator *a = (actuator*)data;
 
 	ochannel_set_value(a->parent, a->channel, (state?0x01:0x00));
 	ochannel_write(a->parent);
+
+//printf("channel %d value %c\n", a->channel, (ochannel_get_value(a->parent, a->channel)?'1':'0'));
+
+	return(TRUE);
+}
+
+gboolean widget_state_set_http(GtkWidget *togglebutton, gboolean state, gpointer data)
+{
+	actuator *a = (actuator*)data;
+
+	httpclient h;
+	jsonWriteChannel(&h, a->channel, 0, (state?0x01:0x00));
 
 //printf("channel %d value %c\n", a->channel, (ochannel_get_value(a->parent, a->channel)?'1':'0'));
 
@@ -190,6 +202,8 @@ int add_ochanneldevice(controlpanel *cp, controller *c, char *name, actuator_typ
 		default:
 			if (cp->usegpio)
 				ochannel_set_value(c, i, initval);
+			else
+				ochannel_set_value(c, i, jsonChannelGetValue(&(cp->h), i, 0));
 			add_ochannelframe(cp, c, i);
 			break;
 	}
@@ -243,6 +257,8 @@ int add_obitdevice(controlpanel *cp, controller *c, char *name, unsigned char in
 		default:
 			if (cp->usegpio)
 				obit_set_value(c, i, initval);
+			else
+				c->actuators[i].value = jsonBitGetValue(&(cp->h), i, 0);
 			add_obitframe(cp, c, i);
 			break;
 	}
@@ -336,7 +352,7 @@ void add_ichannelframe(controlpanel *cp, controller *c, int channel)
 			}
 			sprintf(s, "%d", c->sensors[channel].value);
 			g_object_set((gpointer)w, "active-id", s, NULL);
-			//g_signal_connect(GTK_COMBO_BOX(w), "changed", G_CALLBACK(combo_changed), &(c->sensors[channel]));
+			//g_signal_connect(GTK_COMBO_BOX(w), "changed", G_CALLBACK(), &(c->sensors[channel]));
 			gtk_container_add(GTK_CONTAINER(cp->idw[channel].hbox), w);
 			//gtk_box_pack_start(GTK_BOX(ae->parameter[i].vbox), w, TRUE, TRUE, 0);
 			break;
@@ -344,7 +360,7 @@ void add_ichannelframe(controlpanel *cp, controller *c, int channel)
 		default:
 			cp->idw[channel].control = w = gtk_switch_new();
 			gtk_switch_set_active(GTK_SWITCH(w), c->sensors[channel].value);
-			//g_signal_connect(GTK_SWITCH(w), "state-set", G_CALLBACK(widget_state_set), &(c->sensors[channel]));
+			//g_signal_connect(GTK_SWITCH(w), "state-set", G_CALLBACK(), &(c->sensors[channel]));
 			gtk_container_add(GTK_CONTAINER(cp->idw[channel].hbox), w);
 			//gtk_box_pack_start(GTK_BOX(cp->dw[channel].hbox), w, TRUE, TRUE, 0);
 			break;
@@ -370,7 +386,7 @@ int add_ichanneldevice(controlpanel *cp, controller *c, char *name, sensor_type 
 			if (cp->usegpio)
 				ichannel_read(c);
 			else
-				c->sensors[i].value = jsonReadChannel(&(cp->h), c->sensors[i].channel, 0);
+				c->sensors[i].value = jsonReadChannel(&(cp->h), i, 0);
 			add_ichannelframe(cp, c, i);
 	}
 
@@ -407,7 +423,7 @@ static void button_clicked_gpio(GtkWidget *button, gpointer data)
 //printf("ichannel_get_value(0) = %d\n", ichannel_get_value(c, 0));
 }
 
-static void button_clicked(GtkWidget *button, gpointer data)
+static void button_clicked_http(GtkWidget *button, gpointer data)
 {
 	controlpanel* cp = (controlpanel *)data;
 	controller *c = cp->c;
@@ -419,7 +435,7 @@ static void button_clicked(GtkWidget *button, gpointer data)
 	for(i=0;i<sen->count;i++)
 	{
 		w = cp->idw[i].control;
-		c->sensors[i].value = jsonReadChannel(&(cp->h), c->sensors[i].chnnl, c->sensors[i].devid);
+		c->sensors[i].value = jsonReadChannel(&(cp->h), i, 0);
 		switch (c->sensors[i].type)
 		{
 			case S_LEVEL:
@@ -480,7 +496,7 @@ int main(int argc, char **argv)
 	controlpanel cp;
 	scheduler s;
 	iodevices cha, bit, pul, sen;
-	bool usegpio = 0;
+	int usegpio = 0;
 
 	setlocale(LC_ALL, "tr_TR.UTF-8");
 	setup_default_icon("./images/controller.png");
@@ -492,12 +508,12 @@ int main(int argc, char **argv)
 			usegpio = 1;
 		}
 	}
-	c = controller_open(V0, 0x00);
+	cp.usegpio = usegpio;
+
+	c = controller_open(V0, 0x00, usegpio);
 	if (c->err)
 		printf("Open err=%d\n", c->err);
-	
 	cp.c = c;
-	cp.usegpio = usegpio;
 
 	gtk_init(&argc, &argv);
 
@@ -532,11 +548,6 @@ int main(int argc, char **argv)
 	}
 	if (usegpio)
 		ochannel_write(c);
-	else
-	{
-		if (cha.count)
-			jsonWriteChannel(&h, cha.devices[0].chnnl, cha.devices[0].devid, cha.devices[0].initval)
-	}
 
 	get_devices(&bit, 'A', 8, 9);
 	for(i=0;i<bit.count;i++)
@@ -572,14 +583,15 @@ int main(int argc, char **argv)
 	if (usegpio)
 		g_signal_connect(GTK_BUTTON(button), "clicked", G_CALLBACK(button_clicked_gpio), (void *)&cp);
 	else
-		g_signal_connect(GTK_BUTTON(button), "clicked", G_CALLBACK(button_clicked), (void *)&cp);
+		g_signal_connect(GTK_BUTTON(button), "clicked", G_CALLBACK(button_clicked_http), (void *)&cp);
 	gtk_container_add(GTK_CONTAINER(cp.container), button);
 
+/*
 	if (usegpio)
 		button_clicked_gpio(button, (void *)&cp);
 	else
-		button_clicked(button, (void *)&cp);
-
+		button_clicked_http(button, (void *)&cp);
+*/
 
 	gtk_widget_show_all(cp.window);
 
