@@ -393,7 +393,84 @@ int add_ichanneldevice(controlpanel *cp, controller *c, char *name, sensor_type 
 	return(i);
 }
 
-static void button_clicked_gpio(GtkWidget *button, gpointer data)
+static void arbutton_clicked_gpio(GtkWidget *button, gpointer data)
+{
+	controlpanel* cp = (controlpanel *)data;
+	controller *c = cp->c;
+	int i;
+	GtkWidget *w;
+	char s[10];
+
+	for(i=0;c->actuators[i].type!=A_VOID;i++)
+	{
+		w = cp->idw[i].control;
+		switch (c->actuators[i].type)
+		{
+			case A_LEVEL:
+				sprintf(s, "%d", c->actuators[i].value);
+				g_object_set((gpointer)w, "active-id", s, NULL);
+				break;
+			case A_SWITCH:
+			default:
+				gtk_switch_set_active(GTK_SWITCH(w), c->actuators[i].value);
+				break;
+		}
+		//printf("%s = %c\n", c->sensors[i].name, ichannel_get_value(c, i) + '0');
+	}
+//printf("ichannel_get_value(0) = %d\n", ichannel_get_value(c, 0));
+}
+
+static void arbutton_clicked_http(GtkWidget *button, gpointer data)
+{
+	controlpanel* cp = (controlpanel *)data;
+	controller *c = cp->c;
+	iodevices *cha = cp->cha;
+	iodevices *bit = cp->bit;
+	int i, channel;
+	GtkWidget *w;
+	char s[10];
+
+	for(i=0;i<cha->count;i++)
+	{
+		channel = cha->devices[i].chnnl;
+		w = cp->odw[channel].control;
+		c->actuators[channel].value = jsonChannelGetValue(&(cp->h), channel, 0);
+		switch (c->actuators[channel].type)
+		{
+			case A_LEVEL:
+				sprintf(s, "%d", c->actuators[channel].value);
+				g_object_set((gpointer)w, "active-id", s, NULL);
+				break;
+			case A_SWITCH:
+			default:
+				gtk_switch_set_active(GTK_SWITCH(w), c->actuators[channel].value);
+				break;
+		}
+		//printf("%s = %c\n", c->sensors[i].name, ichannel_get_value(c, i) + '0');
+	}
+//printf("ichannel_get_value(0) = %d\n", ichannel_get_value(c, 0));
+
+	for(i=0;i<bit->count;i++)
+	{
+		channel = bit->devices[i].chnnl;
+		w = cp->odw[channel].control;
+		c->actuators[channel].value = jsonBitGetValue(&(cp->h), channel, 0);
+		switch (c->actuators[channel].type)
+		{
+			case A_LEVEL:
+				sprintf(s, "%d", c->actuators[channel].value);
+				g_object_set((gpointer)w, "active-id", s, NULL);
+				break;
+			case A_SWITCH:
+			default:
+				gtk_switch_set_active(GTK_SWITCH(w), c->actuators[channel].value);
+				break;
+		}
+		//printf("%s = %c\n", c->sensors[i].name, ichannel_get_value(c, i) + '0');
+	}
+}
+
+static void srbutton_clicked_gpio(GtkWidget *button, gpointer data)
 {
 	controlpanel* cp = (controlpanel *)data;
 	controller *c = cp->c;
@@ -423,7 +500,7 @@ static void button_clicked_gpio(GtkWidget *button, gpointer data)
 //printf("ichannel_get_value(0) = %d\n", ichannel_get_value(c, 0));
 }
 
-static void button_clicked_http(GtkWidget *button, gpointer data)
+static void srbutton_clicked_http(GtkWidget *button, gpointer data)
 {
 	controlpanel* cp = (controlpanel *)data;
 	controller *c = cp->c;
@@ -515,6 +592,11 @@ int main(int argc, char **argv)
 		printf("Open err=%d\n", c->err);
 	cp.c = c;
 
+	cp.cha = &cha;
+	cp.bit = &bit;
+	cp.pul = &pul;
+	cp.sen = &sen;
+
 	gtk_init(&argc, &argv);
 
 	/* create a new window */
@@ -565,6 +647,14 @@ int main(int argc, char **argv)
 		{}
 	}
 
+	GtkWidget *arbutton;
+	arbutton = gtk_button_new_with_label("Refresh");
+	if (usegpio)
+		g_signal_connect(GTK_BUTTON(arbutton), "clicked", G_CALLBACK(arbutton_clicked_gpio), (void *)&cp);
+	else
+		g_signal_connect(GTK_BUTTON(arbutton), "clicked", G_CALLBACK(arbutton_clicked_http), (void *)&cp);
+	gtk_container_add(GTK_CONTAINER(cp.container), arbutton);
+
 	get_devices(&sen, 'S', 0, 7);
 	for(i=0;i<sen.count;i++)
 	{
@@ -573,18 +663,13 @@ int main(int argc, char **argv)
 		{}
 	}
 
-	cp.cha = &cha;
-	cp.bit = &bit;
-	cp.pul = &pul;
-	cp.sen = &sen;
-
-	GtkWidget *button;
-	button = gtk_button_new_with_label("Refresh");
+	GtkWidget *srbutton;
+	srbutton = gtk_button_new_with_label("Refresh");
 	if (usegpio)
-		g_signal_connect(GTK_BUTTON(button), "clicked", G_CALLBACK(button_clicked_gpio), (void *)&cp);
+		g_signal_connect(GTK_BUTTON(srbutton), "clicked", G_CALLBACK(srbutton_clicked_gpio), (void *)&cp);
 	else
-		g_signal_connect(GTK_BUTTON(button), "clicked", G_CALLBACK(button_clicked_http), (void *)&cp);
-	gtk_container_add(GTK_CONTAINER(cp.container), button);
+		g_signal_connect(GTK_BUTTON(srbutton), "clicked", G_CALLBACK(srbutton_clicked_http), (void *)&cp);
+	gtk_container_add(GTK_CONTAINER(cp.container), srbutton);
 
 	gtk_widget_show_all(cp.window);
 
