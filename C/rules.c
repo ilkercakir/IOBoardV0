@@ -360,7 +360,8 @@ void* interval_thread(void *args)
 				if (c)
 					value = ichannel_get_value(c, s->chnnl);
 				else
-					value = jsonReadChannel(&h, i, 0);
+					value = jsonReadChannel(&h, s->chnnl, 0);
+printf("sensor %d channel %d value %d\n", s->devid, s->chnnl, value);
 				sensorval &= ((value >= s->fromval) && (value <= s->toval));
 			}
 			if (sensorval)
