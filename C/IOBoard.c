@@ -403,7 +403,7 @@ static void arbutton_clicked_gpio(GtkWidget *button, gpointer data)
 
 	for(i=0;c->actuators[i].type!=A_VOID;i++)
 	{
-		w = cp->idw[i].control;
+		w = cp->odw[i].control;
 		switch (c->actuators[i].type)
 		{
 			case A_LEVEL:
