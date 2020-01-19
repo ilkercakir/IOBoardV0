@@ -23,28 +23,30 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=0
-FILE_NAME_0=11550;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FIOBoard.c;0;4
-FILE_NAME_1=3160;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fdevices.c;0;4
-FILE_NAME_2=384;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fdevices.h;0;4
-FILE_NAME_3=71;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fdb.h;0;4
-FILE_NAME_4=20;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Frules.c;0;4
-FILE_NAME_5=157;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Frules.h;0;4
-FILE_NAME_6=6501;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fiochannels.c;0;4
-FILE_NAME_7=559;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fiochannels.h;0;4
-FILE_NAME_8=1711;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fgpio.c;0;4
-FILE_NAME_9=420;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fgpio.h;0;4
-FILE_NAME_10=5013;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FControllerConsole_Controller.c;0;4
-FILE_NAME_11=0;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FControllerConsole_Controller.h;0;4
+current_page=1
+FILE_NAME_0=14502;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FIOBoard.c;0;4
+FILE_NAME_1=8433;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Frules.c;0;4
+FILE_NAME_2=317;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Frules.h;0;4
+FILE_NAME_3=5237;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fhttpget.c;0;4
+FILE_NAME_4=728;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fhttpget.h;0;4
+FILE_NAME_5=0;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fdevices.c;0;4
+FILE_NAME_6=0;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fdevices.h;0;4
+FILE_NAME_7=71;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fdb.h;0;4
+FILE_NAME_8=908;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fiochannels.c;0;4
+FILE_NAME_9=1538;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fiochannels.h;0;4
+FILE_NAME_10=1544;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fgpio.c;0;4
+FILE_NAME_11=420;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fgpio.h;0;4
+FILE_NAME_12=1600;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FControllerConsole_Controller.c;0;4
+FILE_NAME_13=0;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FControllerConsole_Controller.h;0;4
 
 [VTE]
 last_dir=/home/pi/Desktop/C/GPIO/IOBoard
 
 [build-menu]
 CFT_01_LB=İn_şa Et
-CFT_01_CM=gcc -Wall -o "%e" "%f" devices.o iochannels.o rules.o gpio.o $(pkg-config --cflags gtk+-3.0) -Wl,--whole-archive -lrt -ldl -lm -Wl,--no-whole-archive -rdynamic $(pkg-config --libs gtk+-3.0) -lwiringPi $(pkg-config --libs sqlite3)
+CFT_01_CM=gcc -Wall -o "%e" "%f" httpget.o devices.o iochannels.o rules.o gpio.o $(pkg-config --cflags gtk+-3.0) $(pkg-config --libs json-c) -Wl,--whole-archive -lrt -ldl -lm -Wl,--no-whole-archive -rdynamic $(pkg-config --libs gtk+-3.0) -lwiringPi $(pkg-config --libs sqlite3)
 CFT_01_WD=
 filetypes=C;
 CFT_00_LB=_Derle
-CFT_00_CM=gcc -Wall -c "%f" -DIS_RPI -DSTANDALONE -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS -DTARGET_POSIX -D_LINUX -fPIC -DPIC -D_REENTRANT -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -U_FORTIFY_SOURCE -g -ftree-vectorize -pipe -DUSE_VCHIQ_ARM -Wno-psabi -mcpu=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits $(pkg-config --cflags gtk+-3.0) -Wno-deprecated-declarations -I/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/include -I/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/include/linux
+CFT_00_CM=gcc -Wall -c "%f" -DIS_RPI -DSTANDALONE -D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS -DTARGET_POSIX -D_LINUX -fPIC -DPIC -D_REENTRANT -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -U_FORTIFY_SOURCE -g -ftree-vectorize -pipe -DUSE_VCHIQ_ARM -Wno-psabi -mcpu=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits $(pkg-config --cflags gtk+-3.0) $(pkg-config --cflags json-c) -Wno-deprecated-declarations -I/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/include -I/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/include/linux
 CFT_00_WD=

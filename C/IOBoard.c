@@ -586,23 +586,16 @@ int main(int argc, char **argv)
 		g_signal_connect(GTK_BUTTON(button), "clicked", G_CALLBACK(button_clicked_http), (void *)&cp);
 	gtk_container_add(GTK_CONTAINER(cp.container), button);
 
-/*
-	if (usegpio)
-		button_clicked_gpio(button, (void *)&cp);
-	else
-		button_clicked_http(button, (void *)&cp);
-*/
-
 	gtk_widget_show_all(cp.window);
 
-	//if (usegpio)
-	//	init_scheduler(&s, c);
-	//else
-	//	init_scheduler(&s, NULL);
+	if (usegpio)
+		init_scheduler(&s, c);
+	else
+		init_scheduler(&s, NULL);
 
 	gtk_main();
 
-	//close_scheduler(&s);
+	close_scheduler(&s);
 
 	free_devices(&cha);
 	free_devices(&bit);
