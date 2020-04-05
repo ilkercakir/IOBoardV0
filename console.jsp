@@ -9,7 +9,7 @@
 <jsp:useBean id="devices" class="ControllerConsole.UserDevices" scope="page"/>
 <jsp:useBean id="controller" class="ControllerConsole.Controller" scope="application"/>
 <body>
-<table align="center">
+<table align="center" width="80%">
 <%
 byte selectedvalue;
 int i;
@@ -22,11 +22,11 @@ if (user.isLoggedIn())
 		Device dev = channelIter.next();
 %>
  <tr>
-  <td><img src="images/<%=dev.getDeviceIcon()%>"></td>
-  <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
+  <td align="right"><img width="128px" height="128px" src="images/<%=dev.getDeviceIcon()%>"></td>
+  <td><font style="font-name:Arial;font-size:24pt;width:256px;height:128px;"><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></font></td>
   <%selectedvalue=controller.getChannelValue(dev.getDeviceChannel());%>
-  <td><select id="value<%=dev.getDeviceID()%>"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
-  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:channelClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
+  <td><select style="font-name:Arial;font-size:64pt;width:100px;height:128px;" id="value<%=dev.getDeviceID()%>"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
+  <td><img width="128px" height="128px" src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:pointer" onclick="javascript:channelClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
  </tr>
 <%
         }
@@ -38,11 +38,11 @@ if (user.isLoggedIn())
 		Device dev = bitIter.next();
 %>
  <tr>
-  <td><img src="images/<%=dev.getDeviceIcon()%>"></td>
-  <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
+  <td align="right"><img width="128px" height="128px" src="images/<%=dev.getDeviceIcon()%>"></td>
+  <td><font style="font-name:Arial;font-size:24pt;width:256px;height:128px;"><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></font></td>
   <%selectedvalue=controller.getBitValue(dev.getDeviceChannel());%>
-  <td><select id="value<%=dev.getDeviceID()%>"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
-  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:bitClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
+  <td><select style="font-name:Arial;font-size:64pt;width:100px;height:128px;" id="value<%=dev.getDeviceID()%>"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
+  <td><img width="128px" height="128px" src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:pointer" onclick="javascript:bitClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
  </tr>
 <%
         }
@@ -54,10 +54,10 @@ if (user.isLoggedIn())
 		Device dev = pulseIter.next();
 %>
  <tr>
-  <td><img src="images/<%=dev.getDeviceIcon()%>"></td>
-  <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
-  <td><select id="value<%=dev.getDeviceID()%>"><%for (i=1;i<=10;i++){%><option value="<%=i%>"><%=i%></option><%}%></select></td>
-  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:pulseClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
+  <td align="right"><img width="128px" height="128px" src="images/<%=dev.getDeviceIcon()%>"></td>
+  <td><font style="font-name:Arial;font-size:24pt;width:256px;height:128px;"><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></font></td>
+  <td><select style="font-name:Arial;font-size:64pt;width:100px;height:128px;" id="value<%=dev.getDeviceID()%>"><%for (i=1;i<=10;i++){%><option value="<%=i%>"><%=i%></option><%}%></select></td>
+  <td><img width="128px" height="128px" src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:pointer" onclick="javascript:pulseClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
  </tr>
 <%
         }
@@ -71,17 +71,17 @@ if (user.isLoggedIn())
 		Device dev = sensorIter.next();
 %>
  <tr>
-  <td><img src="images/<%=dev.getDeviceIcon()%>"></td>
-  <td><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></td>
+  <td align="right"><img width="128px" height="128px" src="images/<%=dev.getDeviceIcon()%>"></td>
+  <td><font style="font-name:Arial;font-size:24pt;width:256px;height:128px;"><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></font></td>
   <%selectedvalue=controller.getInputChannelValue(dev.getDeviceChannel());%>
-  <td><select id="value<%=dev.getDeviceID()%>"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
-  <td><img src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:hand" onclick="javascript:sensorClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
+  <td><select style="font-name:Arial;font-size:64pt;width:100px;height:128px;" id="value<%=dev.getDeviceID()%>"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
+  <td><img width="128px" height="128px" src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:pointer" onclick="javascript:sensorClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
  </tr>
 <%
         }
 %>
  <tr>
-  <td colspan="4" align="center"><form name="logoutform" method="POST" action="ControllerConsole?logout"><input type="submit" name="logout" value="Logout"/></form></td>
+  <td colspan="4" align="center"><br><form name="logoutform" method="POST" action="ControllerConsole?logout"><input style="font-name:Arial;font-size:36pt;width:256px;height:128px;" type="submit" name="logout" value="Logout"/></form></td>
  </tr>
 <%
 }
@@ -89,7 +89,7 @@ else
 {
 %>
  <tr>
-  <td>User not logged in</td>
+  <td><font style="font-name:Arial;font-size:24pt;width:256px;height:128px;">User not logged in</font></td>
  </tr>
 <%
 }

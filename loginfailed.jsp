@@ -6,6 +6,6 @@
 </head>
 
 <body>
-<p align="center">Invalid credentials</p>
+<p align="center"><font style="font-name:Arial;font-size:24pt;width:256px;height:128px;">Invalid credentials</font></p>
 </body>
 </html>
