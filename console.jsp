@@ -4,12 +4,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-9" />
+<link rel="stylesheet" type="text/css" href="css/slidebutton.css">
 </head>
 <jsp:useBean id="user" class="ControllerConsole.User" scope="session"/>
 <jsp:useBean id="devices" class="ControllerConsole.UserDevices" scope="page"/>
 <jsp:useBean id="controller" class="ControllerConsole.Controller" scope="application"/>
 <body>
-<table align="center" width="80%">
+<table align="center" width="90%">
 <%
 byte selectedvalue;
 int i;
@@ -25,8 +26,27 @@ if (user.isLoggedIn())
   <td align="right"><img width="128px" height="128px" src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><font style="font-name:Arial;font-size:24pt;width:256px;height:128px;"><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></font></td>
   <%selectedvalue=controller.getChannelValue(dev.getDeviceChannel());%>
-  <td><select style="font-name:Arial;font-size:64pt;width:100px;height:128px;" id="value<%=dev.getDeviceID()%>"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
-  <td><img width="128px" height="128px" src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:pointer" onclick="javascript:channelClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
+  <td>
+<%
+switch(dev.getDeviceType())
+{
+	case 1: // A_SWITCH
+%>
+<label class="switch">
+  <input type="checkbox" id="value<%=dev.getDeviceID()%>" <%if (selectedvalue!=0){%>checked<%}%> onchange="javascript:channelClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>, <%=dev.getDeviceType()%>)">
+  <span class="slider round"></span>
+</label> 
+<%
+		break;
+	case 2: // A_LEVEL
+%>
+<select style="font-name:Arial;font-size:64pt;width:200px;height:128px;" id="value<%=dev.getDeviceID()%>" onchange="javascript:channelClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>, <%=dev.getDeviceType()%>)"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select>
+<%
+		break;
+}
+%>
+  </td>
+  <td></td>
  </tr>
 <%
         }
@@ -41,8 +61,13 @@ if (user.isLoggedIn())
   <td align="right"><img width="128px" height="128px" src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><font style="font-name:Arial;font-size:24pt;width:256px;height:128px;"><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></font></td>
   <%selectedvalue=controller.getBitValue(dev.getDeviceChannel());%>
-  <td><select style="font-name:Arial;font-size:64pt;width:100px;height:128px;" id="value<%=dev.getDeviceID()%>"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
-  <td><img width="128px" height="128px" src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:pointer" onclick="javascript:bitClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
+  <td>
+<label class="switch">
+  <input type="checkbox" id="value<%=dev.getDeviceID()%>" <%if (selectedvalue!=0){%>checked<%}%> onchange="javascript:bitClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>, <%=dev.getDeviceType()%>)">
+  <span class="slider round"></span>
+</label>
+  </td> 
+  <td></td>
  </tr>
 <%
         }
@@ -56,7 +81,7 @@ if (user.isLoggedIn())
  <tr>
   <td align="right"><img width="128px" height="128px" src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><font style="font-name:Arial;font-size:24pt;width:256px;height:128px;"><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></font></td>
-  <td><select style="font-name:Arial;font-size:64pt;width:100px;height:128px;" id="value<%=dev.getDeviceID()%>"><%for (i=1;i<=10;i++){%><option value="<%=i%>"><%=i%></option><%}%></select></td>
+  <td><select style="font-name:Arial;font-size:64pt;width:200px;height:128px;" id="value<%=dev.getDeviceID()%>"><%for (i=1;i<=10;i++){%><option value="<%=i%>"><%=i%></option><%}%></select></td>
   <td><img width="128px" height="128px" src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:pointer" onclick="javascript:pulseClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
  </tr>
 <%
@@ -74,7 +99,7 @@ if (user.isLoggedIn())
   <td align="right"><img width="128px" height="128px" src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><font style="font-name:Arial;font-size:24pt;width:256px;height:128px;"><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></font></td>
   <%selectedvalue=controller.getInputChannelValue(dev.getDeviceChannel());%>
-  <td><select style="font-name:Arial;font-size:64pt;width:100px;height:128px;" id="value<%=dev.getDeviceID()%>"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
+  <td><select style="font-name:Arial;font-size:64pt;width:200px;height:128px;" id="value<%=dev.getDeviceID()%>" disabled><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
   <td><img width="128px" height="128px" src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:pointer" onclick="javascript:sensorClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
  </tr>
 <%
@@ -105,10 +130,22 @@ function channelCallback(responseText)
 	document.getElementById('value' + obj.devid).value = obj.value;
 }
 
-function channelClick(deviceid, channelid)
+function channelClick(deviceid, channelid, devicetype)
 {
+	var value;
 	var channelobj = eval('document.getElementById("value' + deviceid + '");');
-	var value = channelobj.value;
+	switch (devicetype)
+	{
+		case 1: // A_SWITCH
+			if (channelobj.checked)
+				value = 1;
+			else
+				value = 0;
+			break;
+		case 2:
+			value = channelobj.value;
+			break;
+	}
 
  	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.onreadystatechange = function() { 
@@ -128,8 +165,13 @@ function bitCallback(responseText)
 
 function bitClick(deviceid, channelid)
 {
+	var value;
 	var bitobj = eval('document.getElementById("value' + deviceid + '");');
-	var value = bitobj.value;
+
+	if (bitobj.checked)
+		value = 1;
+	else
+		value = 0;
 
  	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.onreadystatechange = function() { 
