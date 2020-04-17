@@ -141,7 +141,7 @@ public class Controller
 		}
 		logger.info("ichannel_read() = " + ichannel_read(controllerHandle));
 
-		logger.info("controller_open() completed");
+		logger.info("controller Open() completed");
 		return(0);
 	}
 
@@ -187,7 +187,29 @@ public class Controller
 
 	public void Close()
 	{
+		Device dev;
+		Iterator<Device> bitIter;
+
+		UserDevices udev = new UserDevices();
+
+		// Output Bits
+        	bitIter = udev.getDevices("A", 8, 8).iterator(); 
+	        while (bitIter.hasNext())
+		{
+			dev = bitIter.next();
+			obit_set_value(controllerHandle, dev.getDeviceID(), (byte)0);
+		}
+
+        	bitIter = udev.getDevices("A", 9, 9).iterator(); 
+	        while (bitIter.hasNext())
+		{
+			dev = bitIter.next();
+			obit_set_value(controllerHandle, dev.getDeviceID(), (byte)0);
+		}
+
 		controller_close(controllerHandle);
 		controllerHandle = 0;
+
+		logger.info("controller Close() completed");
 	}
 }
