@@ -1,0 +1,108 @@
+Cmp-Mod V01 Created by CvPcb (22-Jun-2014 BZR 4027)-stable date = Pzt 20 Nis 2020 15:54:21 +03
+
+BeginCmp
+TimeStamp = /5E9D8653;
+Reference = C1;
+ValeurCmp = 10uF;
+IdModule  = C1V5;
+EndCmp
+
+BeginCmp
+TimeStamp = /5E9D8662;
+Reference = C2;
+ValeurCmp = 100uF;
+IdModule  = C1V5;
+EndCmp
+
+BeginCmp
+TimeStamp = /5E9D8956;
+Reference = D1;
+ValeurCmp = LED;
+IdModule  = LED-3MM;
+EndCmp
+
+BeginCmp
+TimeStamp = /5E9D81A5;
+Reference = J1;
+ValeurCmp = RJ45_2;
+IdModule  = RJ45_8_io0;
+EndCmp
+
+BeginCmp
+TimeStamp = /5E9D81B6;
+Reference = J2;
+ValeurCmp = RJ45_2;
+IdModule  = RJ45_8_io0;
+EndCmp
+
+BeginCmp
+TimeStamp = /5E9D80ED;
+Reference = K1;
+ValeurCmp = RELAY_J9906;
+IdModule  = RELAY_J9906;
+EndCmp
+
+BeginCmp
+TimeStamp = /5E9D8B3B;
+Reference = P1;
+ValeurCmp = KLEMENS_1;
+IdModule  = KLEMENS_1;
+EndCmp
+
+BeginCmp
+TimeStamp = /5E9D8291;
+Reference = P2;
+ValeurCmp = CONN_8X2;
+IdModule  = pin_array_8x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /5E9D8408;
+Reference = Q1;
+ValeurCmp = BC557;
+IdModule  = TO92;
+EndCmp
+
+BeginCmp
+TimeStamp = /5E9D83F9;
+Reference = Q2;
+ValeurCmp = PN2222A;
+IdModule  = TO92;
+EndCmp
+
+BeginCmp
+TimeStamp = /5E9D8699;
+Reference = R1;
+ValeurCmp = 10K;
+IdModule  = R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /5E9D86BC;
+Reference = R2;
+ValeurCmp = 22K;
+IdModule  = R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /5E9D867B;
+Reference = R3;
+ValeurCmp = 680;
+IdModule  = R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /5E9D868A;
+Reference = R4;
+ValeurCmp = 2.2K;
+IdModule  = R3;
+EndCmp
+
+BeginCmp
+TimeStamp = /5E9D8947;
+Reference = R5;
+ValeurCmp = 2.2K;
+IdModule  = R3;
+EndCmp
+
+EndListe

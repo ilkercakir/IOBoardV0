@@ -1,0 +1,29 @@
+EESchema-DOCLIB  Version 2.0  Date: Prş 23 Nis 2020 15:04:57 +03
+#
+$CMP 2N2222A
+D PN2222A, 40V Vce, 1A Ic, NPN, General Purpose Transistor,TO-92
+K NPN General Puprose Transistor TO92
+F http://www.fairchildsemi.com/ds/PN/PN2222A.pdf
+$ENDCMP
+#
+$CMP 74LS138
+D Decoder 3 to 8 (active low outputs)
+K TTL DECOD DECOD8
+$ENDCMP
+#
+$CMP 74LS164
+D Shift Register 8 bits, parallel load
+K TTL SR SR8
+$ENDCMP
+#
+$CMP KLEMENS_1
+D Symbole general de connecteur
+K CONN
+$ENDCMP
+#
+$CMP USB-MINI-B
+D USB Mini B connector
+K USB Mini B, USB
+$ENDCMP
+#
+#End Doc Library
