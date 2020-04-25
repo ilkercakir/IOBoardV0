@@ -37,7 +37,7 @@ $Descr A4 8268 11693 portrait
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "23 apr 2020"
+Date "25 apr 2020"
 Rev ""
 Comp ""
 Comment1 ""
@@ -657,7 +657,7 @@ Wire Wire Line
 Wire Wire Line
 	5050 8850 5050 6000
 Wire Wire Line
-	5350 900  5350 1100
+	5350 900  5350 1700
 Wire Wire Line
 	5350 1100 5900 1100
 Connection ~ 3900 900 
@@ -866,4 +866,22 @@ Wire Wire Line
 Connection ~ 5450 1100
 Wire Wire Line
 	5900 2700 5900 2800
+Wire Wire Line
+	5350 1300 5450 1300
+Connection ~ 5350 1100
+Wire Wire Line
+	5350 1500 5450 1500
+Connection ~ 5350 1300
+Wire Wire Line
+	5350 1700 5450 1700
+Connection ~ 5350 1500
+Wire Wire Line
+	5450 1400 5700 1400
+Connection ~ 5700 1400
+Wire Wire Line
+	5450 1600 5700 1600
+Connection ~ 5700 1600
+Wire Wire Line
+	5450 1800 5700 1800
+Connection ~ 5700 1800
 $EndSCHEMATC
