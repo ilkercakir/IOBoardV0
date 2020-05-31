@@ -33,14 +33,14 @@ switch(dev.getDeviceType())
 	case 1: // A_SWITCH
 %>
 <label class="switch">
-  <input type="checkbox" id="value<%=dev.getDeviceID()%>" <%if (selectedvalue!=0){%>checked<%}%> onchange="javascript:channelClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>, <%=dev.getDeviceType()%>)">
+  <input type="checkbox" <%if (!dev.getAuthorizationLevel().equals("W")){%>disabled<%}%> id="value<%=dev.getDeviceID()%>" <%if (selectedvalue!=0){%>checked<%}%> onchange="javascript:channelClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>, <%=dev.getDeviceType()%>)">
   <span class="slider round"></span>
 </label> 
 <%
 		break;
 	case 2: // A_LEVEL
 %>
-<select style="font-name:Arial;font-size:64pt;width:200px;height:128px;" id="value<%=dev.getDeviceID()%>" onchange="javascript:channelClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>, <%=dev.getDeviceType()%>)"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select>
+<select style="font-name:Arial;font-size:64pt;width:200px;height:128px;" <%if (!dev.getAuthorizationLevel().equals("W")){%>disabled<%}%> id="value<%=dev.getDeviceID()%>" onchange="javascript:channelClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>, <%=dev.getDeviceType()%>)"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select>
 <%
 		break;
 }
@@ -63,7 +63,7 @@ switch(dev.getDeviceType())
   <%selectedvalue=controller.getBitValue(dev.getDeviceChannel());%>
   <td>
 <label class="switch">
-  <input type="checkbox" id="value<%=dev.getDeviceID()%>" <%if (selectedvalue!=0){%>checked<%}%> onchange="javascript:bitClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>, <%=dev.getDeviceType()%>)">
+  <input type="checkbox" <%if (!dev.getAuthorizationLevel().equals("W")){%>disabled<%}%> id="value<%=dev.getDeviceID()%>" <%if (selectedvalue!=0){%>checked<%}%> onchange="javascript:bitClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)">
   <span class="slider round"></span>
 </label>
   </td> 
@@ -81,8 +81,8 @@ switch(dev.getDeviceType())
  <tr>
   <td align="right"><img width="128px" height="128px" src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><font style="font-name:Arial;font-size:24pt;width:256px;height:128px;"><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></font></td>
-  <td><select style="font-name:Arial;font-size:64pt;width:200px;height:128px;" id="value<%=dev.getDeviceID()%>"><%for (i=1;i<=10;i++){%><option value="<%=i%>"><%=i%></option><%}%></select></td>
-  <td><img width="128px" height="128px" src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:pointer" onclick="javascript:pulseClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
+  <td><img width="128px" height="128px" src="images/<%=dev.getDeviceTypeIcon()%>" <%if (!dev.getAuthorizationLevel().equals("W")){%>disabled<%}else{%>style="cursor:pointer"<%}%> onclick="javascript:pulseClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>, <%=dev.getDeviceInitialValue()%>)"></td>
+  <td></td>
  </tr>
 <%
         }
@@ -189,10 +189,10 @@ function pulseCallback(responseText)
 	//document.getElementById('value' + obj.devid).value = obj.value;
 }
 
-function pulseClick(deviceid, channelid)
+function pulseClick(deviceid, channelid, initval)
 {
 	var pulseobj = eval('document.getElementById("value' + deviceid + '");');
-	var value = pulseobj.value * 100000;
+	var value = initval * 100000;
 
  	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.onreadystatechange = function() { 
