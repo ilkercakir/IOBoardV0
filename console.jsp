@@ -96,12 +96,41 @@ switch(dev.getDeviceType())
 		Device dev = sensorIter.next();
 %>
  <tr>
+  <td align="right"><img width="128px" height="128px" src="images/<%=dev.getDeviceIcon()%>" style="cursor:pointer" onclick="javascript:sensorClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
+  <td><font style="font-name:Arial;font-size:24pt;width:256px;height:128px;"><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></font></td>
+  <%selectedvalue=controller.getChannelValue(dev.getDeviceChannel());%>
+  <td>
+<%
+switch(dev.getDeviceType())
+{
+	case 5: // S_SWITCH
+%>
+<label class="switch">
+  <input type="checkbox" disabled id="value<%=dev.getDeviceID()%>" <%if (selectedvalue!=0){%>checked<%}%>>
+  <span class="slider round"></span>
+</label> 
+<%
+		break;
+	case 6: // S_LEVEL
+%>
+<select style="font-name:Arial;font-size:64pt;width:200px;height:128px;" disabled id="value<%=dev.getDeviceID()%>"><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select>
+<%
+		break;
+}
+%>
+  </td>
+  <td></td>
+ </tr>
+
+<!--
+ <tr>
   <td align="right"><img width="128px" height="128px" src="images/<%=dev.getDeviceIcon()%>"></td>
   <td><font style="font-name:Arial;font-size:24pt;width:256px;height:128px;"><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></font></td>
   <%selectedvalue=controller.getInputChannelValue(dev.getDeviceChannel());%>
   <td><select style="font-name:Arial;font-size:64pt;width:200px;height:128px;" id="value<%=dev.getDeviceID()%>" disabled><%for (i=0;i<dev.getDeviceNumStates();i++){%><option value="<%=i%>"<%if (i==selectedvalue){%> selected<%}%>><%=i%></option><%}%></select></td>
   <td><img width="128px" height="128px" src="images/<%=dev.getDeviceTypeIcon()%>" style="cursor:pointer" onclick="javascript:sensorClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
  </tr>
+-->
 <%
         }
 %>
