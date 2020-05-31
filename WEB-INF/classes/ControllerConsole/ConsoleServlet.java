@@ -1,5 +1,7 @@
 package ControllerConsole;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.io.PrintWriter;
@@ -13,6 +15,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import ControllerConsole.User;
+import ControllerConsole.Device;
+import ControllerConsole.UserDevices;
 
 public class ConsoleServlet extends HttpServlet
 {
@@ -69,6 +73,7 @@ public class ConsoleServlet extends HttpServlet
 		String username, password;
 		int id, devid;
 		byte value, v;
+		PrintWriter pw;
 		
 		if (request.getParameter("login")!=null)
 		{
@@ -98,7 +103,7 @@ public class ConsoleServlet extends HttpServlet
 					c.writeChannel();
 				}
 				v = c.getChannelValue(id);
-				PrintWriter pw = response.getWriter();
+				pw = response.getWriter();
 				pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, v, devid);
 				pw.flush();
 				pw.close();
@@ -116,7 +121,7 @@ public class ConsoleServlet extends HttpServlet
 					c.setBitValue(id, value);
 				}
 				v = c.getBitValue(id);
-				PrintWriter pw = response.getWriter();
+				pw = response.getWriter();
 				pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, v, devid);
 				pw.flush();
 				pw.close();
@@ -130,7 +135,7 @@ public class ConsoleServlet extends HttpServlet
 				devid = Integer.parseInt(request.getParameter("devid"));
 				int duration = Integer.parseInt(request.getParameter("value"));
 				c.pulseOut(id, duration);
-				PrintWriter pw = response.getWriter();
+				pw = response.getWriter();
 				pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, duration, devid);
 				pw.flush();
 				pw.close();
@@ -144,7 +149,7 @@ public class ConsoleServlet extends HttpServlet
 				devid = Integer.parseInt(request.getParameter("devid"));
 				c.readChannel();
 				v = c.getInputChannelValue(id);
-				PrintWriter pw = response.getWriter();
+				pw = response.getWriter();
 				pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, v, devid);
 				pw.flush();
 				pw.close();
@@ -152,16 +157,129 @@ public class ConsoleServlet extends HttpServlet
 		}
 		else if (request.getParameter("status")!=null)
 		{
-			PrintWriter pw = response.getWriter();
+			pw = response.getWriter();
 			pw.printf("{ \"status\" : \"%s\", \"version\" : %d, \"local\" : \"%s\", \"remote\" : \"%s\" }", "running", 0, request.getLocalAddr(), request.getRemoteAddr());
 			pw.flush();
 			pw.close();
 		}
-		if (request.getParameter("logout")!=null)
+		else if (request.getParameter("logout")!=null)
 		{
 			request.getSession().removeAttribute("user");
 			request.getRequestDispatcher("login.jsp").forward(request, response);
 		}
+		else if (request.getParameter("rlogin")!=null)
+		{
+			u = new ControllerConsole.User();
+			username = request.getParameter("username");
+			password = request.getParameter("password");
+			if (u.isPasswordValid(username, password))
+			{
+				request.getSession().setAttribute("user", u);
+				v = 1;
+			}
+			else
+			{
+				v = 0;
+			}
+			pw = response.getWriter();
+			pw.printf("{ \"login\" : %d }", v);
+			pw.flush();
+			pw.close();
+		}
+		else if (request.getParameter("channels")!=null)
+		{
+			if (isAuthenticated(request))
+			{
+				pw = response.getWriter();
+				ControllerConsole.User user = (ControllerConsole.User)request.getSession().getAttribute("user");
+				ControllerConsole.UserDevices devices = new ControllerConsole.UserDevices();
+				Iterator<Device> channelIter = devices.getDevicesOfUser(user, "A", 0, 7).iterator();
+				String separator = "";
+				pw.printf("{ \"devices\" : [ ");
+				while (channelIter.hasNext())
+				{
+					Device dev = channelIter.next();
+					pw.printf("%s{ \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
+					separator = ", ";
+				}
+				pw.printf(" ] }");
+				pw.flush();
+				pw.close();
+			}
+		}
+		else if (request.getParameter("bits")!=null)
+		{
+			if (isAuthenticated(request))
+			{
+				pw = response.getWriter();
+				ControllerConsole.User user = (ControllerConsole.User)request.getSession().getAttribute("user");
+				ControllerConsole.UserDevices devices = new ControllerConsole.UserDevices();
+				Iterator<Device> channelIter = devices.getDevicesOfUser(user, "A", 8, 9).iterator();
+				String separator = "";
+				pw.printf("{ \"devices\" : [ ");
+				while (channelIter.hasNext())
+				{
+					Device dev = channelIter.next();
+					pw.printf("%s{ \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
+					separator = ", ";
+				}
+				pw.printf(" ] }");
+				pw.flush();
+				pw.close();
+			}
+		}
+		else if (request.getParameter("pulses")!=null)
+		{
+			if (isAuthenticated(request))
+			{
+				pw = response.getWriter();
+				ControllerConsole.User user = (ControllerConsole.User)request.getSession().getAttribute("user");
+				ControllerConsole.UserDevices devices = new ControllerConsole.UserDevices();
+				Iterator<Device> channelIter = devices.getDevicesOfUser(user, "A", 10, 11).iterator();
+				String separator = "";
+				pw.printf("{ \"devices\" : [ ");
+				while (channelIter.hasNext())
+				{
+					Device dev = channelIter.next();
+					pw.printf("%s{ \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
+					separator = ", ";
+				}
+				pw.printf(" ] }");
+				pw.flush();
+				pw.close();
+			}
+		}
+		else if (request.getParameter("sensors")!=null)
+		{
+			if (isAuthenticated(request))
+			{
+				pw = response.getWriter();
+				ControllerConsole.User user = (ControllerConsole.User)request.getSession().getAttribute("user");
+				ControllerConsole.UserDevices devices = new ControllerConsole.UserDevices();
+				Iterator<Device> channelIter = devices.getDevicesOfUser(user, "S", 0, 7).iterator();
+				String separator = "";
+				pw.printf("{ \"devices\" : [ ");
+				while (channelIter.hasNext())
+				{
+					Device dev = channelIter.next();
+					pw.printf("%s{ \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
+					separator = ", ";
+				}
+				pw.printf(" ] }");
+				pw.flush();
+				pw.close();
+			}
+		}
+		else if (request.getParameter("rlogout")!=null)
+		{
+			request.getSession().removeAttribute("user");
+			v = 0;
+			pw = response.getWriter();
+			pw.printf("{ \"login\" : %d }", v);
+			pw.flush();
+			pw.close();
+		}
+		
 	}
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException  
