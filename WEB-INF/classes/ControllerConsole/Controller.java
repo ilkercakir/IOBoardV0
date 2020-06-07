@@ -22,6 +22,8 @@ public class Controller
 	private native void ochannel_write(long handle);
 	private native byte obit_get_value(long handle, int bit);
 	private native void obit_set_value(long handle, int bit, byte value);
+	private native byte opulse_get_value(long handle, int pulse);
+	private native void opulse_set_value(long handle, int pulse, byte value);
 	private native void opulse_out(long handle, int pulse, int usecs);
 	//private native void controller_set_ivalue(long handle, byte value);
 	private native int ichannel_add(long handle, String name, int type, int numstates);
@@ -112,7 +114,8 @@ public class Controller
 			logger.info("opulse_add " + dev.getDeviceText() + " db:" + id);
 			if (id == dev.getDeviceChannel())
 			{
-				logger.info("opulse " + dev.getDeviceID());
+				opulse_set_value(controllerHandle, dev.getDeviceID(), (byte)dev.getDeviceInitialValue());
+				logger.info("opulse_set_value " + dev.getDeviceID() + ", initial value " + (byte)dev.getDeviceInitialValue());
 			}
 			else
 			{
@@ -165,6 +168,16 @@ public class Controller
 		obit_set_value(controllerHandle, bit, value);
 	}
 
+	public byte getPulseValue(int pulse)
+	{
+		return(opulse_get_value(controllerHandle, pulse));
+	}
+
+	public void setPulseValue(int pulse, byte value)
+	{
+		opulse_set_value(controllerHandle, pulse, value);
+	}
+	
 	public void pulseOut(int pulse, int usecs)
 	{
 		opulse_out(controllerHandle, pulse, usecs);

@@ -221,7 +221,7 @@ function pulseCallback(responseText)
 function pulseClick(deviceid, channelid, initval)
 {
 	var pulseobj = eval('document.getElementById("value' + deviceid + '");');
-	var value = initval * 100000;
+	var value = initval;
 
  	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.onreadystatechange = function() { 

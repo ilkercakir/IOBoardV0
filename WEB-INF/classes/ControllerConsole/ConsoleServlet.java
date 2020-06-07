@@ -133,10 +133,14 @@ public class ConsoleServlet extends HttpServlet
 			{
 				id = Integer.parseInt(request.getParameter("id"));
 				devid = Integer.parseInt(request.getParameter("devid"));
-				int duration = Integer.parseInt(request.getParameter("value"));
-				c.pulseOut(id, duration);
+				if (request.getParameter("value")!=null)
+				{
+					value = (byte)Integer.parseInt(request.getParameter("value"));
+					c.pulseOut(id, (int)value*100000);
+				}
+				v = c.getPulseValue(id);
 				pw = response.getWriter();
-				pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, duration, devid);
+				pw.printf("{ \"id\" : %d, \"value\" : %d, \"devid\" : %d }", id, v, devid);
 				pw.flush();
 				pw.close();
 			}
@@ -199,7 +203,7 @@ public class ConsoleServlet extends HttpServlet
 				while (channelIter.hasNext())
 				{
 					Device dev = channelIter.next();
-					pw.printf("%s{ \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
+					pw.printf("%s{ \"service\" : \"channel\", \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
 					separator = ", ";
 				}
 				pw.printf(" ] }");
@@ -220,7 +224,7 @@ public class ConsoleServlet extends HttpServlet
 				while (channelIter.hasNext())
 				{
 					Device dev = channelIter.next();
-					pw.printf("%s{ \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
+					pw.printf("%s{ \"service\" : \"bit\", \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
 					separator = ", ";
 				}
 				pw.printf(" ] }");
@@ -241,7 +245,7 @@ public class ConsoleServlet extends HttpServlet
 				while (channelIter.hasNext())
 				{
 					Device dev = channelIter.next();
-					pw.printf("%s{ \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
+					pw.printf("%s{ \"service\" : \"pulse\", \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
 					separator = ", ";
 				}
 				pw.printf(" ] }");
@@ -262,7 +266,7 @@ public class ConsoleServlet extends HttpServlet
 				while (channelIter.hasNext())
 				{
 					Device dev = channelIter.next();
-					pw.printf("%s{ \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
+					pw.printf("%s{ \"service\" : \"readchannel\", \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
 					separator = ", ";
 				}
 				pw.printf(" ] }");
