@@ -115,7 +115,7 @@ static void button_clicked_pulse_gpio(GtkWidget *button, gpointer data)
 {
 	actuator *a = (actuator*)data;
 
-	opulse_out(a->parent, a->channel, 1000000);
+	opulse_out(a->parent, a->channel, (int)a->value*100000);
 }
 
 static void button_clicked_pulse_http(GtkWidget *button, gpointer data)
@@ -123,7 +123,7 @@ static void button_clicked_pulse_http(GtkWidget *button, gpointer data)
 	actuator *a = (actuator*)data;
 
 	httpclient h;
-	jsonWritePulse(&h, a->channel, 0, 1000000);
+	jsonWritePulse(&h, a->channel, 0, a->value);
 }
 
 void add_ochannelframe(controlpanel *cp, controller *c, int channel)
@@ -293,22 +293,26 @@ void add_opulseframe(controlpanel *cp, controller *c, int channel)
 	//gtk_box_pack_start(GTK_BOX(cp->dw[channel].hbox), w, TRUE, TRUE, 0);
 }
 
-int add_opulsedevice(controlpanel *cp, controller *c, char *name)
+int add_opulsedevice(controlpanel *cp, controller *c, char *name, unsigned char initval)
 {
 	int i;
 
 	switch (i = opulse_add(c, name))
 	{
 		case CONTROLLER_INVALID_STATES:
-			printf("obit_add() err=%d\n", i);
+			printf("opulse_add() err=%d\n", i);
 			break;
 		case CONTROLLER_INVALID_ACTUATOR:
-			printf("obit_add() err=%d\n", i);
+			printf("opulse_add() err=%d\n", i);
 			break;
 		case CONTROLLER_FULL:
-			printf("obit_add() err=%d\n", i);
+			printf("opulse_add() err=%d\n", i);
 			break;
 		default:
+			if (cp->usegpio)
+				opulse_set_value(c, i, initval);
+			else
+				c->actuators[i].value = jsonPulseGetValue(&(cp->h), i, 0);
 			add_opulseframe(cp, c, i);
 			break;
 	}
@@ -643,7 +647,7 @@ int main(int argc, char **argv)
 	for(i=0;i<pul.count;i++)
 	{
 		//printf("pulse %d, id=%d\n", i, pul.devices[i].devid);
-		if ((err=add_opulsedevice(&cp, c, pul.devices[i].dtext)) >= 0)
+		if ((err=add_opulsedevice(&cp, c, pul.devices[i].dtext, pul.devices[i].initval)) >= 0)
 		{}
 	}
 

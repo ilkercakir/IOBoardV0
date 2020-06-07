@@ -24,6 +24,7 @@ void jsonWriteChannel(httpclient *h, int id, int devid, unsigned char value);
 unsigned char jsonChannelGetValue(httpclient *h, int id, int devid);
 void jsonWriteBit(httpclient *h, int id, int devid, unsigned char value);
 unsigned char jsonBitGetValue(httpclient *h, int id, int devid);
-void jsonWritePulse(httpclient *h, int id, int devid, int value);
+void jsonWritePulse(httpclient *h, int id, int devid, unsigned char value);
+unsigned char jsonPulseGetValue(httpclient *h, int id, int devid);
 unsigned char jsonReadChannel(httpclient *h, int id, int devid);
 #endif

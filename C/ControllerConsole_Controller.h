@@ -89,6 +89,22 @@ JNIEXPORT void JNICALL Java_ControllerConsole_Controller_obit_1set_1value
 
 /*
  * Class:     ControllerConsole_Controller
+ * Method:    opulse_get_value
+ * Signature: (JI)B
+ */
+JNIEXPORT jbyte JNICALL Java_ControllerConsole_Controller_opulse_1get_1value
+  (JNIEnv *, jobject, jlong, jint);
+
+/*
+ * Class:     ControllerConsole_Controller
+ * Method:    opulse_set_value
+ * Signature: (JIB)V
+ */
+JNIEXPORT void JNICALL Java_ControllerConsole_Controller_opulse_1set_1value
+  (JNIEnv *, jobject, jlong, jint, jbyte);
+
+/*
+ * Class:     ControllerConsole_Controller
  * Method:    opulse_out
  * Signature: (JII)V
  */

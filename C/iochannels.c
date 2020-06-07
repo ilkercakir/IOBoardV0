@@ -396,6 +396,47 @@ void obit_set_value(controller *c, unsigned int bit, unsigned char value)
 	pthread_mutex_unlock(&(c->iomutex));
 }
 
+unsigned char opulse_get_value(controller *c, unsigned int pulse)
+{
+	actuator *a = c->actuators;
+	int err;
+
+	pthread_mutex_lock(&(c->iomutex));
+	if (c->pindex == c->ochannels + c->obits) // no pulses added
+	{
+		err = 0;
+	}
+	else if ((pulse < c->ochannels + c->obits) || (pulse >= (c->ochannels + c->obits + c->opulses))) // pulse outside bounds
+	{
+		err = 0;
+	}
+	else
+	{
+		err = a[pulse].value;
+	}
+	pthread_mutex_unlock(&(c->iomutex));
+
+	return(err);
+}
+
+void opulse_set_value(controller *c, unsigned int pulse, unsigned char value)
+{
+	actuator *a = c->actuators;
+
+	pthread_mutex_lock(&(c->iomutex));
+	if (c->pindex == c->ochannels + c->obits) // no pulses added
+	{
+	}
+	else if ((pulse < c->ochannels + c->obits) || (pulse >= (c->ochannels + c->obits + c->opulses))) // pulse outside bounds
+	{
+	}
+	else
+	{
+		a[pulse].value = value;
+	}
+	pthread_mutex_unlock(&(c->iomutex));
+}
+
 void opulse_out(controller *c, unsigned int pulse, unsigned int usecs)
 {
 	actuator *a = c->actuators;
@@ -413,7 +454,6 @@ void opulse_out(controller *c, unsigned int pulse, unsigned int usecs)
 	}
 	pthread_mutex_unlock(&(c->iomutex));
 }
-
 
 // Sensor interface
 

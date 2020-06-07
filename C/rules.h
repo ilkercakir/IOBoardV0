@@ -9,6 +9,7 @@
 
 #include "iochannels.h"
 #include "db.h"
+#include "httpget.h"
 
 typedef struct
 {

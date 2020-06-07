@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=IOBoard
+Comment=IOBoard
+Exec=/home/pi/Desktop/C/GPIO/IOBoard/IOBoard
+Icon=/home/pi/Desktop/C/GPIO/IOBoard/images/controller.png
+Terminal=false
+Path=/home/pi/Desktop/C/GPIO/IOBoard
+GenericName=IOBoard
+StartupNotify=false
+Name[tr_TR]=IOBoard
+Categories=GNOME;GTK

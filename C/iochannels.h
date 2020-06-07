@@ -79,6 +79,8 @@ unsigned char controller_get_ovalue(controller *c);
 void ochannel_write(controller *c);
 unsigned char obit_get_value(controller *c, unsigned int bit);
 void obit_set_value(controller *c, unsigned int bit, unsigned char value);
+unsigned char opulse_get_value(controller *c, unsigned int pulse);
+void opulse_set_value(controller *c, unsigned int pulse, unsigned char value);
 void opulse_out(controller *c, unsigned int pulse, unsigned int usecs);
 void controller_set_ivalue(controller *c, unsigned char value);
 int ichannel_add(controller *c, char *name, sensor_type type, int numstates);

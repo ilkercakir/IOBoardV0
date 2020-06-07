@@ -184,7 +184,7 @@ unsigned char jsonBitGetValue(httpclient *h, int id, int devid)
 	return(value);
 }
 
-void jsonWritePulse(httpclient *h, int id, int devid, int value)
+void jsonWritePulse(httpclient *h, int id, int devid, unsigned char value)
 {
 	char params[100];
 
@@ -201,6 +201,27 @@ void jsonWritePulse(httpclient *h, int id, int devid, int value)
 	value = (json_object_object_get_ex(jobj, "value", &val)?json_object_get_int(val):-1);
 
 	json_object_put(jobj);
+}
+
+unsigned char jsonPulseGetValue(httpclient *h, int id, int devid)
+{
+	char params[100];
+
+	sprintf(params, "&id=%d&devid=%d", id, devid);
+	http_get(h, "pulse", params);
+//printf("%s\n", h.json);
+
+	struct json_object *jobj, *val;
+
+	jobj = json_tokener_parse(h->json);
+
+	id = (json_object_object_get_ex(jobj, "id", &val)?json_object_get_int(val):-1);
+	devid = (json_object_object_get_ex(jobj, "devid", &val)?json_object_get_int(val):-1);
+	unsigned char value = (unsigned char)(json_object_object_get_ex(jobj, "value", &val)?json_object_get_int(val):-1);
+
+	json_object_put(jobj);
+
+	return(value);
 }
 
 unsigned char jsonReadChannel(httpclient *h, int id, int devid)

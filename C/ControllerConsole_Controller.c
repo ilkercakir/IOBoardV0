@@ -123,6 +123,23 @@ JNIEXPORT void JNICALL Java_ControllerConsole_Controller_obit_1set_1value(JNIEnv
 	obit_set_value(c, (unsigned int)bit, (unsigned char)value);
 }
 
+JNIEXPORT jbyte JNICALL Java_ControllerConsole_Controller_opulse_1get_1value(JNIEnv *env, jobject obj, jlong handle, jint pulse)
+{
+	controller *c = (controller *)(long)handle;
+	unsigned char value;
+
+	value = opulse_get_value(c, (unsigned int)pulse);
+
+	return((jbyte)value);
+}
+
+JNIEXPORT void JNICALL Java_ControllerConsole_Controller_opulse_1set_1value(JNIEnv *env, jobject obj, jlong handle, jint pulse, jbyte value)
+{
+	controller *c = (controller *)(long)handle;
+
+	opulse_set_value(c, (unsigned int)pulse, (unsigned char)value);
+}
+
 JNIEXPORT void JNICALL Java_ControllerConsole_Controller_opulse_1out(JNIEnv *env, jobject obj, jlong handle, jint pulse, jint usecs)
 {
 	controller *c = (controller *)(long)handle;
