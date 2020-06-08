@@ -1,16 +1,24 @@
 package ControllerConsole;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Iterator;
+import java.util.Set;
+
 import java.io.IOException;
-import java.sql.SQLException;
 import java.io.PrintWriter;
+
+import java.sql.SQLException;
+
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpSession;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -22,10 +30,13 @@ public class ConsoleServlet extends HttpServlet
 {
 	static Logger logger = LogManager.getLogger(ControllerConsole.ConsoleServlet.class);
 	private ControllerConsole.Controller c;
+	private Map<String, HttpSession> ConsoleSessions;
 
 	public void init(ServletConfig config) throws ServletException
 	{
 		super.init(config);
+
+		ServletContext ctx = getServletContext();
 
 		c = new ControllerConsole.Controller();
 		logger.info("Opening controller");
@@ -41,8 +52,10 @@ public class ConsoleServlet extends HttpServlet
 			case -3:logger.info("Pulses init failed");
 				break; // pulses init failed
 		}
+		ctx.setAttribute("controller", c);
 		
-		getServletContext().setAttribute("controller", c);  
+		ConsoleSessions = new HashMap<String, HttpSession>();
+		ctx.setAttribute("ConsoleSessions", ConsoleSessions);
 	}
 
 	private boolean isAuthenticated(HttpServletRequest request)
@@ -282,6 +295,39 @@ public class ConsoleServlet extends HttpServlet
 			pw.printf("{ \"login\" : %d }", v);
 			pw.flush();
 			pw.close();
+		}
+		else if (request.getParameter("sessions")!=null)
+		{
+			u = (ControllerConsole.User)request.getSession().getAttribute("user");
+			if (u!=null)
+			{
+				if (u.isSuperUser())
+				{
+					pw = response.getWriter();
+
+					String sessionId = request.getSession().getId();
+					ServletContext ctx = getServletContext(); 
+					Map<String, HttpSession> sessions = (Map<String, HttpSession>)ctx.getAttribute("ConsoleSessions");
+
+					Set set = sessions.entrySet();
+      					Iterator iterator = set.iterator();
+
+					String separator = "";
+					pw.printf("{ \"sessions\" : [ ");
+					while (iterator.hasNext())
+					{
+						Map.Entry mentry = (Map.Entry)iterator.next();
+						HttpSession session = (HttpSession)mentry.getValue();
+						u = (ControllerConsole.User)session.getAttribute("user");
+						String uname = (u!=null?u.getUserName():""); 
+						pw.printf("%s{ \"id\" : \"%s\", \"maxinactiveinterval\" : %d, \"username\" : \"%s\" }", separator, mentry.getKey(), session.getMaxInactiveInterval(), uname);
+						separator = ", ";
+					}
+					pw.printf(" ] }");
+					pw.flush();
+					pw.close();
+				}
+			}
 		}
 		
 	}
