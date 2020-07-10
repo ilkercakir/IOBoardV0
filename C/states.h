@@ -39,3 +39,6 @@ typedef struct
  controller *c;
 }statescheduler;
 #endif
+
+void init_state_scheduler(statescheduler *s, controller *c);
+void close_state_scheduler(statescheduler *s);
