@@ -47,15 +47,15 @@ typedef struct
   pthread_t tid;
   int retval;
   int threadrunning;
-}interval;
+}ruleinterval;
 
 typedef struct
 {
  int intervalcount;
- interval *intervals;
+ ruleinterval *intervals;
  controller *c;
-}scheduler;
+}rulescheduler;
 
-void init_scheduler(scheduler *s, controller *c);
-void close_scheduler(scheduler *s);
+void init_rule_scheduler(rulescheduler *s, controller *c);
+void close_rule_scheduler(rulescheduler *s);
 #endif
