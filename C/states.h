@@ -9,7 +9,7 @@ typedef struct
   sdev *sdevs;
   int oldvalue;
   int value;
-}states;
+}state;
 
 typedef struct
 {
@@ -18,6 +18,24 @@ typedef struct
   int agrid;
   int adevcount;
   adev *adevs;
-}transitions;
+}transition;
 
+typedef struct
+{
+  int intid;
+  int seconds;
+  controller *c;
+  int statecount;
+  state *states;
+  pthread_t tid;
+  int retval;
+  int threadrunning;
+}stateinterval;
+
+typedef struct
+{
+ int intervalcount;
+ stateinterval *intervals;
+ controller *c;
+}statescheduler;
 #endif
