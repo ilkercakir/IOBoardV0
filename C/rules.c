@@ -161,7 +161,7 @@ void init_count_sensors_of_rule(rule *r)
 
 int init_rules_of_interval_callback(void *data, int argc, char **argv, char **azColName) 
 {
-	interval *i = (interval *)data;
+	ruleinterval *i = (ruleinterval *)data;
 
 	i->rules[i->rulecount].rulid = atoi(argv[0]);
 	i->rules[i->rulecount].sgrid = atoi(argv[1]);
@@ -206,7 +206,7 @@ void init_rules_of_interval(interval *i)
 
 int init_count_rules_of_interval_callback(void *data, int argc, char **argv, char **azColName) 
 {
-	interval *i = (interval *)data;
+	ruleinterval *i = (ruleinterval *)data;
   
 	i->rulecount = atoi(argv[0]);
 	i->rules = malloc(i->rulecount*sizeof(rule));
@@ -217,7 +217,7 @@ int init_count_rules_of_interval_callback(void *data, int argc, char **argv, cha
 	return(0);
 }
 
-void init_count_rules_of_interval(interval *i)
+void init_count_rules_of_interval(ruleinterval *i)
 {
 	sqlite3 *db;
 	char *err_msg = NULL;
@@ -244,9 +244,9 @@ void init_count_rules_of_interval(interval *i)
 	sqlite3_close(db);
 }
 
-int init_intervals_callback(void *data, int argc, char **argv, char **azColName) 
+int init_rule_intervals_callback(void *data, int argc, char **argv, char **azColName) 
 {
-	scheduler *s = (scheduler *)data;
+	rulescheduler *s = (rulescheduler *)data;
   
 	s->intervals[s->intervalcount].intid = atoi(argv[0]);
 	s->intervals[s->intervalcount].seconds = atoi(argv[2]);
@@ -260,7 +260,7 @@ int init_intervals_callback(void *data, int argc, char **argv, char **azColName)
 	return(0);
 }
 
-void init_intervals(scheduler *s)
+void init_rule_intervals(rulescheduler *s)
 {
 	sqlite3 *db;
 	char *err_msg = NULL;
@@ -275,7 +275,7 @@ void init_intervals(scheduler *s)
 	{
 //printf("Opened database successfully\n");
 		sql = "select * from intervals;";
-		if((rc = sqlite3_exec(db, sql, init_intervals_callback, (void*)s, &err_msg)) != SQLITE_OK)
+		if((rc = sqlite3_exec(db, sql, init_rule_intervals_callback, (void*)s, &err_msg)) != SQLITE_OK)
 		{
 		printf("Failed to select data, %s\n", err_msg);
 		sqlite3_free(err_msg);
@@ -287,9 +287,9 @@ void init_intervals(scheduler *s)
 	sqlite3_close(db);
 }
 
-int init_count_intervals_callback(void *data, int argc, char **argv, char **azColName) 
+int init_count_rule_intervals_callback(void *data, int argc, char **argv, char **azColName) 
 {
-	scheduler *s = (scheduler *)data;
+	rulescheduler *s = (rulescheduler *)data;
 
 	s->intervalcount = atoi(argv[0]);
 	s->intervals = malloc(s->intervalcount*sizeof(interval));
@@ -299,7 +299,7 @@ int init_count_intervals_callback(void *data, int argc, char **argv, char **azCo
 	return(0);
 }
   
-void init_count_intervals(scheduler *s)
+void init_count_rule_intervals(rulescheduler *s)
 {
 	sqlite3 *db;
 	char *err_msg = NULL;
@@ -314,7 +314,7 @@ void init_count_intervals(scheduler *s)
 	{
 //printf("Opened database successfully\n");
 		sql = "select count(*) as schedules from intervals;";
-		if ((rc = sqlite3_exec(db, sql, init_count_intervals_callback, (void*)s, &err_msg)) != SQLITE_OK)
+		if ((rc = sqlite3_exec(db, sql, init_count_rule_intervals_callback, (void*)s, &err_msg)) != SQLITE_OK)
 		{
 		printf("Failed to select data, %s\n", err_msg);
 		sqlite3_free(err_msg);
@@ -326,9 +326,9 @@ void init_count_intervals(scheduler *s)
 	sqlite3_close(db);
 }
 
-void* interval_thread(void *args)
+void* rule_interval_thread(void *args)
 {
-	interval *ival = (interval *)args;
+	ruleinterval *ival = (ruleinterval *)args;
 	controller *c = ival->c;
 	rule *r;
 	sdev *s;
@@ -405,19 +405,19 @@ void* interval_thread(void *args)
 	pthread_exit(&(ival->retval));
 }
 
-void init_interval_threads(scheduler *s)
+void init_rule_interval_threads(rulescheduler *s)
 {
 	int i, err;
 
 	for(i=0;i<s->intervalcount;i++)
 	{
-		err = pthread_create(&(s->intervals[i].tid), NULL, &interval_thread, (void *)&(s->intervals[i]));
+		err = pthread_create(&(s->intervals[i].tid), NULL, &rule_interval_thread, (void *)&(s->intervals[i]));
 		if (err)
 			printf("pthread_create error, interval %d\n", i);
 	}
 }
 
-void close_interval_threads(scheduler *s)
+void close_rule_interval_threads(rulescheduler *s)
 {
 	int i, err;
 
@@ -434,21 +434,21 @@ void close_interval_threads(scheduler *s)
 	}
 }
 
-void init_scheduler(scheduler *s, controller *c)
+void init_rule_scheduler(rulescheduler *s, controller *c)
 {
 	s->c = c;
-	init_count_intervals(s);
-	init_intervals(s);
+	init_count_rule_intervals(s);
+	init_rule_intervals(s);
 //printf("intervals %d\n", s->intervalcount);
 
-	init_interval_threads(s);
+	init_rule_interval_threads(s);
 }
 
-void close_scheduler(scheduler *s)
+void close_rule_scheduler(rulescheduler *s)
 {
 	int i, j;
 
-	close_interval_threads(s);
+	close_rule_interval_threads(s);
 
 	for(i=0;i<s->intervalcount;i++)
 	{
