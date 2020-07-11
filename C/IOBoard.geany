@@ -23,28 +23,31 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=0
-FILE_NAME_0=3529;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FIOBoard.c;0;4
-FILE_NAME_1=8837;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Frules.c;0;4
-FILE_NAME_2=317;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Frules.h;0;4
-FILE_NAME_3=4740;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fhttpget.c;0;4
-FILE_NAME_4=860;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fhttpget.h;0;4
-FILE_NAME_5=2921;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fdevices.c;0;4
-FILE_NAME_6=250;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fdevices.h;0;4
-FILE_NAME_7=71;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fdb.h;0;4
-FILE_NAME_8=8646;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fiochannels.c;0;4
-FILE_NAME_9=927;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fiochannels.h;0;4
-FILE_NAME_10=1544;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fgpio.c;0;4
-FILE_NAME_11=420;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fgpio.h;0;4
-FILE_NAME_12=4672;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FControllerConsole_Controller.c;0;4
-FILE_NAME_13=2768;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FControllerConsole_Controller.h;0;4
+current_page=1
+FILE_NAME_0=134;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FIOBoard.c;0;4
+FILE_NAME_1=7419;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fstates.c;0;4
+FILE_NAME_2=320;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fstates.h;0;4
+FILE_NAME_3=7347;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Frules.c;0;4
+FILE_NAME_4=612;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Frules.h;0;4
+FILE_NAME_5=26;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fdev.h;0;4
+FILE_NAME_6=4740;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fhttpget.c;0;4
+FILE_NAME_7=860;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fhttpget.h;0;4
+FILE_NAME_8=2921;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fdevices.c;0;4
+FILE_NAME_9=250;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fdevices.h;0;4
+FILE_NAME_10=71;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fdb.h;0;4
+FILE_NAME_11=11599;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fiochannels.c;0;4
+FILE_NAME_12=927;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fiochannels.h;0;4
+FILE_NAME_13=1429;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fgpio.c;0;4
+FILE_NAME_14=420;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2Fgpio.h;0;4
+FILE_NAME_15=5547;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FControllerConsole_Controller.c;0;4
+FILE_NAME_16=2768;C;0;EUTF-8;1;1;0;%2Fhome%2Fpi%2FDesktop%2FC%2FGPIO%2FIOBoard%2FControllerConsole_Controller.h;0;4
 
 [VTE]
 last_dir=/home/pi/Desktop/C/GPIO/IOBoard
 
 [build-menu]
 CFT_01_LB=İn_şa Et
-CFT_01_CM=gcc -Wall -o "%e" "%f" httpget.o devices.o iochannels.o rules.o gpio.o $(pkg-config --cflags gtk+-3.0) $(pkg-config --libs json-c) -Wl,--whole-archive -lrt -ldl -lm -Wl,--no-whole-archive -rdynamic $(pkg-config --libs gtk+-3.0) -lwiringPi $(pkg-config --libs sqlite3)
+CFT_01_CM=gcc -Wall -o "%e" "%f" httpget.o devices.o iochannels.o states.o rules.o gpio.o $(pkg-config --cflags gtk+-3.0) $(pkg-config --libs json-c) -Wl,--whole-archive -lrt -ldl -lm -Wl,--no-whole-archive -rdynamic $(pkg-config --libs gtk+-3.0) -lwiringPi $(pkg-config --libs sqlite3)
 CFT_01_WD=
 filetypes=C;
 CFT_00_LB=_Derle

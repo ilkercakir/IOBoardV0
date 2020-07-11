@@ -14,8 +14,8 @@
  * 138.{A2,A1,A0}
  * 0,0,0 164.CLK - Serial Out
  * 0,0,1 373.EN - Parallel Write
- * 0,1,0 165.CP - Serial In
- * 0,1,1 165.PL - Parallel Load
+ * 0,1,0 165.PL - Parallel Load
+ * 0,1,1 165.CP - Serial In
  * 1,0,0 74(1).CLK - Write bit 1
  * 1,0,1 74(2).CLK - Write bit 2
  * 1,1,0 138.O6 - Pulse 1
@@ -75,10 +75,10 @@ unsigned char read_data()
 	int i;
 	unsigned char c;
 
-	set_address(3); // Parallel load mode
+	set_address(2); // Parallel load mode
 	clock_pulse(USECS);
 
-	set_address(2); // Serial Out mode
+	set_address(3); // Serial Out mode
 	for(i=0;i<8;i++)
 	{
 		c = c << 1;
