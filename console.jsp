@@ -98,7 +98,7 @@ switch(dev.getDeviceType())
  <tr>
   <td align="right"><img width="128px" height="128px" src="images/<%=dev.getDeviceIcon()%>" style="cursor:pointer" onclick="javascript:sensorClick(<%=dev.getDeviceID()%>, <%=dev.getDeviceChannel()%>)"></td>
   <td><font style="font-name:Arial;font-size:24pt;width:256px;height:128px;"><b><%=dev.getDeviceText()%></b><br><i><%=dev.getDeviceCategoryText()%>, <%=dev.getDeviceTypeText()%></i></font></td>
-  <%selectedvalue=controller.getChannelValue(dev.getDeviceChannel());%>
+  <%selectedvalue=controller.getInputChannelValue(dev.getDeviceChannel());%>
   <td>
 <%
 switch(dev.getDeviceType())
