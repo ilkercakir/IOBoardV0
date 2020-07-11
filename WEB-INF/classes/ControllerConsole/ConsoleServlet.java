@@ -209,19 +209,22 @@ public class ConsoleServlet extends HttpServlet
 			{
 				pw = response.getWriter();
 				ControllerConsole.User user = (ControllerConsole.User)request.getSession().getAttribute("user");
-				ControllerConsole.UserDevices devices = new ControllerConsole.UserDevices();
-				Iterator<Device> channelIter = devices.getDevicesOfUser(user, "A", 0, 7).iterator();
-				String separator = "";
-				pw.printf("{ \"devices\" : [ ");
-				while (channelIter.hasNext())
+				if (user!=null)
 				{
-					Device dev = channelIter.next();
-					pw.printf("%s{ \"service\" : \"channel\", \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
-					separator = ", ";
+					ControllerConsole.UserDevices devices = new ControllerConsole.UserDevices();
+					Iterator<Device> channelIter = devices.getDevicesOfUser(user, "A", 0, 7).iterator();
+					String separator = "";
+					pw.printf("{ \"devices\" : [ ");
+					while (channelIter.hasNext())
+					{
+						Device dev = channelIter.next();
+						pw.printf("%s{ \"service\" : \"channel\", \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
+						separator = ", ";
+					}
+					pw.printf(" ] }");
+					pw.flush();
+					pw.close();
 				}
-				pw.printf(" ] }");
-				pw.flush();
-				pw.close();
 			}
 		}
 		else if (request.getParameter("bits")!=null)
@@ -230,19 +233,22 @@ public class ConsoleServlet extends HttpServlet
 			{
 				pw = response.getWriter();
 				ControllerConsole.User user = (ControllerConsole.User)request.getSession().getAttribute("user");
-				ControllerConsole.UserDevices devices = new ControllerConsole.UserDevices();
-				Iterator<Device> channelIter = devices.getDevicesOfUser(user, "A", 8, 9).iterator();
-				String separator = "";
-				pw.printf("{ \"devices\" : [ ");
-				while (channelIter.hasNext())
+				if (user!=null)
 				{
-					Device dev = channelIter.next();
-					pw.printf("%s{ \"service\" : \"bit\", \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
-					separator = ", ";
+					ControllerConsole.UserDevices devices = new ControllerConsole.UserDevices();
+					Iterator<Device> channelIter = devices.getDevicesOfUser(user, "A", 8, 9).iterator();
+					String separator = "";
+					pw.printf("{ \"devices\" : [ ");
+					while (channelIter.hasNext())
+					{
+						Device dev = channelIter.next();
+						pw.printf("%s{ \"service\" : \"bit\", \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
+						separator = ", ";
+					}
+					pw.printf(" ] }");
+					pw.flush();
+					pw.close();
 				}
-				pw.printf(" ] }");
-				pw.flush();
-				pw.close();
 			}
 		}
 		else if (request.getParameter("pulses")!=null)
@@ -251,19 +257,22 @@ public class ConsoleServlet extends HttpServlet
 			{
 				pw = response.getWriter();
 				ControllerConsole.User user = (ControllerConsole.User)request.getSession().getAttribute("user");
-				ControllerConsole.UserDevices devices = new ControllerConsole.UserDevices();
-				Iterator<Device> channelIter = devices.getDevicesOfUser(user, "A", 10, 11).iterator();
-				String separator = "";
-				pw.printf("{ \"devices\" : [ ");
-				while (channelIter.hasNext())
+				if (user!=null)
 				{
-					Device dev = channelIter.next();
-					pw.printf("%s{ \"service\" : \"pulse\", \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
-					separator = ", ";
+					ControllerConsole.UserDevices devices = new ControllerConsole.UserDevices();
+					Iterator<Device> channelIter = devices.getDevicesOfUser(user, "A", 10, 11).iterator();
+					String separator = "";
+					pw.printf("{ \"devices\" : [ ");
+					while (channelIter.hasNext())
+					{
+						Device dev = channelIter.next();
+						pw.printf("%s{ \"service\" : \"pulse\", \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
+						separator = ", ";
+					}
+					pw.printf(" ] }");
+					pw.flush();
+					pw.close();
 				}
-				pw.printf(" ] }");
-				pw.flush();
-				pw.close();
 			}
 		}
 		else if (request.getParameter("sensors")!=null)
@@ -272,19 +281,22 @@ public class ConsoleServlet extends HttpServlet
 			{
 				pw = response.getWriter();
 				ControllerConsole.User user = (ControllerConsole.User)request.getSession().getAttribute("user");
-				ControllerConsole.UserDevices devices = new ControllerConsole.UserDevices();
-				Iterator<Device> channelIter = devices.getDevicesOfUser(user, "S", 0, 7).iterator();
-				String separator = "";
-				pw.printf("{ \"devices\" : [ ");
-				while (channelIter.hasNext())
+				if (user!=null)
 				{
-					Device dev = channelIter.next();
-					pw.printf("%s{ \"service\" : \"readchannel\", \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
-					separator = ", ";
+					ControllerConsole.UserDevices devices = new ControllerConsole.UserDevices();
+					Iterator<Device> channelIter = devices.getDevicesOfUser(user, "S", 0, 7).iterator();
+					String separator = "";
+					pw.printf("{ \"devices\" : [ ");
+					while (channelIter.hasNext())
+					{
+						Device dev = channelIter.next();
+						pw.printf("%s{ \"service\" : \"readchannel\", \"level\" : \"%s\", \"devid\" : %d, \"dtext\" : \"%s\", \"chnnl\" : %d, \"dtype\" : %d, \"dttext\" : \"%s\", \"numstates\" : %d, \"initval\" : %d, \"categ\" : \"%s\", \"catxt\" : \"%s\", \"dicon\" : \"%s\", \"dticon\" : \"%s\" }", separator, dev.getAuthorizationLevel(), dev.getDeviceID(), dev.getDeviceText(), dev.getDeviceChannel(), dev.getDeviceType(), dev.getDeviceTypeText(), dev.getDeviceNumStates(), dev.getDeviceInitialValue(), dev.getDeviceCategory(), dev.getDeviceCategoryText(), dev.getDeviceIcon(), dev.getDeviceTypeIcon());
+						separator = ", ";
+					}
+					pw.printf(" ] }");
+					pw.flush();
+					pw.close();
 				}
-				pw.printf(" ] }");
-				pw.flush();
-				pw.close();
 			}
 		}
 		else if (request.getParameter("rlogout")!=null)
@@ -327,6 +339,21 @@ public class ConsoleServlet extends HttpServlet
 					pw.flush();
 					pw.close();
 				}
+			}
+		}
+		else if (request.getParameter("setpassword")!=null)
+		{
+			u = (ControllerConsole.User)request.getSession().getAttribute("user");
+			if (u!=null)
+			{
+				username = u.getUserName();
+				password = request.getParameter("password");
+				v = (byte)(u.setPassword(username, password)==1?1:0);
+
+				pw = response.getWriter();
+				pw.printf("{ \"setpassword\" : %d }", v);
+				pw.flush();
+				pw.close();
 			}
 		}
 		

@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -81,6 +82,38 @@ public class User
 	public boolean isSuperUser()
 	{
 		return(superuser);
+	}
+
+	public int setPassword(String user, String pass)
+	{
+		int result = 1;
+
+		try
+		{
+			Class.forName("org.sqlite.JDBC");
+		}
+		catch (ClassNotFoundException ex)
+		{
+			//throw ex;
+			result = -1;
+		}
+
+		try
+		{
+			String sql = "update users set password = '" + pass + "' where username = '" + user + "';";
+			Connection conn = DriverManager.getConnection("jdbc:sqlite:" + DBpath);
+			PreparedStatement stat = conn.prepareStatement(sql);
+			stat.execute();
+			stat.close();
+			conn.close();
+		}
+		catch(SQLException sqlex)
+		{
+        		//throw sqlex;
+        		//sqlex.printStackTrace();
+			result = -1;
+		}
+		return(result);
 	}
 
 	public void logout()
