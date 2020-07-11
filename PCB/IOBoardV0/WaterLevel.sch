@@ -1,0 +1,194 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:special
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:kicad_custom_lib
+LIBS:WaterLevel-cache
+EELAYER 27 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date "4 jul 2020"
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L RJ45_2 J1
+U 1 1 5EEF169C
+P 1650 1350
+F 0 "J1" H 1850 1850 60  0000 C CNN
+F 1 "RJ45_2" H 1500 1850 60  0000 C CNN
+F 2 "~" H 1650 1350 60  0000 C CNN
+F 3 "~" H 1650 1350 60  0000 C CNN
+	1    1650 1350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1300 3000 1300 1800
+Wire Wire Line
+	1400 1800 1400 2900
+Wire Wire Line
+	1500 1800 1500 2800
+Wire Wire Line
+	1600 1800 1600 2700
+Wire Wire Line
+	1700 1800 1700 2600
+Wire Wire Line
+	1800 1800 1800 2500
+Wire Wire Line
+	1900 1800 1900 2400
+Wire Wire Line
+	2000 1800 2000 2300
+$Comp
+L GND #PWR?
+U 1 1 5F0014A9
+P 1000 3050
+F 0 "#PWR?" H 1000 3050 30  0001 C CNN
+F 1 "GND" H 1000 2980 30  0001 C CNN
+F 2 "" H 1000 3050 60  0000 C CNN
+F 3 "" H 1000 3050 60  0000 C CNN
+	1    1000 3050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1000 3000 1000 3050
+Connection ~ 1300 3000
+$Comp
+L GS2 GS8
+U 1 1 5F0014DA
+P 2200 2300
+F 0 "GS8" H 2300 2450 50  0000 C CNN
+F 1 "GS2" H 2300 2151 40  0000 C CNN
+F 2 "GS2" V 2300 2300 30  0000 C CNN
+F 3 "" H 2200 2300 60  0000 C CNN
+	1    2200 2300
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GS2 GS7
+U 1 1 5F001520
+P 2100 2400
+F 0 "GS7" H 2200 2550 50  0000 C CNN
+F 1 "GS2" H 2200 2251 40  0000 C CNN
+F 2 "GS2" V 2174 2400 30  0000 C CNN
+F 3 "" H 2100 2400 60  0000 C CNN
+	1    2100 2400
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GS2 GS6
+U 1 1 5F001533
+P 2000 2500
+F 0 "GS6" H 2100 2650 50  0000 C CNN
+F 1 "GS2" H 2100 2351 40  0000 C CNN
+F 2 "GS2" V 2074 2500 30  0000 C CNN
+F 3 "" H 2000 2500 60  0000 C CNN
+	1    2000 2500
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GS2 GS5
+U 1 1 5F001542
+P 1900 2600
+F 0 "GS5" H 2000 2750 50  0000 C CNN
+F 1 "GS2" H 2000 2451 40  0000 C CNN
+F 2 "GS2" V 1974 2600 30  0000 C CNN
+F 3 "" H 1900 2600 60  0000 C CNN
+	1    1900 2600
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GS2 GS4
+U 1 1 5F001551
+P 1800 2700
+F 0 "GS4" H 1900 2850 50  0000 C CNN
+F 1 "GS2" H 1900 2551 40  0000 C CNN
+F 2 "GS2" V 1874 2700 30  0000 C CNN
+F 3 "" H 1800 2700 60  0000 C CNN
+	1    1800 2700
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GS2 GS3
+U 1 1 5F001560
+P 1700 2800
+F 0 "GS3" H 1800 2950 50  0000 C CNN
+F 1 "GS2" H 1800 2651 40  0000 C CNN
+F 2 "GS2" V 1774 2800 30  0000 C CNN
+F 3 "" H 1700 2800 60  0000 C CNN
+	1    1700 2800
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GS2 GS2
+U 1 1 5F00156F
+P 1600 2900
+F 0 "GS2" H 1700 3050 50  0000 C CNN
+F 1 "GS2" H 1700 2751 40  0000 C CNN
+F 2 "GS2" V 1674 2900 30  0000 C CNN
+F 3 "" H 1600 2900 60  0000 C CNN
+	1    1600 2900
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	2400 2300 2400 2400
+Wire Wire Line
+	2400 2400 2300 2400
+Wire Wire Line
+	2300 2400 2300 2500
+Wire Wire Line
+	2300 2500 2200 2500
+Wire Wire Line
+	2200 2500 2200 2600
+Wire Wire Line
+	2200 2600 2100 2600
+Wire Wire Line
+	2100 2600 2100 2700
+Wire Wire Line
+	2100 2700 2000 2700
+Wire Wire Line
+	2000 2700 2000 2800
+Wire Wire Line
+	2000 2800 1900 2800
+Wire Wire Line
+	1900 2800 1900 2900
+Wire Wire Line
+	1900 2900 1800 2900
+Wire Wire Line
+	1800 3000 1800 2900
+Wire Wire Line
+	1000 3000 1800 3000
+$EndSCHEMATC

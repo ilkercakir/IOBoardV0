@@ -37,7 +37,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "23 apr 2020"
+Date "20 jun 2020"
 Rev ""
 Comp ""
 Comment1 ""
@@ -586,13 +586,9 @@ Wire Wire Line
 Wire Wire Line
 	5600 4350 7600 4350
 Wire Wire Line
-	7600 4450 8350 4450
-Wire Wire Line
-	8350 4450 8350 4500
-Wire Wire Line
 	8200 2050 8550 2050
 Wire Wire Line
-	8550 2050 8550 4500
+	8550 2050 8550 4600
 Wire Wire Line
 	8200 950  8200 1550
 Wire Wire Line
@@ -603,9 +599,6 @@ Wire Wire Line
 	8400 3000 8300 3000
 Wire Wire Line
 	8300 3000 8300 3200
-Connection ~ 8350 4500
-Wire Wire Line
-	8550 4500 8350 4500
 Wire Wire Line
 	6450 850  6400 850 
 Wire Wire Line
@@ -1308,4 +1301,22 @@ F 3 "~" H 2200 5700 60  0000 C CNN
 $EndComp
 Connection ~ 2500 5500
 Connection ~ 2500 5900
+Wire Wire Line
+	8550 4600 8100 4600
+Wire Wire Line
+	8300 4600 8300 4450
+Wire Wire Line
+	8300 4450 7600 4450
+$Comp
+L GND #PWR09
+U 1 1 5EEE2585
+P 8100 4600
+F 0 "#PWR09" H 8100 4600 30  0001 C CNN
+F 1 "GND" H 8100 4530 30  0001 C CNN
+F 2 "" H 8100 4600 60  0000 C CNN
+F 3 "" H 8100 4600 60  0000 C CNN
+	1    8100 4600
+	1    0    0    -1  
+$EndComp
+Connection ~ 8300 4600
 $EndSCHEMATC

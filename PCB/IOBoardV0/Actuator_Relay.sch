@@ -37,7 +37,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title "noname.sch"
-Date "23 apr 2020"
+Date "28 jun 2020"
 Rev ""
 Comp ""
 Comment1 ""
@@ -238,7 +238,7 @@ Connection ~ 2400 1550
 Wire Wire Line
 	2600 2250 2600 2150
 Wire Wire Line
-	2100 2050 2100 1850
+	2100 1650 2100 2050
 Connection ~ 2800 1850
 Wire Wire Line
 	3100 1950 3100 2650
@@ -280,7 +280,7 @@ Wire Wire Line
 Wire Wire Line
 	1050 1500 1050 2050
 Wire Wire Line
-	950  2050 1200 2050
+	950  2050 1700 2050
 $Comp
 L R R5
 U 1 1 5E9D8947
@@ -332,4 +332,18 @@ Wire Wire Line
 	2200 1400 2000 1400
 Wire Wire Line
 	1650 1100 1650 950 
+$Comp
+L DIODE D2
+U 1 1 5EF8356A
+P 1900 1650
+F 0 "D2" H 1900 1750 40  0000 C CNN
+F 1 "DIODE" H 1900 1550 40  0000 C CNN
+F 2 "~" H 1900 1650 60  0000 C CNN
+F 3 "~" H 1900 1650 60  0000 C CNN
+	1    1900 1650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1700 2050 1700 1650
+Connection ~ 1200 2050
 $EndSCHEMATC

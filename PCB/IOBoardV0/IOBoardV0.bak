@@ -37,7 +37,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "23 apr 2020"
+Date "20 jun 2020"
 Rev ""
 Comp ""
 Comment1 ""
@@ -147,12 +147,12 @@ $EndComp
 $Comp
 L VCC #PWR04
 U 1 1 5E9C360D
-P 2550 850
-F 0 "#PWR04" H 2550 950 30  0001 C CNN
-F 1 "VCC" H 2550 950 30  0000 C CNN
-F 2 "" H 2550 850 60  0000 C CNN
-F 3 "" H 2550 850 60  0000 C CNN
-	1    2550 850 
+P 2550 800
+F 0 "#PWR04" H 2550 900 30  0001 C CNN
+F 1 "VCC" H 2550 900 30  0000 C CNN
+F 2 "" H 2550 800 60  0000 C CNN
+F 3 "" H 2550 800 60  0000 C CNN
+	1    2550 800 
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -585,8 +585,6 @@ Wire Wire Line
 	5600 1300 5600 4350
 Wire Wire Line
 	5600 4350 7600 4350
-Wire Wire Line
-	7600 4450 8350 4450
 Wire Wire Line
 	8350 4450 8350 4500
 Wire Wire Line
@@ -1308,4 +1306,6 @@ F 3 "~" H 2200 5700 60  0000 C CNN
 $EndComp
 Connection ~ 2500 5500
 Connection ~ 2500 5900
+Wire Wire Line
+	8350 4450 7600 4450
 $EndSCHEMATC
