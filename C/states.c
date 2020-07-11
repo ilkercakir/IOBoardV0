@@ -1,5 +1,167 @@
 #include "states.h"
 
+int init_actuators_of_transition_callback(void *data, int argc, char **argv, char **azColName) 
+{
+	statetransition *st = (statetransition *)data;
+
+	st->adevs[st->adevcount].chnnl = atoi(argv[0]);
+	st->adevs[st->adevcount].devid = atoi(argv[1]);
+	st->adevs[st->adevcount].value = atoi(argv[2]);  
+//printf("init_actuators_of_transition_callback %d %d %d %d\n", st->adevs[st->adevcount].value, st->adevs[st->adevcount].devid, st->adevs[st->adevcount].chnnl, st->adevcount);
+	st->adevcount++;
+
+	return(0);
+}
+
+void init_actuators_of_transition(statetransition *st)
+{
+	sqlite3 *db;
+	char *err_msg = NULL;
+	char sql[200];
+	int rc;
+
+	if ((rc = sqlite3_open(DBPATH, &db)))
+	{
+		printf("Can't open database: %s\n", sqlite3_errmsg(db));
+	}
+	else
+	{
+//printf("Opened database successfully\n");
+		sprintf(sql, "select devices.chnnl, devices.devid, agdev.value from agdev inner join devices on devices.devid = agdev.devid where agdev.devgr = %d;", st->agrid);
+		if((rc = sqlite3_exec(db, sql, init_actuators_of_transition_callback, (void*)st, &err_msg)) != SQLITE_OK)
+		{
+		printf("Failed to select data, %s\n", err_msg);
+		sqlite3_free(err_msg);
+		}
+		else // success
+		{
+		}
+	}
+	sqlite3_close(db);
+}
+
+int init_count_actuators_of_transition_callback(void *data, int argc, char **argv, char **azColName) 
+{
+	statetransition *st = (statetransition *)data;
+  
+	st->adevcount = atoi(argv[0]);
+	st->adevs = malloc(st->adevcount*sizeof(adev));
+//printf("init_count_actuators_of_transition_callback %d\n", st->adevcount);
+	st->adevcount = 0;
+
+	return(0);
+}
+
+void init_count_actuators_of_transition(statetransition *st)
+{
+	sqlite3 *db;
+	char *err_msg = NULL;
+	char sql[100];
+	int rc;
+
+	if ((rc = sqlite3_open(DBPATH, &db)))
+	{
+		printf("Can't open database: %s\n", sqlite3_errmsg(db));
+	}
+	else
+	{
+//printf("Opened database successfully\n");
+		sprintf(sql, "select count(*) as actuatorcount from agdev where devgr = %d;", st->agrid);
+		if((rc = sqlite3_exec(db, sql, init_count_actuators_of_transition_callback, (void*)st, &err_msg)) != SQLITE_OK)
+		{
+		printf("Failed to select data, %s\n", err_msg);
+		sqlite3_free(err_msg);
+		}
+		else // success
+		{
+		}
+	}
+	sqlite3_close(db);
+}
+
+int init_state_transitions_callback(void *data, int argc, char **argv, char **azColName) 
+{
+	statescheduler *s = (statescheduler *)data;
+
+	s->transitions[s->transitioncount].traid = atoi(argv[0]);
+	s->transitions[s->transitioncount].staidfrom = atoi(argv[1]);
+	s->transitions[s->transitioncount].staidto = atoi(argv[2]);
+	s->transitions[s->transitioncount].agrid = atoi(argv[3]);
+//printf("init_state_transitions_callback %d %d %d %d %d\n", s->transitioncount, s->transitions[s->transitioncount].traid, s->transitions[s->transitioncount].staidfrom, s->transitions[s->transitioncount].staidto, s->transitions[s->transitioncount].agrid);
+	init_count_actuators_of_transition(&(s->transitions[s->transitioncount]));
+	init_actuators_of_transition(&(s->transitions[s->transitioncount]));
+
+	s->transitioncount++;
+
+	return(0);
+}
+
+void init_state_transitions(statescheduler *s)
+{
+	sqlite3 *db;
+	char *err_msg = NULL;
+	char sql[200];
+	int rc;
+
+	if ((rc = sqlite3_open(DBPATH, &db)))
+	{
+		printf("Can't open database: %s\n", sqlite3_errmsg(db));
+	}
+	else
+	{
+//printf("Opened database successfully\n");
+		sprintf(sql, "select transdef.traid, transdef.staidfrom, transdef.staidto, transdef.agrid from transitions inner join transdef on transitions.traid = transdef.traid;");
+		if((rc = sqlite3_exec(db, sql, init_state_transitions_callback, (void*)s, &err_msg)) != SQLITE_OK)
+		{
+		printf("Failed to select data, %s\n", err_msg);
+		sqlite3_free(err_msg);
+		}
+		else // success
+		{
+		}
+	}
+	sqlite3_close(db);
+}
+
+int init_count_state_transitions_callback(void *data, int argc, char **argv, char **azColName) 
+{
+	statescheduler *s = (statescheduler *)data;
+
+	s->transitioncount = atoi(argv[0]);
+	s->transitions = malloc(s->transitioncount*sizeof(statetransition));
+//printf("init_count_state_intervals_callback %d\n", s->intervalcount);
+	s->transitioncount = 0;
+
+	return(0);
+}
+  
+void init_count_state_transitions(statescheduler *s)
+{
+	sqlite3 *db;
+	char *err_msg = NULL;
+	char *sql = NULL;
+	int rc;
+
+	if ((rc = sqlite3_open(DBPATH, &db)))
+	{
+		printf("Can't open database: %s\n", sqlite3_errmsg(db));
+	}
+	else
+	{
+//printf("Opened database successfully\n");
+		sql = "select count(*) as trans from transitions;";
+		if ((rc = sqlite3_exec(db, sql, init_count_state_transitions_callback, (void*)s, &err_msg)) != SQLITE_OK)
+		{
+		printf("Failed to select data, %s\n", err_msg);
+		sqlite3_free(err_msg);
+		}
+		else // success
+		{
+		}
+	}
+	sqlite3_close(db);
+}
+
 int init_sensors_of_state_callback(void *data, int argc, char **argv, char **azColName) 
 {
 	state *st = (state *)data;
@@ -85,7 +247,8 @@ int init_states_of_interval_callback(void *data, int argc, char **argv, char **a
 	stateinterval *i = (stateinterval *)data;
 
 	i->states[i->statecount].staid = atoi(argv[0]);
-	i->states[i->statecount].sgrid = atoi(argv[1]); 
+	i->states[i->statecount].sgrid = atoi(argv[1]);
+	i->states[i->statecount].newvalue = 0; // false
 //printf("init_states_of_interval_callback %d %d %d\n", i->statecount, i->states[i->statecount].staid, i->states[i->statecount].sgrid);
 	init_count_sensors_of_state(&(i->states[i->statecount]));
 	init_sensors_of_state(&(i->states[i->statecount]));
@@ -95,7 +258,7 @@ int init_states_of_interval_callback(void *data, int argc, char **argv, char **a
 	return(0);
 }
 
-void init_states_of_interval(interval *i)
+void init_states_of_interval(stateinterval *i)
 {
 	sqlite3 *db;
 	char *err_msg = NULL;
@@ -210,7 +373,7 @@ int init_count_state_intervals_callback(void *data, int argc, char **argv, char 
 	statescheduler *s = (statescheduler *)data;
 
 	s->intervalcount = atoi(argv[0]);
-	s->intervals = malloc(s->intervalcount*sizeof(interval));
+	s->intervals = malloc(s->intervalcount*sizeof(stateinterval));
 //printf("init_count_state_intervals_callback %d\n", s->intervalcount);
 	s->intervalcount = 0;
 
@@ -244,14 +407,15 @@ void init_count_state_intervals(statescheduler *s)
 	sqlite3_close(db);
 }
 
-void* rule_interval_thread(void *args)
+void* state_interval_thread(void *args)
 {
 	stateinterval *ival = (stateinterval *)args;
 	controller *c = ival->c;
-	state *st;
+	state *st, *oldst, *newst;
+	statetransition *t;
 	sdev *s;
 	adev *a;
-	int i, j;
+	int i, j, k, l;
 	unsigned char value;
 	int sensorval;
 	httpclient h;
@@ -271,7 +435,7 @@ void* rule_interval_thread(void *args)
 		{
 			sensorval = 1;
 			st = &(ival->states[i]);
-      st->oldvalue = st->value;
+			st->oldvalue = st->newvalue;
 			for(j=0;(j<st->sdevcount) && (sensorval);j++)
 			{
 				s = &(st->sdevs[j]);
@@ -283,12 +447,71 @@ void* rule_interval_thread(void *args)
 //printf("sensor %d channel %d value %d\n", s->devid, s->chnnl, value);
 				sensorval &= ((value >= s->fromval) && (value <= s->toval));
 			}
-      st->value = sensorval;
+			st->newvalue = sensorval;
 		}
-    
-    // transition check
-    
-//printf("\n");
+
+		// transition check
+		for(i=0;i<ival->transitioncount;i++)
+		{
+			t = &(ival->transitions[i]);
+			for(j=0;j<ival->statecount;j++)
+			{
+				oldst = &(ival->states[j]);
+				if (oldst->oldvalue && (oldst->staid == t->staidfrom))
+				{
+					for(k=0;k<ival->statecount;k++)
+					{
+						newst = &(ival->states[k]);
+						if (newst->newvalue && (newst->staid == t->staidto))
+						{
+							for(l=0;l<t->adevcount;l++)
+							{
+								a = &(t->adevs[l]);
+//printf("%d %d %d\n", a->chnnl, a->devid, a->value);
+								if (a->chnnl < 8) // channel
+								{
+									if (c)
+									{
+										ochannel_set_value(c, a->chnnl, (unsigned char)a->value);
+										ochannel_write(c);
+									}
+									else
+										jsonWriteChannel(&h, a->chnnl, 0, (unsigned char)a->value);
+								}
+								else if (a->chnnl < 10) // bit
+								{
+									if (c)
+										obit_set_value(c, (unsigned int)a->chnnl, (unsigned char)a->value);
+									else
+										jsonWriteBit(&h, a->chnnl, 0, (unsigned char)a->value);
+								}
+								else if (a->chnnl < 12) // pulse
+								{
+									if (c)
+										opulse_out(c, (unsigned int)a->chnnl, a->value);
+									else
+										jsonWritePulse(&h, a->chnnl, 0, a->value);
+								}
+							}
+							printf("transition %d, from %d to %d\n", i, t->staidfrom, t->staidto);
+						}
+					}
+				}
+			}
+		}
+/*
+		for(i=0;i<ival->statecount;i++)
+		{
+			st = &(ival->states[i]);
+			for(j=0;j<st->sdevcount;j++)
+			{
+				s = &(st->sdevs[j]);
+				printf("state %d, device %d, %d -> %d\n", st->staid, s->devid, st->oldvalue, st->newvalue);
+			}
+		}
+		printf("\n");
+*/
+
 		sleep(ival->seconds);
 	}while (ival->threadrunning);
 
@@ -302,6 +525,8 @@ void init_state_interval_threads(statescheduler *s)
 
 	for(i=0;i<s->intervalcount;i++)
 	{
+		s->intervals[i].transitioncount = s->transitioncount;
+		s->intervals[i].transitions = s->transitions;
 		err = pthread_create(&(s->intervals[i].tid), NULL, &state_interval_thread, (void *)&(s->intervals[i]));
 		if (err)
 			printf("pthread_create error, interval %d\n", i);
@@ -331,6 +556,9 @@ void init_state_scheduler(statescheduler *s, controller *c)
 	init_count_state_intervals(s);
 	init_state_intervals(s);
 //printf("intervals %d\n", s->intervalcount);
+
+	init_count_state_transitions(s);
+	init_state_transitions(s);
 
 	init_state_interval_threads(s);
 }

@@ -10,21 +10,7 @@
 #include "iochannels.h"
 #include "db.h"
 #include "httpget.h"
-
-typedef struct
-{
-  int chnnl;
-  int devid;
-  int fromval;
-  int toval;
-}sdev;
-
-typedef struct
-{
-  int chnnl;
-  int devid;
-  int value;
-}adev;
+#include "dev.h"
 
 typedef struct
 {

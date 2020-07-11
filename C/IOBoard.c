@@ -5,6 +5,7 @@
 #include <locale.h>
 
 #include "rules.h"
+#include "states.h"
 #include "devices.h"
 #include "httpget.h"
 
@@ -19,12 +20,70 @@ typedef struct
 	GtkWidget *control;
 }devicewidgets;
 
+typedef enum
+{
+  COL_DEVID = 0,
+  COL_DTEXT,
+  COL_DTYPE,
+  COL_NUMSTATES,
+  COL_INITVAL,
+  COL_DICON,
+  COL_CHNNL,
+  NUM_COLS
+}devices_columns;
+
+typedef struct
+{
+	int devid;
+	char *dtext;
+	int dtype;
+	int numstates;
+	int initval;
+	char *dicon;
+	int chnnl;
+}deviceconfig;
+
+typedef struct
+{
+	GtkWidget *configwindow;
+	GtkWidget *configcontainer;
+	GtkWidget *scrolled_window;
+	GtkWidget *listview;
+	GtkListStore *store;
+	GtkTreeIter iter;
+	GtkWidget *buttoncontainer;
+	GtkWidget *add_button;
+	GtkWidget *delete_button;
+	GtkWidget *refresh_button;
+	GtkWidget *editconfigwindow;
+	GtkWidget *editconfigcontainer;
+	GtkWidget *grid;
+	GtkWidget *label_devid;
+	GtkWidget *entry_devid;
+	GtkWidget *label_dtext;
+	GtkWidget *entry_dtext;
+	GtkWidget *label_dtype;
+	GtkWidget *combo_dtype;
+	GtkWidget *label_numstates;
+	GtkWidget *entry_numstates;
+	GtkWidget *label_initval;
+	GtkWidget *entry_initval;
+	GtkWidget *label_dicon;
+	GtkWidget *entry_dicon;
+	GtkWidget *label_chnnl;
+	GtkWidget *entry_chnnl;
+	GtkWidget *save_button;
+	int mode;
+	deviceconfig dc;
+}configwidgets;
+
 typedef struct
 {
 	GtkWidget *window;
 	GtkWidget *container;
 	devicewidgets odw[12];
 	devicewidgets idw[8];
+	configwidgets cw;
 	controller *c;
 	iodevices *cha, *bit, *pul, *sen;
 	httpclient h;
@@ -534,9 +593,474 @@ static void srbutton_clicked_http(GtkWidget *button, gpointer data)
 //printf("ichannel_get_value(0) = %d\n", ichannel_get_value(c, 0));
 }
 
+int fill_combo_dtype_callback(void *data, int argc, char **argv, char **azColName) 
+{
+	GtkWidget *w = (GtkWidget *)data;
+
+	gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(w), argv[0], argv[1]);
+
+	return 0;
+}
+
+void fill_combo_dtype(GtkWidget *combo)
+{
+	sqlite3 *db;
+	char *err_msg = NULL;
+	char *sql = NULL;
+	int rc;
+
+	if((rc = sqlite3_open(DBPATH, &db)))
+	{
+		printf("Can't open database: %s\n", sqlite3_errmsg(db));
+	}
+	else
+	{
+//printf("Opened database successfully\n");
+		sql = "SELECT * FROM devicetypes;";
+		if((rc = sqlite3_exec(db, sql, fill_combo_dtype_callback, (void*)combo, &err_msg)) != SQLITE_OK)
+		{
+			printf("Failed to select data, %s\n", err_msg);
+			sqlite3_free(err_msg);
+		}
+		else
+		{
+// success
+		}
+	}
+	sqlite3_close(db);
+}
+
+static gboolean delete_event_edit_config(GtkWidget *widget, GdkEvent *event, gpointer data)
+{
+	return FALSE; // return FALSE to emit destroy signal
+}
+
+static void destroy_edit_config(GtkWidget *widget, gpointer data)
+{
+}
+
+static void realize_cb_edit_config(GtkWidget *widget, gpointer data)
+{
+}
+
+int select_callback(void *data, int argc, char **argv, char **azColName) 
+{
+	controlpanel* cp = (controlpanel *)data;
+	configwidgets *cw = &(cp->cw);
+
+	gtk_list_store_append(cw->store, &(cw->iter));
+	gtk_list_store_set(cw->store, &(cw->iter), COL_DEVID, atoi(argv[0]), COL_DTEXT, argv[1], COL_DTYPE, atoi(argv[2]), COL_NUMSTATES, atoi(argv[3]), COL_INITVAL, atoi(argv[4]), COL_DICON, argv[5], COL_CHNNL, atoi(argv[6]), -1);
+
+//g_print("%s, %s\n", argv[0], argv[1]);
+	return 0;
+}
+
+static GtkTreeModel* create_and_fill_model(controlpanel *cp)
+{
+	configwidgets *cw = &(cp->cw);
+	sqlite3 *db;
+	char *err_msg = NULL;
+	char *sql = NULL;
+	int rc;
+
+	cw->store = gtk_list_store_new(NUM_COLS, G_TYPE_UINT, G_TYPE_STRING, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_STRING, G_TYPE_UINT);
+
+	if((rc = sqlite3_open(DBPATH, &db)))
+	{
+		printf("Can't open database: %s\n", sqlite3_errmsg(db));
+	}
+	else
+	{
+//printf("Opened database successfully\n");
+		sql = "SELECT * FROM devices;";
+		if((rc = sqlite3_exec(db, sql, select_callback, (void*)cp, &err_msg)) != SQLITE_OK)
+		{
+			printf("Failed to select data, %s\n", err_msg);
+			sqlite3_free(err_msg);
+		}
+		else
+		{
+// success
+		}
+	}
+	sqlite3_close(db);
+
+	return GTK_TREE_MODEL(cw->store);
+}
+
+static void refresh_button_clicked(GtkWidget *button, gpointer data)
+{
+	controlpanel *cp = (controlpanel *)data;
+	configwidgets *cw = &(cp->cw);
+
+	GtkTreeModel *model;
+	model = gtk_tree_view_get_model(GTK_TREE_VIEW(cw->listview));
+
+	gtk_tree_view_set_model(GTK_TREE_VIEW(cw->listview), NULL); /* Detach model from view */
+	g_object_unref(model);
+	model = create_and_fill_model(cp); // insert rows from db
+	gtk_tree_view_set_model(GTK_TREE_VIEW(cw->listview), model); /* Re-attach model to view */
+}
+
+static void save_button_clicked(GtkWidget *button, gpointer data)
+{
+	controlpanel* cp = (controlpanel *)data;
+	configwidgets *cw = &(cp->cw);
+	deviceconfig *dc = &(cw->dc);
+
+	sqlite3 *db;
+	char *err_msg = NULL;
+	char sql[250];
+	int rc;
+
+	if((rc = sqlite3_open(DBPATH, &db)))
+	{
+		printf("Can't open database: %s\n", sqlite3_errmsg(db));
+	}
+	else
+	{
+//printf("Opened database successfully\n");
+		switch (cw->mode)
+		{
+			case 0: // Create
+					sprintf(sql, "insert into devices values(%d, '%s', %d, %d, %d, '%s', %d);", atoi(gtk_entry_get_text(GTK_ENTRY(cw->entry_devid))), gtk_entry_get_text(GTK_ENTRY(cw->entry_dtext)), gtk_combo_box_get_active(GTK_COMBO_BOX(cw->combo_dtype)), atoi(gtk_entry_get_text(GTK_ENTRY(cw->entry_numstates))), atoi(gtk_entry_get_text(GTK_ENTRY(cw->entry_initval))), gtk_entry_get_text(GTK_ENTRY(cw->entry_dicon)), atoi(gtk_entry_get_text(GTK_ENTRY(cw->entry_chnnl))));
+					break;
+			case 1: // Update
+					sprintf(sql, "update devices set dtext='%s', dtype=%d, numstates=%d, initval=%d, dicon='%s', chnnl=%d where devid=%d;", gtk_entry_get_text(GTK_ENTRY(cw->entry_dtext)), gtk_combo_box_get_active(GTK_COMBO_BOX(cw->combo_dtype)), atoi(gtk_entry_get_text(GTK_ENTRY(cw->entry_numstates))), atoi(gtk_entry_get_text(GTK_ENTRY(cw->entry_initval))), gtk_entry_get_text(GTK_ENTRY(cw->entry_dicon)), atoi(gtk_entry_get_text(GTK_ENTRY(cw->entry_chnnl))), atoi(gtk_entry_get_text(GTK_ENTRY(cw->entry_devid))));
+					break;
+			case 2: // Delete
+					sprintf(sql, "delete from devices where devid=%d;", dc->devid);
+					break;
+			default:
+					break;
+		}
+//printf("%s\n", sql);
+		if((rc = sqlite3_exec(db, sql, NULL, NULL, &err_msg)) != SQLITE_OK)
+		{
+			printf("Failed to update data, %s\n", err_msg);
+			sqlite3_free(err_msg);
+		}
+		else
+		{
+// success
+			switch (cw->mode)
+			{
+				case 0:
+				case 1:
+						gtk_window_close(GTK_WINDOW(cw->editconfigwindow));
+						break;
+				case 2:
+				default:
+						break;
+			}
+			refresh_button_clicked(cw->refresh_button, (void*)cp);
+		}
+	}
+	sqlite3_close(db);
+}
+
+void edit_device_config(controlpanel *cp)
+{
+	configwidgets *cw = &(cp->cw);
+	deviceconfig *dc = &(cw->dc);
+	char s[50];
+
+	/* create a new window */
+	cw->editconfigwindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_position(GTK_WINDOW(cw->editconfigwindow), GTK_WIN_POS_CENTER);
+	gtk_container_set_border_width(GTK_CONTAINER(cw->editconfigwindow), 2);
+	gtk_widget_set_size_request(cw->editconfigwindow, 300, 400);
+	gtk_window_set_title(GTK_WINDOW(cw->editconfigwindow), "Edit Configuration");
+	gtk_window_set_resizable(GTK_WINDOW(cw->editconfigwindow), TRUE);
+	gtk_window_set_modal(GTK_WINDOW(cw->editconfigwindow), TRUE);
+	/* When the window is given the "delete-event" signal (this is given
+	* by the window manager, usually by the "close" option, or on the
+	* titlebar), we ask it to call the delete_event () function
+	* as defined above. The data passed to the callback
+	* function is NULL and is ignored in the callback function. */
+	g_signal_connect(cw->editconfigwindow, "delete-event", G_CALLBACK(delete_event_edit_config), NULL);
+	/* Here we connect the "destroy" event to a signal handler.  
+	* This event occurs when we call gtk_widget_destroy() on the window,
+	* or if we return FALSE in the "delete-event" callback. */
+	g_signal_connect(cw->editconfigwindow, "destroy", G_CALLBACK(destroy_edit_config), NULL);
+	g_signal_connect(cw->editconfigwindow, "realize", G_CALLBACK(realize_cb_edit_config), NULL);
+
+	cw->editconfigcontainer = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+	gtk_container_add(GTK_CONTAINER(cw->editconfigwindow), cw->editconfigcontainer);
+
+	cw->grid = gtk_grid_new();
+	gtk_container_add(GTK_CONTAINER(cw->editconfigcontainer), cw->grid);
+
+	// DEVID
+	cw->label_devid = gtk_label_new("Device ID");
+	gtk_grid_attach(GTK_GRID(cw->grid), cw->label_devid, 0, 0, 1, 1);
+
+	cw->entry_devid = gtk_entry_new();
+	if (cw->mode==1)
+	{
+		sprintf(s, "%d", dc->devid);
+		gtk_entry_set_text(GTK_ENTRY(cw->entry_devid), (const gchar *)s);
+		gtk_widget_set_sensitive(cw->entry_devid, FALSE);
+	}
+	gtk_grid_attach(GTK_GRID(cw->grid), cw->entry_devid, 1, 0, 1, 1);
+
+	// DTEXT
+	cw->label_dtext = gtk_label_new("Device Name");
+	gtk_grid_attach(GTK_GRID(cw->grid), cw->label_dtext, 0, 1, 1, 1);
+
+	cw->entry_dtext = gtk_entry_new();
+	if (cw->mode==1)
+	{
+		gtk_entry_set_text(GTK_ENTRY(cw->entry_dtext), (const gchar *)dc->dtext);
+	}
+	gtk_grid_attach(GTK_GRID(cw->grid), cw->entry_dtext, 1, 1, 1, 1);
+
+	// DTYPE
+	cw->label_dtype = gtk_label_new("Device Type");
+	gtk_grid_attach(GTK_GRID(cw->grid), cw->label_dtype, 0, 2, 1, 1);
+
+	cw->combo_dtype = gtk_combo_box_text_new();
+	fill_combo_dtype(cw->combo_dtype);
+	if (!cw->mode)
+	{
+		dc->dtype = 0;
+		sprintf(s, "%d", dc->dtype);
+		g_object_set((gpointer)cw->combo_dtype, "active-id", s, NULL);
+	}
+	else if (cw->mode==1)
+	{
+		sprintf(s, "%d", dc->dtype);
+		g_object_set((gpointer)cw->combo_dtype, "active-id", s, NULL);
+	}
+	gtk_grid_attach(GTK_GRID(cw->grid), cw->combo_dtype, 1, 2, 1, 1);
+
+	// NUMSTATES
+	cw->label_numstates = gtk_label_new("Device States");
+	gtk_grid_attach(GTK_GRID(cw->grid), cw->label_numstates, 0, 3, 1, 1);
+
+	cw->entry_numstates = gtk_entry_new();
+	if (cw->mode==1)
+	{
+		sprintf(s, "%d", dc->numstates);
+		gtk_entry_set_text(GTK_ENTRY(cw->entry_numstates), (const gchar *)s);
+	}
+	gtk_grid_attach(GTK_GRID(cw->grid), cw->entry_numstates, 1, 3, 1, 1);
+
+	// INITVAL
+	cw->label_initval = gtk_label_new("Initial Value");
+	gtk_grid_attach(GTK_GRID(cw->grid), cw->label_initval, 0, 4, 1, 1);
+
+	cw->entry_initval = gtk_entry_new();
+	if (cw->mode==1)
+	{
+		sprintf(s, "%d", dc->initval);
+		gtk_entry_set_text(GTK_ENTRY(cw->entry_initval), (const gchar *)s);
+	}
+	gtk_grid_attach(GTK_GRID(cw->grid), cw->entry_initval, 1, 4, 1, 1);
+
+	// DICON
+	cw->label_dicon = gtk_label_new("Device Icon");
+	gtk_grid_attach(GTK_GRID(cw->grid), cw->label_dicon, 0, 5, 1, 1);
+
+	cw->entry_dicon = gtk_entry_new();
+	if (cw->mode==1)
+	{
+		gtk_entry_set_text(GTK_ENTRY(cw->entry_dicon), (const gchar *)dc->dicon);
+	}
+	gtk_grid_attach(GTK_GRID(cw->grid), cw->entry_dicon, 1, 5, 1, 1);
+
+	// CHNNL
+	cw->label_chnnl = gtk_label_new("Device Channel");
+	gtk_grid_attach(GTK_GRID(cw->grid), cw->label_chnnl, 0, 6, 1, 1);
+
+	cw->entry_chnnl = gtk_entry_new();
+	if (cw->mode==1)
+	{
+		sprintf(s, "%d", dc->chnnl);
+		gtk_entry_set_text(GTK_ENTRY(cw->entry_chnnl), (const gchar *)s);
+	}
+	gtk_grid_attach(GTK_GRID(cw->grid), cw->entry_chnnl, 1, 6, 1, 1);
+
+	cw->save_button = gtk_button_new_with_label("Save");
+	g_signal_connect(GTK_BUTTON(cw->save_button), "clicked", G_CALLBACK(save_button_clicked), (void*)cp);
+	gtk_grid_attach(GTK_GRID(cw->grid), cw->save_button, 1, 7, 1, 1);
+
+	gtk_widget_show_all(cw->editconfigwindow);
+}
+
+static GtkWidget* create_view_and_model(controlpanel* cp)
+{
+	GtkCellRenderer *renderer;
+	GtkTreeModel *model;
+	GtkWidget *view;
+
+	view = gtk_tree_view_new();
+
+	// Column 1
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(view), -1, "Device ID", renderer, "text", COL_DEVID, NULL);
+
+	// Column 2
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW(view), -1, "Device", renderer, "text", COL_DTEXT, NULL);
+
+	// Column 3
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(view), -1, "Device Type", renderer, "text", COL_DTYPE, NULL);
+
+	// Column 4
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW(view), -1, "Device States", renderer, "text", COL_NUMSTATES, NULL);
+
+	// Column 5
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW(view), -1, "Initial Value", renderer, "text", COL_INITVAL, NULL);
+
+	// Column 6
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW(view), -1, "Device Icon", renderer, "text", COL_DICON, NULL);
+
+	// Column 7
+	renderer = gtk_cell_renderer_text_new();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW(view), -1, "Channel", renderer, "text", COL_CHNNL, NULL);
+
+	model = create_and_fill_model(cp);
+
+	gtk_tree_view_set_model(GTK_TREE_VIEW(view), model);
+
+/* The tree view has acquired its own reference to the model, so we can drop ours. That way the model will
+   be freed automatically when the tree view is destroyed */
+//g_object_unref(model);
+
+	return view;
+}
+
+void listview_onRowActivated(GtkTreeView *treeview, GtkTreePath *path, GtkTreeViewColumn *col, gpointer userdata)
+{
+	controlpanel* cp = (controlpanel *)userdata;
+	configwidgets *cw = &(cp->cw);
+	deviceconfig *dc = &(cw->dc);
+	GtkTreeModel *model;
+
+//g_print("double-clicked\n");
+	cw->mode = 1; // Edit
+	model = gtk_tree_view_get_model(treeview);
+	if (gtk_tree_model_get_iter(model, &(cw->iter), path))
+	{
+		gtk_tree_model_get(model, &(cw->iter), COL_DEVID, &(dc->devid), COL_DTEXT, &(dc->dtext), COL_DTYPE, &(dc->dtype), COL_NUMSTATES, &(dc->numstates), COL_INITVAL, &(dc->initval), COL_DICON, &(dc->dicon), COL_CHNNL, &(dc->chnnl), -1);
+		edit_device_config(cp);
+		g_free(dc->dtext);
+		g_free(dc->dicon);
+	}
+}
+
+static void add_button_clicked(GtkWidget *button, gpointer data)
+{
+	controlpanel *cp = (controlpanel *)data;
+	configwidgets *cw = &(cp->cw);
+
+	cw->mode = 0; // Create
+	edit_device_config(cp);
+}
+
+static void delete_button_clicked(GtkWidget *button, gpointer data)
+{
+	controlpanel *cp = (controlpanel *)data;
+	configwidgets *cw = &(cp->cw);
+	deviceconfig *dc = &(cw->dc);
+
+	GtkTreeModel *model;
+	GtkTreeSelection *selection;
+
+	cw->mode = 2; // Delete
+
+	model = gtk_tree_view_get_model(GTK_TREE_VIEW(cw->listview));
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(cw->listview));
+	gtk_tree_selection_get_selected(selection, &model, &(cw->iter));
+	gtk_tree_model_get(model, &(cw->iter), COL_DEVID, &(dc->devid), COL_DTEXT, &(dc->dtext), COL_DTYPE, &(dc->dtype), COL_NUMSTATES, &(dc->numstates), COL_INITVAL, &(dc->initval), COL_DICON, &(dc->dicon), COL_CHNNL, &(dc->chnnl), -1);
+	save_button_clicked(cw->save_button, (void*)cp);
+//printf("%d\n", dc.devid);
+	g_free(dc->dtext);
+	g_free(dc->dicon);
+}
+
+static gboolean delete_event_config(GtkWidget *widget, GdkEvent *event, gpointer data)
+{
+	return FALSE; // return FALSE to emit destroy signal
+}
+
+static void destroy_config(GtkWidget *widget, gpointer data)
+{
+}
+
+static void realize_cb_config(GtkWidget *widget, gpointer data)
+{
+}
+
+void display_config(controlpanel *cp)
+{
+	configwidgets *cw = &(cp->cw);
+
+	/* create a new window */
+	cw->configwindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_position(GTK_WINDOW(cw->configwindow), GTK_WIN_POS_CENTER);
+	gtk_container_set_border_width(GTK_CONTAINER(cw->configwindow), 2);
+	gtk_widget_set_size_request(cw->configwindow, 250, 200);
+	gtk_window_set_title(GTK_WINDOW(cw->configwindow), "Configuration");
+	gtk_window_set_resizable(GTK_WINDOW(cw->configwindow), TRUE);
+	gtk_window_set_modal(GTK_WINDOW(cw->configwindow), TRUE);
+	/* When the window is given the "delete-event" signal (this is given
+	* by the window manager, usually by the "close" option, or on the
+	* titlebar), we ask it to call the delete_event () function
+	* as defined above. The data passed to the callback
+	* function is NULL and is ignored in the callback function. */
+	g_signal_connect(cw->configwindow, "delete-event", G_CALLBACK(delete_event_config), NULL);
+	/* Here we connect the "destroy" event to a signal handler.  
+	* This event occurs when we call gtk_widget_destroy() on the window,
+	* or if we return FALSE in the "delete-event" callback. */
+	g_signal_connect(cw->configwindow, "destroy", G_CALLBACK(destroy_config), NULL);
+	g_signal_connect(cw->configwindow, "realize", G_CALLBACK(realize_cb_config), NULL);
+
+	cw->configcontainer = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+	gtk_container_add(GTK_CONTAINER(cw->configwindow), cw->configcontainer);
+
+	cw->scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+	gtk_container_set_border_width(GTK_CONTAINER(cw->scrolled_window), 10);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(cw->scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
+
+	gtk_box_pack_start(GTK_BOX(cw->configcontainer), cw->scrolled_window, TRUE, TRUE, 0);
+
+	cw->listview = create_view_and_model(cp);
+	g_signal_connect(cw->listview, "row-activated", (GCallback)listview_onRowActivated, (void*)cp);
+	gtk_container_add(GTK_CONTAINER(cw->scrolled_window), cw->listview);
+
+	cw->buttoncontainer = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+	gtk_container_add(GTK_CONTAINER(cw->configcontainer), cw->buttoncontainer);
+
+	cw->add_button = gtk_button_new_with_label("Add");
+	g_signal_connect(GTK_BUTTON(cw->add_button), "clicked", G_CALLBACK(add_button_clicked), (void*)cp);
+	gtk_container_add(GTK_CONTAINER(cw->buttoncontainer), cw->add_button);
+
+	cw->delete_button = gtk_button_new_with_label("Delete");
+	g_signal_connect(GTK_BUTTON(cw->delete_button), "clicked", G_CALLBACK(delete_button_clicked), (void*)cp);
+	gtk_container_add(GTK_CONTAINER(cw->buttoncontainer), cw->delete_button);
+
+	cw->refresh_button = gtk_button_new_with_label("Refresh");
+	g_signal_connect(GTK_BUTTON(cw->refresh_button), "clicked", G_CALLBACK(refresh_button_clicked), (void*)cp);
+	gtk_container_add(GTK_CONTAINER(cw->buttoncontainer), cw->refresh_button);
+
+	gtk_widget_show_all(cw->configwindow);
+}
+
+static void configbutton_clicked(GtkWidget *button, gpointer data)
+{
+	controlpanel* cp = (controlpanel *)data;
+
+	display_config(cp);
+}
+
 static gboolean delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
-
 	return FALSE; // return FALSE to emit destroy signal
 }
 
@@ -547,7 +1071,6 @@ static void destroy(GtkWidget *widget, gpointer data)
 
 static void realize_cb(GtkWidget *widget, gpointer data)
 {
-
 }
 
 void setup_default_icon(char *filename)
@@ -575,7 +1098,8 @@ int main(int argc, char **argv)
 	controller *c = NULL;
 	int i, err;
 	controlpanel cp;
-	scheduler s;
+	rulescheduler rs;
+	statescheduler ss;
 	iodevices cha, bit, pul, sen;
 	int usegpio = 0;
 
@@ -675,16 +1199,28 @@ int main(int argc, char **argv)
 		g_signal_connect(GTK_BUTTON(srbutton), "clicked", G_CALLBACK(srbutton_clicked_http), (void *)&cp);
 	gtk_container_add(GTK_CONTAINER(cp.container), srbutton);
 
+	GtkWidget *configbutton;
+	configbutton = gtk_button_new_with_label("Configuration");
+	g_signal_connect(GTK_BUTTON(configbutton), "clicked", G_CALLBACK(configbutton_clicked), (void *)&cp);
+	gtk_container_add(GTK_CONTAINER(cp.container), configbutton);
+
 	gtk_widget_show_all(cp.window);
 
 	if (usegpio)
-		init_scheduler(&s, c);
+	{
+		init_rule_scheduler(&rs, c);
+		init_state_scheduler(&ss, c);
+	}
 	else
-		init_scheduler(&s, NULL);
+	{
+		init_rule_scheduler(&rs, NULL);
+		init_state_scheduler(&ss, NULL);
+	}
 
 	gtk_main();
 
-	close_scheduler(&s);
+	close_rule_scheduler(&rs);
+	close_state_scheduler(&ss);
 
 	free_devices(&cha);
 	free_devices(&bit);

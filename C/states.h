@@ -1,6 +1,17 @@
 #ifndef statesH
 #define statesH
 
+#include <sqlite3.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <unistd.h>
+
+#include "iochannels.h"
+#include "db.h"
+#include "httpget.h"
+#include "dev.h"
+
 typedef struct
 {
   int staid;
@@ -8,17 +19,18 @@ typedef struct
   int sdevcount;
   sdev *sdevs;
   int oldvalue;
-  int value;
+  int newvalue;
 }state;
 
 typedef struct
 {
+  int traid;
   int staidfrom;
   int staidto;
   int agrid;
   int adevcount;
   adev *adevs;
-}transition;
+}statetransition;
 
 typedef struct
 {
@@ -27,6 +39,8 @@ typedef struct
   controller *c;
   int statecount;
   state *states;
+  int transitioncount;
+  statetransition *transitions;
   pthread_t tid;
   int retval;
   int threadrunning;
@@ -36,6 +50,8 @@ typedef struct
 {
  int intervalcount;
  stateinterval *intervals;
+ int transitioncount;
+ statetransition *transitions;
  controller *c;
 }statescheduler;
 #endif

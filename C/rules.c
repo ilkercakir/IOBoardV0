@@ -177,7 +177,7 @@ int init_rules_of_interval_callback(void *data, int argc, char **argv, char **az
 	return(0);
 }
 
-void init_rules_of_interval(interval *i)
+void init_rules_of_interval(ruleinterval *i)
 {
 	sqlite3 *db;
 	char *err_msg = NULL;
@@ -274,7 +274,7 @@ void init_rule_intervals(rulescheduler *s)
 	else
 	{
 //printf("Opened database successfully\n");
-		sql = "select * from intervals;";
+		sql = "select * from intervals where itype = 'R';";
 		if((rc = sqlite3_exec(db, sql, init_rule_intervals_callback, (void*)s, &err_msg)) != SQLITE_OK)
 		{
 		printf("Failed to select data, %s\n", err_msg);
@@ -292,7 +292,7 @@ int init_count_rule_intervals_callback(void *data, int argc, char **argv, char *
 	rulescheduler *s = (rulescheduler *)data;
 
 	s->intervalcount = atoi(argv[0]);
-	s->intervals = malloc(s->intervalcount*sizeof(interval));
+	s->intervals = malloc(s->intervalcount*sizeof(ruleinterval));
 //printf("init_count_intervals_callback %d\n", s->intervalcount);
 	s->intervalcount = 0;
 
@@ -313,7 +313,7 @@ void init_count_rule_intervals(rulescheduler *s)
 	else
 	{
 //printf("Opened database successfully\n");
-		sql = "select count(*) as schedules from intervals;";
+		sql = "select count(*) as schedules from intervals where itype = 'R';";
 		if ((rc = sqlite3_exec(db, sql, init_count_rule_intervals_callback, (void*)s, &err_msg)) != SQLITE_OK)
 		{
 		printf("Failed to select data, %s\n", err_msg);
