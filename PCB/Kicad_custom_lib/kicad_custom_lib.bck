@@ -1,4 +1,10 @@
-EESchema-DOCLIB  Version 2.0  Date: Pzt 20 Nis 2020 14:42:05 +03
+EESchema-DOCLIB  Version 2.0  Date: Cts 25 Nis 2020 18:02:27 +03
+#
+$CMP 2N2222A
+D PN2222A, 40V Vce, 1A Ic, NPN, General Purpose Transistor,TO-92
+K NPN General Puprose Transistor TO92
+F http://www.fairchildsemi.com/ds/PN/PN2222A.pdf
+$ENDCMP
 #
 $CMP 74LS138
 D Decoder 3 to 8 (active low outputs)
